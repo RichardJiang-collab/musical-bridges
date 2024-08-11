@@ -131,6 +131,7 @@ def get_recommendations():
         {'name': track['name'], 'artist': track['artists'][0]['name'], 'id': track['id']}
         for track in recommendations['tracks']
     ]
+    #dummy line
 
 
     return jsonify({
