@@ -48,7 +48,8 @@
         class="h1 home-heading"><span class="text-span-2">Discover Your Emotional Soundtrack</span></h1>
       <p class="paragraph-2"><strong class="bold-text-3">Let your feelings guide you to the perfect melody. Experience
           music that resonates with your soul.</strong></p>
-      <div class="cta-column"><a href="/emotions" target="_blank" class="button cc-cta button-main w-button">Explore
+      <div class="cta-column"><a id="emotion_page" href="/emotions" target="_blank"
+          class="button cc-cta button-main w-button">Explore
           your emotions</a></div>
     </div>
   </div>
@@ -143,3 +144,16 @@
 </body>
 
 </html>
+
+
+<script>
+  // adding event listener to the button (id: emotion_page) to redirect to the emotions.html. 
+  var currentUrl = window.location.href;
+  document.getElementById('emotion_page').addEventListener('click', function (event) {
+    event.preventDefault();
+    var newUrl = currentUrl.replace('index.html', 'emotions.html');
+    window.location.href = newUrl;
+  });
+
+  // TODO: adding any other url redirections here
+</script>

@@ -1,7 +1,7 @@
 # app.py
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 import os
 import spotipy
@@ -13,7 +13,10 @@ from spotipy.oauth2 import SpotifyClientCredentials
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all domains on all routes
+# CORS(app)  # Enable CORS for all domains on all routes
+cors = CORS(app, resources={r"/*": {"origins": "http://localhost:5000"}})
+app.config['CORS_HEADERS'] = 'Content-Type'
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///musical_bridges.db'
 db = SQLAlchemy(app)
 
@@ -22,10 +25,16 @@ client_credentials_manager = SpotifyClientCredentials(
     client_id=os.getenv('SPOTIFY_CLIENT_ID'),
     client_secret=os.getenv('SPOTIFY_CLIENT_SECRET')
 )
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+sp = spotipy.Spotify(
+    client_credentials_manager=client_credentials_manager)
+
+
+print("running app.py")
 
 # Add a root route
 @app.route('/')
+@cross_origin()
 def home():
     return "Welcome to Musical Bridges API!"
 
@@ -45,30 +54,25 @@ class Playlist(db.Model):
 
 # API routes
 @app.route('/api/emotions', methods=['GET'])
+@cross_origin()
 def get_emotions():
     emotions = Emotion.query.all()
+    print("in get_emotions")
     return jsonify([{'id': e.id, 'name': e.name, 'intensity': e.intensity} for e in emotions])
 
 
-@app.route('/api/select-emotion', methods=['POST'])
-def select_emotion():
-    data = request.json
-    emotion_id = data.get('emotion_id')
-    intensity = data.get('intensity')
-
-    emotion = Emotion.query.get(emotion_id)
-    if not emotion or emotion.intensity != intensity:
-        return jsonify({'error': 'Invalid emotion or intensity'}), 400
-
-    return jsonify({'message': 'Emotion selected successfully'})
-
-
 @app.route('/api/recommendations', methods=['GET'])
+@cross_origin()
 def get_recommendations():
-    emotion_id = request.args.get('emotion_id')
+    print("starting in get_recommendations")
+    emotion = request.args.get('emotion')
     intensity = request.args.get('intensity')
 
-    emotion = Emotion.query.get(emotion_id)
+   
+    # emotion_id = request.args.get('emotion_id')
+    # intensity = request.args.get('intensity')
+
+    # emotion = Emotion.query.get(emotion_id)
     if not emotion:
         return jsonify({'error': 'Invalid emotion'}), 400
 
@@ -105,7 +109,8 @@ def get_recommendations():
     }
 
     # Get the appropriate seed tracks and audio features
-    emotion_name = emotion.name.lower()
+    # emotion_name = emotion.name.lower()
+    emotion_name = emotion
     if emotion_name not in emotion_seeds or intensity not in emotion_seeds[emotion_name]:
         return jsonify({'error': 'Unsupported emotion or intensity'}), 400
 
@@ -127,11 +132,28 @@ def get_recommendations():
         for track in recommendations['tracks']
     ]
 
+
     return jsonify({
         'emotion': emotion_name,
         'intensity': intensity,
         'recommendations': formatted_recommendations
     })
+
+@app.route('/api/select-emotion', methods=['POST'])
+@cross_origin()
+def select_emotion():
+    data = request.json
+    emotion_id = data.get('emotion_id')
+    intensity = data.get('intensity')
+
+    emotion = Emotion.query.get(emotion_id)
+    if not emotion or emotion.intensity != intensity:
+        return jsonify({'error': 'Invalid emotion or intensity'}), 400
+    # print("in select_emotion")
+    return jsonify({'message': 'Emotion selected successfully'})
+
+
+
 
 
 if __name__ == '__main__':

@@ -68,7 +68,8 @@
             <li class="description-list-item">Gradually transition to more mellow tunes<br /></li>
             <li class="description-list-item">Explore songs with empowering lyrics</li>
           </ul>
-          <div class="selection-button-box"><a href="/anger-selection" class="selection-button w-button">Continue Your
+          <div class="selection-button-box"><a id="anger_selection_page" href="/anger-selection"
+              class="selection-button w-button">Continue Your
               Recommendation</a></div>
         </div>
       </div>
@@ -89,7 +90,8 @@
             <li class="description-list-item">Incorporate uplifting melodies as you progress<br /></li>
             <li class="description-list-item">Consider instrumental pieces for reflection</li>
           </ul>
-          <div class="selection-button-box"><a href="/sadness-selection" class="selection-button w-button">Continue Your
+          <div class="selection-button-box"><a id="sadness_selection_page" href="/sadness-selection"
+              class="selection-button w-button">Continue Your
               Recommendation</a></div>
         </div>
       </div>
@@ -121,3 +123,26 @@
 </body>
 
 </html>
+
+<script>
+
+  var currentUrl = window.location.href;
+
+  document.getElementById('anger_selection_page').addEventListener('click', function (event) {
+    event.preventDefault();
+    var newUrl = currentUrl.replace('emotions.html', 'anger-selection.html');
+    emotion_type = "anger"
+    newUrl += '?emotion_type=' + emotion_type;
+    window.location.href = newUrl;
+  });
+
+  document.getElementById('sadness_selection_page').addEventListener('click', function (event) {
+    event.preventDefault();
+    var newUrl = currentUrl.replace('emotions.html', 'sadness-selection.html');
+    emotion_type = "sadness"
+    newUrl += '?emotion_type=' + emotion_type;
+    window.location.href = newUrl;
+  });
+
+  // TODO: adding any other url redirections here
+</script>
