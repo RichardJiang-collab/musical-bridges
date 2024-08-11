@@ -26,7 +26,7 @@ Musical Bridges is a web application that allows users to select an emotion and 
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/musical-bridges.git
+   git clone https://github.com/RichardJiang-collab/musical-bridges.git
    cd musical-bridges
    ```
 
@@ -47,7 +47,7 @@ Musical Bridges is a web application that allows users to select an emotion and 
 
 4. Install the required packages:
    ```
-   pip install -r requirements.txt
+   pip install -r app/requirements.txt
    ```
 
 ### API Keys
