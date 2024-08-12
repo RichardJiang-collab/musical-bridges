@@ -118,3 +118,88 @@
 </body>
 
 </html>
+
+<script>
+
+  // window.onload = function () {
+
+  //   var API_URL;
+  //   if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+  //     // API_URL = 'http://127.0.0.1:5000/';
+  //     API_URL = 'http://127.0.0.1:5002/';
+  //   } else {
+  //     API_URL = '';
+  //   }
+
+  //   const baseUrl = API_URL;
+
+
+  //   const url = new URL('get_recommendations', baseUrl);
+  //   url.searchParams.set('videoId', videoDict[videoTopic][0]);
+  //   url.searchParams.set('pauseTimes', videoDict[videoTopic][1]);
+  //   const segmented_transcript = await fetch(url).then((res) => res.json());
+  //   console.log('segmented_transcript, to be copied: ', segmented_transcript)
+  //   return segmented_transcript
+
+
+  //   var urlParams = new URLSearchParams(window.location.search);
+  //   var emotion_type = urlParams.get('emotion_type');
+  //   console.log('Emotion Type: ' + emotion_type);
+  //   var intensity_type = urlParams.get('intensity_type');
+  //   console.log('Intensity Type: ' + intensity_type);
+
+  //   // Send HTTP request to backend
+  //   fetch('http://localhost:5000/get_recommendations', {
+  //     method: 'POST',
+  //     mode: 'cors',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       emotion_id: emotion_type,
+  //       intensity: intensity_type
+  //     }),
+  //   })
+  //     .then(response => response.json())
+  //     .then(data => console.log(data))
+  //     .catch((error) => {
+  //       console.error('Error:', error);
+  //     });
+  // };
+
+
+  window.onload = function () {
+    var urlParams = new URLSearchParams(window.location.search);
+    var emotion_type = urlParams.get('emotion_type');
+    if (emotion_type == "anger") {
+      emotion_type = "angry"
+    }
+    console.log('Emotion Type: ' + emotion_type);
+    var intensity_type = urlParams.get('intensity_type');
+    console.log('Intensity Type: ' + intensity_type);
+
+
+    const url = new URL('http://127.0.0.1:5000/api/recommendations')
+    url.searchParams.set('emotion', emotion_type);
+    url.searchParams.set('intensity', intensity_type);
+    const res = fetch(url).then((res) => res.json());
+    out = { "res": res }
+    console.log("!!!!! out: ", out)
+
+    return out
+
+
+    // Send HTTP request to backend
+    // fetch('http://localhost:5000/api/recommendations', {
+    //   method: 'POST',
+    //   mode: 'no-cors',
+    //   // headers: {
+    //   //   'Content-Type': 'application/json',
+    //   // },
+    //   body: JSON.stringify({
+    //     emotion: emotion_type,
+    //     intensity: intensity_type
+    //   }),
+    // }).then(response => response.json()).then(data => console.log(data))
+  };
+</script>

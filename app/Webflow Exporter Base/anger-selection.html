@@ -53,9 +53,12 @@
     <div class="div-block-4">
       <p class="paragraph-7">Select the intensity of your current emotion...</p>
     </div>
-    <div class="selection-buttons-div"><a href="/recommendations" target="_blank"
-        class="intensity-normal-button w-button">Normal</a><a href="/recommendations" target="_blank"
-        class="intensity-intense-button w-button">Intense</a></div>
+    <div class="selection-buttons-div">
+      <a id="normal_recommendations_page" href="/recommendations" target="_blank"
+        class="intensity-normal-button w-button">Normal</a>
+      <a id="intense_recommendations_page" href="/recommendations" target="_blank"
+        class="intensity-intense-button w-button">Intense</a>
+    </div>
   </div>
   <div class="separator cc-background-grey">
     <div class="container">
@@ -83,3 +86,27 @@
 </body>
 
 </html>
+
+<script>
+
+  var currentUrl = window.location.href;
+
+  document.getElementById('normal_recommendations_page').addEventListener('click', function (event) {
+    event.preventDefault();
+    var newUrl = currentUrl.replace('anger-selection.html', 'recommendations.html');
+    intensity_type = "normal";
+    newUrl += '&intensity_type=' + intensity_type;
+    window.location.href = newUrl;
+  });
+
+
+  document.getElementById('intense_recommendations_page').addEventListener('click', function (event) {
+    event.preventDefault();
+    var newUrl = currentUrl.replace('anger-selection.html', 'recommendations.html');
+    intensity_type = "intense";
+    newUrl += '&intensity_type=' + intensity_type;
+    window.location.href = newUrl;
+  });
+
+  // TODO: adding any other url redirections here
+</script>
