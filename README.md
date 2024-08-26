@@ -1,28 +1,62 @@
-# 🎶 Project Musical Bridges 🌁
+# 🎵 Musical Bridges
 
-Musical Bridges is a Flask-based API that recommends music based on user-selected emotions. This README provides an overview of the project, its setup, and how to use the API.
+Welcome to Musical Bridges, a Spotify playlist generator that creates personalized playlists based on emotions and recommends top tracks!
 
-## 🌴 Overview
+## 📁 Project Structure
 
-Musical Bridges is a web application that allows users to select an emotion and its intensity, and receive music recommendations based on their selection. The backend is built with Flask and integrates with the Spotify API to fetch playlist data.
+```
+music_recommendation_system/
+├── app/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── models.py
+│   ├── main.py
+│   ├── utils.py
+│   ├── extensions.py
+├── webflow_exporter_base/
+│   ├── index.html
+│   ├── emotions.html
+│   ├── recommendations.html
+│   ├── anger-selection.html
+│   ├── sadness-selection.html
+│   ├── css/
+│   │   ├── webflow-style.css
+│   ├── js/
+│   │   ├── jquery.js
+│   │   ├── webflow-script.js
+│   ├── images/
+│   │   ├── (image files)
+├── tests/
+│   ├── test_app.py
+├── migrations/
+│   └── (migration files)
+├── .env
+├── .gitignore
+├── README.md
+├── requirements.txt
+└── run.py
+```
 
-## 🛠️ Features
+## 🚀 Main Functionalities
 
-- Emotion selection API
-- Music recommendations based on emotions and intensity
-- Integration with Spotify API
-- SQLite database for storing emotion and playlist data
-- CORS support for cross-origin requests
+### Backend
 
-## 🚀 Setup and Installation
+1. **Create Spotify Playlist**: Generates a playlist of 10-20 songs based on emotion and song features.
+2. **Top 5 Recommended Songs**: Returns the top 5 most popular songs from the generated playlist as embedded track links.
 
-### Prerequisites
+## 🧠 Algorithm
 
-- Python 3.7 or higher
-- pip (Python package manager)
-- Spotify Developer account for API access
+### Playlist Creation
+1. The system selects songs from the database that match the given emotion.
+2. It then randomly selects 10-20 tracks from this pool.
+3. The selection process considers various song features such as danceability, energy, loudness, speechiness, acousticness, instrumentalness, liveness, valence, tempo, and popularity.
 
-### Environment Setup
+### Top 5 Recommendations
+1. From the generated playlist, the system sorts the songs based on their popularity.
+2. It then selects the top 5 most popular songs.
+3. For each of these songs, it generates a Spotify embedded track link for easy listening.
+
+## 🛠 Setup Instructions
 
 1. Clone the repository:
    ```
@@ -30,59 +64,48 @@ Musical Bridges is a web application that allows users to select an emotion and 
    cd musical-bridges
    ```
 
-2. Create a virtual environment:
+2. Set up a virtual environment:
    ```
    python -m venv venv
+   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
    ```
 
-3. Activate the virtual environment:
-   - On Windows:
-     ```
-     venv\Scripts\activate
-     ```
-   - On macOS and Linux:
-     ```
-     source venv/bin/activate
-     ```
-
-4. Install the required packages:
+3. Install the required packages:
    ```
-   pip install -r app/requirements.txt
+   pip install -r requirements.txt
    ```
 
-### API Keys
-
-1. Create a Spotify Developer account at https://developer.spotify.com/
-2. Create a new application to obtain your Client ID and Client Secret
-3. Create a `.env` file in the project root and add your Spotify credentials:
+4. Set up your .env file with the following variables:
    ```
-   SPOTIFY_CLIENT_ID=your_client_id_here
-   SPOTIFY_CLIENT_SECRET=your_client_secret_here
+   SECRET_KEY=your_secret_key
+   SPOTIFY_CLIENT_ID=your_spotify_client_id
+   SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+   FLASK_DEBUG=True  # Set to False in production
    ```
 
-## 🏃‍♂️ Running the Backend
-
-1. Ensure your virtual environment is activated
-2. Run the Flask application:
+5. Initialize the database:
    ```
-   python app.py
+   flask db init
+   flask db migrate
+   flask db upgrade
    ```
-3. The server will start, and you should see output indicating it's running on `http://127.0.0.1:5000/`
 
-## 🔗 API Endpoints
-
-- `GET /api/emotions`: Get all available emotions
-- `POST /api/select-emotion`: Select an emotion and intensity
-- `GET /api/recommendations`: Get music recommendations based on selected emotion and intensity
-
-## 🧪 Testing
-
-(Add information about running tests once you have implemented them)
+6. Run the application:
+   ```
+   python run.py
+   ```
 
 ## 🤝 Contributing
 
-(Add guidelines for contributing to the project)
+Contributions, issues, and feature requests are welcome! Feel free to check [issues page](https://github.com/RichardJiang-collab/musical-bridges/issues).
 
-## 📄 License
+## 📝 License
 
-(Add license information for your project)
+This project is [MIT](https://choosealicense.com/licenses/mit/) licensed.
+
+## 🎉 Acknowledgements
+
+- Thanks to Spotify for providing the API that makes this project possible.
+- Shoutout to all the music lovers who inspire projects like these!
+
+Happy listening! 🎧
