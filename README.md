@@ -90,9 +90,9 @@ music_recommendation_system/
    flask db upgrade
    ```
 
-6. Run the application:
+6. Run the application (it will go to the test page):
    ```
-   python run.py
+   flask run
    ```
 
 ## 🤝 Contributing
