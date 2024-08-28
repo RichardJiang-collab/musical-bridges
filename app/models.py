@@ -2,25 +2,10 @@ from .extensions import db
 from enum import Enum
 
 class Emotion(Enum):
-    HAPPY_NORMAL = 'HAPPY_NORMAL'
-    HAPPY_INTENSE = 'HAPPY_INTENSE'
     SAD_NORMAL = 'SAD_NORMAL'
     SAD_INTENSE = 'SAD_INTENSE'
     ANGRY_NORMAL = 'ANGRY_NORMAL'
     ANGRY_INTENSE = 'ANGRY_INTENSE'
-    CALM_NORMAL = 'CALM_NORMAL'
-    CALM_INTENSE = 'CALM_INTENSE'
-
-playlist_songs = db.Table('playlist_songs',
-    db.Column('playlist_id', db.Integer, db.ForeignKey('playlist.id'), primary_key=True),
-    db.Column('song_id', db.Integer, db.ForeignKey('song.id'), primary_key=True)
-)
-
-class Playlist(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    emotion = db.Column(db.Enum(Emotion), nullable=False)
-    songs = db.relationship('Song', secondary=playlist_songs, back_populates='playlists')
 
 class Song(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -42,4 +27,16 @@ class Song(db.Model):
     tempo = db.Column(db.Float, nullable=False)
     duration_ms = db.Column(db.Integer, nullable=False)
     popularity = db.Column(db.Integer, nullable=False)
-    playlists = db.relationship('Playlist', secondary=playlist_songs, back_populates='songs')
+
+class Playlist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    emotion = db.Column(db.Enum(Emotion), nullable=False)
+    songs = db.relationship('Song', secondary='playlist_songs', back_populates='playlists')
+
+playlist_songs = db.Table('playlist_songs',
+    db.Column('playlist_id', db.Integer, db.ForeignKey('playlist.id'), primary_key=True),
+    db.Column('song_id', db.Integer, db.ForeignKey('song.id'), primary_key=True)
+)
+
+Song.playlists = db.relationship('Playlist', secondary='playlist_songs', back_populates='songs')

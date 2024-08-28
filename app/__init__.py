@@ -1,20 +1,19 @@
+import os
 from flask import Flask
 from .extensions import db, migrate
 from .main import main as main_blueprint
-from .models import Song, Playlist, Emotion  # Add this line
 
-def create_app(config_name='testing'):
-    app = Flask(__name__)
+def create_app(config_name='development'):
+    app = Flask(__name__, instance_relative_config=True)
 
     # Load configuration
-    config_module = 'app.config'
+    app.config.from_object(f'app.config.{config_name.capitalize()}Config')
+
+    # Ensure the instance folder exists
     try:
-        if config_name == 'testing':
-            app.config.from_object(f'{config_module}.TestingConfig')
-        else:
-            app.config.from_object(f'{config_module}.Config')
-    except ImportError as e:
-        raise ImportError(f"Could not import configuration '{config_name}'. Error: {e}")
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
 
     # Initialize extensions
     db.init_app(app)
@@ -22,5 +21,9 @@ def create_app(config_name='testing'):
 
     # Register blueprints
     app.register_blueprint(main_blueprint)
+
+    # Initialize database within app context
+    with app.app_context():
+        db.create_all()
 
     return app
