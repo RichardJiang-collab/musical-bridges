@@ -80,6 +80,9 @@ def create_playlist():
             print("No tracks found for the given emotion")
             return jsonify({'error': f'No tracks found for emotion: {emotion_key}'}), 404
 
+
+        # IMPORTANT: Spotify_Playlist_Ids and Top 5 Tracks Ids links
+
         spotify_playlist_id = create_spotify_playlist(tracks)
         print(f"Created Spotify playlist with ID: {spotify_playlist_id}")
 
