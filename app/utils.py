@@ -1,22 +1,35 @@
 from spotipy.oauth2 import SpotifyOAuth
 import spotipy
 from flask import current_app, session
+import time
 from .models import Song, Emotion
 
 def get_spotify_client():
-    cache_handler = spotipy.cache_handler.FlaskSessionCacheHandler(session)
-    auth_manager = SpotifyOAuth(
-        client_id=current_app.config['SPOTIFY_CLIENT_ID'],
-        client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
-        redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-        scope="playlist-modify-private",
-        cache_handler=cache_handler
-    )
-    if not auth_manager.validate_token(cache_handler.get_cached_token()):
+    if 'token_info' not in session:
+        current_app.logger.error("No token info in session")
         return None
-    return spotipy.Spotify(auth_manager=auth_manager)
 
+    token_info = session['token_info']
+
+    # Check if token is expired
+    now = int(time.time())
+    is_expired = token_info['expires_at'] - now < 60
+
+    if is_expired:
+        sp_oauth = SpotifyOAuth(
+            client_id=current_app.config['SPOTIFY_CLIENT_ID'],
+            client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
+            redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
+            scope="playlist-modify-private"
+        )
+        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
+        session['token_info'] = token_info
+
+    return spotipy.Spotify(auth=token_info['access_token'])
+
+# Get tracks based on the each emotion & intensity music data configurations
 def get_random_tracks(emotion, min_count=10, max_count=20):
+    # Use the Spotify API to get the random tracks
     sp = get_spotify_client()
     if not sp:
         raise Exception("Spotify client not authenticated")
@@ -35,6 +48,7 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
     if len(results['tracks']) < min_count:
         return None
 
+    # Add tracks to the Song Model
     return [Song(
         spotify_id=track['id'],
         title=track['name'],
@@ -44,7 +58,9 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
         emotion=emotion
     ) for track in results['tracks']]
 
+# Create the recommended playlist based on the songs we have get from "get_random_tracks" function
 def create_spotify_playlist(tracks):
+    # Use the Spotify API to create the playlist
     sp = get_spotify_client()
     if not sp:
         raise Exception("Spotify client not authenticated")
@@ -57,13 +73,14 @@ def create_spotify_playlist(tracks):
 
     return playlist['id']
 
+# Create Embedded Code
 def get_embedded_playlist_code(playlist_id):
     return f'<iframe src="https://open.spotify.com/embed/playlist/{playlist_id}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>'
 
 def get_embedded_track_code(track_id):
     return f'<iframe src="https://open.spotify.com/embed/track/{track_id}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>'
 
-
+# Algorithm (weights for each music feature when picking each Songs)
 def calculate_composite_score(track):
     # Calculate a composite score based on all features
     return (
@@ -79,8 +96,12 @@ def calculate_composite_score(track):
         track.popularity * 0.3  # Give more weight to popularity
     )
 
+# Use the composite_score function to pick the top 5 recommended tracks
 def get_top_recommended_tracks(playlist_id, limit=5):
+    # Use Spotify API to pick the top 5 recommended tracks
     sp = get_spotify_client()
+
+    # Error handling
     if not sp:
         raise Exception("Spotify client not authenticated")
 
@@ -90,6 +111,7 @@ def get_top_recommended_tracks(playlist_id, limit=5):
     # Fetch audio features for all tracks in one API call
     audio_features = sp.audio_features(track_ids)
 
+    # Add tracks to the Song Model
     tracks = []
     for item, features in zip(playlist_tracks['items'], audio_features):
         if features:  # Sometimes features might be None for certain tracks
@@ -112,4 +134,4 @@ def get_top_recommended_tracks(playlist_id, limit=5):
 
     # Sort tracks by composite score
     sorted_tracks = sorted(tracks, key=calculate_composite_score, reverse=True)
-    return sorted_tracks[:limit]
+    return sorted_tracks[:limit]  # return the top 5 tracks
