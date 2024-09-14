@@ -8,18 +8,13 @@ import time
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
+from flask import send_from_directory, current_app
+
 @main.route('/')
 def index():
-    current_app.logger.info(f"Session: {session}")
     if 'token_info' not in session:
-        current_app.logger.info("No token_info in session, redirecting to login")
         return redirect(url_for('main.login'))
-    try:
-        current_app.logger.info(f"Static folder: {current_app.static_folder}")
-        return send_from_directory(current_app.static_folder, 'index.html')
-    except Exception as e:
-        current_app.logger.error(f"Error serving index.html: {str(e)}")
-        return f"Error serving the home page: {str(e)}", 500
+    return send_from_directory(current_app.static_folder, 'index.html')
     
 @main.route('/login')
 def login():
