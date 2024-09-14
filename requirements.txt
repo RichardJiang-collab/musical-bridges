@@ -7,3 +7,4 @@ spotipy==2.23.0
 python-dotenv==1.0.0
 enum34==1.1.10
 gunicorn==20.1.0
+psycopg2-binary==2.9.6
