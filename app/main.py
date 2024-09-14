@@ -12,7 +12,7 @@ CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 def index():
     if 'token_info' not in session:
         return redirect(url_for('main.login'))
-    return "Welcome to the Music Recommendation System! You are logged in."
+    return send_from_directory(current_app.static_folder, 'index.html')
 
 @main.route('/login')
 def login():
@@ -35,9 +35,19 @@ def callback():
     )
     session.clear()
     code = request.args.get('code')
-    token_info = sp_oauth.get_access_token(code)
-    session["token_info"] = token_info
-    return redirect(url_for('main.emotions'))  # Redirect to the main page or wherever you want
+    error = request.args.get('error')
+    
+    if error:
+        current_app.logger.error(f"Spotify Auth Error: {error}")
+        return redirect(url_for('main.login'))
+    
+    try:
+        token_info = sp_oauth.get_access_token(code)
+        session["token_info"] = token_info
+        return redirect(url_for('main.index'))  # Redirect to home page
+    except Exception as e:
+        current_app.logger.error(f"Error in callback: {str(e)}")
+        return redirect(url_for('main.login'))
 
 @main.route('/emotions')
 def emotions():
