@@ -4,7 +4,7 @@ from .extensions import db, migrate
 from .main import main as main_blueprint
 from flask_cors import CORS
 
-def create_app(config_name='development'):
+def create_app(config_name='production'):
     # Set up paths to the static folder
     base_dir = os.path.abspath(os.path.dirname(__file__))
     static_folder = os.path.join(base_dir, '..', 'webflow_exporter_base')  # Go up one directory and then into webflow_exporter_base
