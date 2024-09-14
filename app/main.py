@@ -10,10 +10,17 @@ CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 @main.route('/')
 def index():
+    current_app.logger.info(f"Session: {session}")
     if 'token_info' not in session:
+        current_app.logger.info("No token_info in session, redirecting to login")
         return redirect(url_for('main.login'))
-    return send_from_directory(current_app.static_folder, 'index.html')
-
+    try:
+        current_app.logger.info(f"Static folder: {current_app.static_folder}")
+        return send_from_directory(current_app.static_folder, 'index.html')
+    except Exception as e:
+        current_app.logger.error(f"Error serving index.html: {str(e)}")
+        return f"Error serving the home page: {str(e)}", 500
+    
 @main.route('/login')
 def login():
     sp_oauth = SpotifyOAuth(
@@ -35,19 +42,10 @@ def callback():
     )
     session.clear()
     code = request.args.get('code')
-    error = request.args.get('error')
-    
-    if error:
-        current_app.logger.error(f"Spotify Auth Error: {error}")
-        return redirect(url_for('main.login'))
-    
-    try:
-        token_info = sp_oauth.get_access_token(code)
-        session["token_info"] = token_info
-        return redirect(url_for('main.index'))  # Redirect to home page
-    except Exception as e:
-        current_app.logger.error(f"Error in callback: {str(e)}")
-        return redirect(url_for('main.login'))
+    token_info = sp_oauth.get_access_token(code)
+    session["token_info"] = token_info
+    current_app.logger.info(f"Token info stored in session: {token_info}")
+    return redirect(url_for('main.index'))
 
 @main.route('/emotions')
 def emotions():
