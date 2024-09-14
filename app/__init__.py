@@ -11,8 +11,14 @@ def create_app(config_name='production'):
 
     app = Flask(__name__, instance_relative_config=True, template_folder='templates', static_folder=static_folder)
     app.config.from_object(f'app.config.{config_name.capitalize()}Config')
+    app.secret_key = os.environ.get('SECRET_KEY') or 'your-secret-key'
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
+    app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    
     # Ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)

@@ -9,12 +9,6 @@ main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 from flask import send_from_directory, current_app
-
-@main.route('/')
-def index():
-    if 'token_info' not in session:
-        return redirect(url_for('main.login'))
-    return send_from_directory(current_app.static_folder, 'index.html')
     
 @main.route('/login')
 def login():
@@ -35,12 +29,21 @@ def callback():
         redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
         scope="playlist-modify-private"
     )
-    session.clear()
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
-    session["token_info"] = token_info
-    current_app.logger.info(f"Token info stored in session: {token_info}")
+    
+    # Store only necessary token information
+    session['access_token'] = token_info['access_token']
+    session['refresh_token'] = token_info['refresh_token']
+    session['expires_at'] = token_info['expires_at']
+    
     return redirect(url_for('main.index'))
+
+@main.route('/')
+def index():
+    if 'access_token' not in session:
+        return redirect(url_for('main.login'))
+    return send_from_directory(current_app.static_folder, 'index.html')
 
 @main.route('/emotions')
 def emotions():
@@ -67,24 +70,22 @@ def recommendations():
     return send_from_directory(current_app.static_folder, 'recommendations.html')
 
 def get_token():
-    token_info = session.get('token_info', None)
-    if not token_info:
+    if 'access_token' not in session:
         return None
-    now = int(time.time())
-    is_expired = token_info['expires_at'] - now < 60
-    if is_expired:
+    if int(time.time()) > session['expires_at']:
         sp_oauth = SpotifyOAuth(client_id=current_app.config['SPOTIFY_CLIENT_ID'],
                                 client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
                                 redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
                                 scope="playlist-modify-private")
-        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
-        session['token_info'] = token_info
-    return token_info
+        token_info = sp_oauth.refresh_access_token(session['refresh_token'])
+        session['access_token'] = token_info['access_token']
+        session['expires_at'] = token_info['expires_at']
+    return session['access_token']
 
 @main.route('/api/create_playlist', methods=['POST'])
 def create_playlist():
-    token_info = get_token()
-    if not token_info:
+    token = get_token()
+    if not token:
         return jsonify({'error': 'Not authenticated'}), 401
     
     current_app.logger.info(f"Received request: {request.json}")
