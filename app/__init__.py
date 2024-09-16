@@ -7,9 +7,14 @@ from flask_cors import CORS
 def create_app(config_name='production'):
     # Set up paths to the static folder
     base_dir = os.path.abspath(os.path.dirname(__file__))
-    static_folder = os.path.join(base_dir, '..', 'webflow_exporter_base')  # Go up one directory and then into webflow_exporter_base
+    static_folder = os.path.join(base_dir, '..', 'webflow_exporter_base')
 
-    app = Flask(__name__, instance_relative_config=True, template_folder='templates', static_folder=static_folder)
+    print(f"Base directory: {base_dir}")
+    print(f"Static folder path: {static_folder}")
+    print(f"Static folder exists: {os.path.exists(static_folder)}")
+    print(f"Contents of static folder: {os.listdir(static_folder)}")
+
+    app = Flask(__name__, instance_relative_config=True, static_folder=static_folder, static_url_path='')
     app.config.from_object(f'app.config.{config_name.capitalize()}Config')
     app.secret_key = os.environ.get('SECRET_KEY') or 'your-secret-key'
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
@@ -24,10 +29,6 @@ def create_app(config_name='production'):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
-    @app.route('/<path:filename>')
-    def serve_static(filename):
-        return send_from_directory(app.static_folder, filename)
 
     # Initialize extensions
     db.init_app(app)
