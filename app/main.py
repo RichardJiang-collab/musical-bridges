@@ -3,22 +3,10 @@ from .models import Emotion
 from .utils import get_random_tracks, get_top_recommended_tracks, create_spotify_playlist, get_embedded_playlist_code, get_embedded_track_code, get_spotify_client
 from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
-import time, os
+import time
 
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
-
-@main.route('/login')
-def login():
-    sp_oauth = SpotifyOAuth(
-        client_id=current_app.config['SPOTIFY_CLIENT_ID'],
-        client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
-        redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-        scope="playlist-modify-private",
-        cache_handler=None
-    )
-    auth_url = sp_oauth.get_authorize_url()
-    return render_template('login.html', auth_url=auth_url)
 
 @main.route('/callback')
 def callback():
@@ -38,34 +26,44 @@ def callback():
 
 @main.route('/')
 def index():
-    if 'token_info' not in session:
-        return redirect(url_for('main.login'))
-    
-    static_folder = current_app.static_folder
-    index_path = os.path.join(static_folder, 'index.html')
-    
-    print(f"Static folder: {static_folder}")
-    print(f"Index path: {index_path}")
-    print(f"Index file exists: {os.path.exists(index_path)}")
-    
-    if os.path.exists(index_path):
-        return send_from_directory(current_app.static_folder, 'index.html')
-    else:
-        return "Index file not found", 404
+    return send_from_directory(current_app.static_folder, 'index.html')
 
-@main.route('/emotions')
-@main.route('/anger-selection')
-@main.route('/sadness-selection')
-@main.route('/recommendations')
-def serve_static_routes():
+def check_auth():
     if 'token_info' not in session:
         return redirect(url_for('main.login'))
-    
-    filename = f"{request.endpoint}.html"
-    if os.path.exists(os.path.join(current_app.static_folder, filename)):
-        return send_from_directory(current_app.static_folder, filename)
-    else:
-        return f"File {filename} not found", 404
+    return None
+
+@main.route('/anger-selection')
+def anger_selection():
+    auth_check = check_auth()
+    if auth_check:
+        return auth_check
+    return send_from_directory(current_app.static_folder, 'anger-selection.html')
+
+@main.route('/sadness-selection')
+def sadness_selection():
+    auth_check = check_auth()
+    if auth_check:
+        return auth_check
+    return send_from_directory(current_app.static_folder, 'sadness-selection.html')
+
+@main.route('/recommendations')
+def recommendations():
+    auth_check = check_auth()
+    if auth_check:
+        return auth_check
+    return send_from_directory(current_app.static_folder, 'recommendations.html')
+
+@main.route('/login')
+def login():
+    sp_oauth = SpotifyOAuth(
+        client_id=current_app.config['SPOTIFY_CLIENT_ID'],
+        client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
+        redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
+        scope="playlist-modify-private"
+    )
+    auth_url = sp_oauth.get_authorize_url()
+    return render_template('login.html', auth_url=auth_url)
 
 @main.route('/<path:filename>')
 def serve_static(filename):
