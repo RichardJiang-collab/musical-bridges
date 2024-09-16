@@ -33,6 +33,13 @@ def check_auth():
         return redirect(url_for('main.login'))
     return None
 
+@main.route('/emotions')
+def emotions():
+    auth_check = check_auth()
+    if auth_check:
+        return auth_check
+    return send_from_directory(current_app.static_folder, 'emotions.html')
+
 @main.route('/anger-selection')
 def anger_selection():
     auth_check = check_auth()
