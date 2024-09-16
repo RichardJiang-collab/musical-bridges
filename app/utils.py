@@ -4,32 +4,17 @@ from flask import current_app, session
 import time
 from .models import Song, Emotion
 
-def get_spotify_client():
-    if 'token_info' not in session:
-        current_app.logger.error("No token info in session")
-        return None
+def get_spotify_client(access_token=None):
+    if not access_token:
+        if 'token_info' not in session:
+            current_app.logger.error("No token info in session")
+            return None
+        access_token = session['token_info']['access_token']
 
-    token_info = session['token_info']
-
-    # Check if token is expired
-    now = int(time.time())
-    is_expired = token_info['expires_at'] - now < 60
-
-    if is_expired:
-        sp_oauth = SpotifyOAuth(
-            client_id=current_app.config['SPOTIFY_CLIENT_ID'],
-            client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
-            redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-            scope="playlist-modify-private"
-        )
-        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
-        session['token_info'] = token_info
-
-    return spotipy.Spotify(auth=token_info['access_token'])
+    return spotipy.Spotify(auth=access_token)
 
 # Get tracks based on the each emotion & intensity music data configurations
 def get_random_tracks(emotion, min_count=10, max_count=20):
-    # Use the Spotify API to get the random tracks
     sp = get_spotify_client()
     if not sp:
         raise Exception("Spotify client not authenticated")
@@ -48,7 +33,6 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
     if len(results['tracks']) < min_count:
         return None
 
-    # Add tracks to the Song Model
     return [Song(
         spotify_id=track['id'],
         title=track['name'],

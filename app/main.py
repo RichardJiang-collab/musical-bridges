@@ -8,15 +8,14 @@ import time
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
-from flask import send_from_directory, current_app
-    
 @main.route('/login')
 def login():
     sp_oauth = SpotifyOAuth(
         client_id=current_app.config['SPOTIFY_CLIENT_ID'],
         client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
         redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-        scope="playlist-modify-private"
+        scope="playlist-modify-private",
+        cache_handler=None
     )
     auth_url = sp_oauth.get_authorize_url()
     return render_template('login.html', auth_url=auth_url)
@@ -27,74 +26,59 @@ def callback():
         client_id=current_app.config['SPOTIFY_CLIENT_ID'],
         client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
         redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-        scope="playlist-modify-private"
+        scope="playlist-modify-private",
+        cache_handler=None
     )
     code = request.args.get('code')
-    token_info = sp_oauth.get_access_token(code)
+    token_info = sp_oauth.get_access_token(code, check_cache=False)
     
-    # Store only necessary token information
-    session['access_token'] = token_info['access_token']
-    session['refresh_token'] = token_info['refresh_token']
-    session['expires_at'] = token_info['expires_at']
+    session['token_info'] = token_info
     
     return redirect(url_for('main.index'))
 
 @main.route('/')
 def index():
-    if 'access_token' not in session:
+    if 'token_info' not in session:
         return redirect(url_for('main.login'))
     return send_from_directory(current_app.static_folder, 'index.html')
 
 @main.route('/emotions')
-def emotions():
-    if 'token_info' not in session:
-        return redirect(url_for('main.login'))
-    return send_from_directory(current_app.static_folder, 'emotions.html')
-
 @main.route('/anger-selection')
-def anger_selection():
-    if 'token_info' not in session:
-        return redirect(url_for('main.login'))
-    return send_from_directory(current_app.static_folder, 'anger-selection.html')
-
 @main.route('/sadness-selection')
-def sadness_selection():
-    if 'token_info' not in session:
-        return redirect(url_for('main.login'))
-    return send_from_directory(current_app.static_folder, 'sadness-selection.html')
-
 @main.route('/recommendations')
-def recommendations():
+def serve_static_routes():
     if 'token_info' not in session:
         return redirect(url_for('main.login'))
-    return send_from_directory(current_app.static_folder, 'recommendations.html')
+    return send_from_directory(current_app.static_folder, f'{request.endpoint}.html')
 
 def get_token():
-    if 'access_token' not in session:
+    token_info = session.get('token_info')
+    if not token_info:
         return None
-    if int(time.time()) > session['expires_at']:
-        sp_oauth = SpotifyOAuth(client_id=current_app.config['SPOTIFY_CLIENT_ID'],
-                                client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
-                                redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-                                scope="playlist-modify-private")
-        token_info = sp_oauth.refresh_access_token(session['refresh_token'])
-        session['access_token'] = token_info['access_token']
-        session['expires_at'] = token_info['expires_at']
-    return session['access_token']
+    now = int(time.time())
+    is_expired = token_info['expires_at'] - now < 60
+    
+    if is_expired:
+        sp_oauth = SpotifyOAuth(
+            client_id=current_app.config['SPOTIFY_CLIENT_ID'],
+            client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
+            redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
+            scope="playlist-modify-private",
+            cache_handler=None
+        )
+        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
+        session['token_info'] = token_info
+    return token_info['access_token']
 
 @main.route('/api/create_playlist', methods=['POST'])
 def create_playlist():
-    token = get_token()
-    if not token:
+    access_token = get_token()
+    if not access_token:
         return jsonify({'error': 'Not authenticated'}), 401
     
-    current_app.logger.info(f"Received request: {request.json}")
+    sp = get_spotify_client(access_token)
     
     try:
-        sp = get_spotify_client()
-        if not sp:
-            return jsonify({'error': 'Spotify client not authenticated'}), 401
-        
         data = request.json
         emotion = data.get('emotion')
         intensity = data.get('intensity')
@@ -117,13 +101,11 @@ def create_playlist():
             print("No tracks found for the given emotion")
             return jsonify({'error': f'No tracks found for emotion: {emotion_key}'}), 404
 
-        # IMPORTANT: Spotify_Playlist_Ids and Top 5 Tracks Ids links
         spotify_playlist_id = create_spotify_playlist(tracks)
         embedded_playlist_code = get_embedded_playlist_code(spotify_playlist_id)
         top_tracks = get_top_recommended_tracks(spotify_playlist_id)
         top_tracks_embedded = [get_embedded_track_code(track.spotify_id) for track in top_tracks]
         
-        # Return Output
         return jsonify({
             'embedded_playlist_code': embedded_playlist_code,
             'top_tracks_embedded': top_tracks_embedded
@@ -132,7 +114,6 @@ def create_playlist():
     except Exception as e:
         current_app.logger.error(f"Error in create_playlist: {str(e)}")
         return jsonify({'error': str(e)}), 500
-    
 
 @main.route('/api/recommend_top_tracks/<string:playlist_id>', methods=['GET'])
 def recommend_top_tracks(playlist_id):
@@ -150,7 +131,6 @@ def recommend_top_tracks(playlist_id):
 
         return jsonify({'top_tracks': tracks_data}), 200
     
-    # Error handling
     except Exception as e:
         error_msg = f"Error in recommend_top_tracks: {str(e)}"
         current_app.logger.error(error_msg)
