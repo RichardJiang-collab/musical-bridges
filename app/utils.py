@@ -20,15 +20,15 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
         raise Exception("Spotify client not authenticated")
 
     emotion_to_attributes = {
-        Emotion.SAD_INTENSE: {"valence": "0.0-0.3", "energy": "0.7-1.0"},
-        Emotion.SAD_NORMAL: {"valence": "0.0-0.3", "energy": "0.0-0.3"},
-        Emotion.ANGRY_INTENSE: {"valence": "0.0-0.4", "energy": "0.8-1.0"},
-        Emotion.ANGRY_NORMAL: {"valence": "0.0-0.4", "energy": "0.4-0.7"},
+        Emotion.SAD_INTENSE: {"valence": "0.6-1.0", "energy": "0.7-1.0"},
+        Emotion.SAD_NORMAL: {"valence": "0.6-1.0", "energy": "0.0-0.3"},
+        Emotion.ANGRY_INTENSE: {"valence": "0.5-0.8", "energy": "0.8-1.0"},
+        Emotion.ANGRY_NORMAL: {"valence": "0.5-0.8", "energy": "0.4-0.7"},
     }
 
     attributes = emotion_to_attributes.get(emotion, {})
     
-    results = sp.recommendations(limit=max_count, seed_genres=['pop'], **attributes)
+    results = sp.recommendations(limit=max_count, seed_genres=['rock'], **attributes)
     
     if len(results['tracks']) < min_count:
         return None
