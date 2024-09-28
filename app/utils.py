@@ -17,6 +17,7 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
     if not sp:
         raise Exception("Spotify client not authenticated")
 
+    # Emotion to Spotify track attribute mapping
     emotion_to_attributes = {
         Emotion.SAD_INTENSE: {"valence": "0.6-1.0", "energy": "0.7-1.0"},
         Emotion.SAD_NORMAL: {"valence": "0.6-1.0", "energy": "0.0-0.3"},
@@ -24,13 +25,20 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
         Emotion.ANGRY_NORMAL: {"valence": "0.5-0.8", "energy": "0.4-0.7"},
     }
 
+    # Fetch user genres from the session (or database)
+    user_genres = session.get('selected_genres', ['Rock'])  # Default to ['Rock'] if no user preference
+
+    # Get the attributes based on emotion
     attributes = emotion_to_attributes.get(emotion, {})
-    
-    results = sp.recommendations(limit=max_count, seed_genres=['rock'], **attributes)  # NOTE
-    
+
+    # Use the user's genres in the seed_genres parameter
+    results = sp.recommendations(limit=max_count, seed_genres=user_genres, **attributes)
+
+    # Ensure there are enough tracks in the results
     if len(results['tracks']) < min_count:
         return None
 
+    # Return the list of Song objects
     return [Song(
         spotify_id=track['id'],
         title=track['name'],
