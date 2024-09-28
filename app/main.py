@@ -82,6 +82,21 @@ def genres():
     # Otherwise, serve the HTML page for regular requests
     return send_from_directory(current_app.static_folder, 'genre.html')
 
+# Update seed genres based on user input
+@main.route('/update-genres', methods=['POST'])
+def update_genres():
+    data = request.json
+    genres = data.get('genres', [])
+    
+    # Ensure 'rock' is always in the seed_genres
+    if 'rock' not in genres:
+        genres.append('rock')
+
+    # Store genres in session (or in a database if available)
+    session['selected_genres'] = genres
+
+    return jsonify({"status": "success", "updated_genres": genres})
+
 @main.route('/login')
 def login():
     sp_oauth = SpotifyOAuth(
