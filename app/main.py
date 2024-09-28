@@ -3,7 +3,12 @@ from .models import Emotion
 from .utils import get_random_tracks, get_top_recommended_tracks, create_spotify_playlist, get_embedded_playlist_code, get_embedded_track_code, get_spotify_client
 from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
-import time
+import time, random
+
+# Define a list of popular genres (can be fetched from Spotify API if needed)
+POPULAR_GENRES = [
+    'pop', 'hip-hop', 'jazz', 'rock', 'electronic', 'classical', 'blues', 'latin', 'reggae', 'soul'
+]
 
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
@@ -69,20 +74,22 @@ def user_profile():
 
 @main.route('/genres', methods=['GET'])
 def genres():
-    saved_genres = session.get('selected_genres')  # Default to ['rock'] if no genres saved
+    saved_genres = session.get('selected_genres', ['rock'])  # Default to ['rock'] if no genres saved
     return jsonify({"genres": saved_genres})
 
 # Update seed genres based on user input
 @main.route('/update-genres', methods=['POST'])
 def update_genres():
     data = request.json
-    genres = data.get('genres', [])
+    user_genres = data.get('genres', [])
+    user_genres = [genre.lower() for genre in user_genres]
     
-    # Ensure all genres are lowercase
-    genres = [genre.lower() for genre in genres]
-
+    random_genres = random.sample(POPULAR_GENRES, k=3)
+    
+    combined_genres = list(set(user_genres+random_genres))
+    
     # Save genres to the session
-    session['selected_genres'] = genres
+    session['selected_genres'] = combined_genres
 
     return jsonify({"status": "success", "updated_genres": genres})
 
