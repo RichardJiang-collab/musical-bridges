@@ -5,11 +5,6 @@ from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
 import time, random
 
-# Define a list of popular genres (can be fetched from Spotify API if needed)
-POPULAR_GENRES = [
-    'pop', 'hip-hop', 'jazz', 'rock', 'electronic', 'classical', 'blues', 'latin', 'reggae', 'soul'
-]
-
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
@@ -84,16 +79,8 @@ def update_genres():
     user_genres = data.get('genres', [])
     user_genres = [genre.lower() for genre in user_genres]
     
-    random_genres = random.sample(POPULAR_GENRES, k=3)
-    
-    combined_genres = list(set(user_genres+random_genres))
-    
-    # Limit to 5 seed genres, as required by the Spotify API
-    if len(combined_genres) > 5:
-        combined_genres = random.sample(combined_genres, 5)
-    
     # Save genres to the session
-    session['selected_genres'] = combined_genres
+    session['selected_genres'] = user_genres
 
     return jsonify({"status": "success", "updated_genres": genres})
 

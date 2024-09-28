@@ -1,6 +1,11 @@
-import spotipy
+import spotipy, random
 from flask import current_app, session
 from .models import Song, Emotion
+
+# Define a list of popular genres (can be fetched from Spotify API if needed)
+POPULAR_GENRES = [
+    'pop', 'hip-hop', 'jazz', 'rock', 'electronic', 'classical', 'blues', 'latin', 'reggae', 'soul'
+]
 
 def get_spotify_client(access_token=None):
     if not access_token:
@@ -25,12 +30,17 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
         Emotion.ANGRY_NORMAL: {"valence": "0.5-0.8", "energy": "0.4-0.7"},
     }
 
-    # Fetch user genres from the session (or database)
     user_genres = session.get('selected_genres')
-
+    random_genres = random.sample(POPULAR_GENRES, k=3)
+    combined_genres = list(set(user_genres+random_genres))
+    
+    # Limit to 5 seed genres, as required by the Spotify API
+    if len(combined_genres) > 5:
+        combined_genres = random.sample(combined_genres, 5)
+    
     # Get the attributes based on emotion
     attributes = emotion_to_attributes.get(emotion, {})
-
+    
     # Use the user's genres in the seed_genres parameter
     results = sp.recommendations(limit=max_count, seed_genres=user_genres, **attributes)
 
