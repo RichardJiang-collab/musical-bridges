@@ -313,24 +313,24 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({genres: selectedGenres})
+                body: JSON.stringify({ genres: selectedGenres })
             })
             .then(response => response.json())
             .then(data => {
                 console.log("Genres saved successfully:", data);
-                showSuccessMessage(); // Show success message after saving
+                showSuccessMessage();  // Show success message after saving
             })
             .catch(error => {
                 console.error("Error saving genres:", error);
             });
         }
-
+    
         function showSuccessMessage() {
             const successMessage = document.getElementById('successMessage');
             successMessage.classList.add('show');
             setTimeout(() => {
                 successMessage.classList.remove('show');
-            }, 3000); // Hide message after 3 seconds
+            }, 3000);  // Hide message after 3 seconds
         }
 
         function filterGenres() {

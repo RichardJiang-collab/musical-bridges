@@ -77,7 +77,7 @@ def genres_page():
 
 @main.route('/genres', methods=['GET'])
 def genres():
-    saved_genres = session.get('selectedGenres')
+    saved_genres = session.get('selectedGenres', ['rock'])  # Default to 'rock' if no genres saved
     return jsonify({"genres": saved_genres})
 
 # Update seed genres based on user input
@@ -86,11 +86,12 @@ def update_genres():
     data = request.json
     user_genres = data.get('genres', [])
     user_genres = [genre.lower() for genre in user_genres]
-    
+
     # Save genres to the session
     session['selectedGenres'] = user_genres
 
-    return jsonify({"status": "success", "updated_genres": genres})
+    # Return a success response
+    return jsonify({"status": "success", "updated_genres": user_genres})
 
 @main.route('/login')
 def login():
