@@ -261,6 +261,7 @@
                         const genreBlock = document.createElement('div');
                         genreBlock.className = 'genre-block hover-effect';
                         genreBlock.innerText = genre;
+                        genreBlock.addEventListener('click', () => removeGenre(genreBlock, genre)); // Add click event for removing genre
                         genreContainer.appendChild(genreBlock);
                     });
         
