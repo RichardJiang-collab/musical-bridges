@@ -273,6 +273,8 @@
                 });
         });
         
+        let selectedGenres = ['Rock']; // Start with 'Rock'
+
         function addGenre(genre) {
             const genreBlocks = document.querySelectorAll('.genre-block');
             const genreNames = Array.from(genreBlocks).map(block => block.innerText);
