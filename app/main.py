@@ -21,7 +21,6 @@ def callback():
     token_info = sp_oauth.get_access_token(code, check_cache=False)
     
     session['token_info'] = token_info
-    
     return redirect(url_for('main.index'))
 
 @main.route('/')
@@ -60,6 +59,13 @@ def recommendations():
     if auth_check:
         return auth_check
     return send_from_directory(current_app.static_folder, 'recommendations.html')
+
+@main.route('/user-profile')
+def recommendations():
+    auth_check = check_auth()
+    if auth_check:
+        return auth_check
+    return send_from_directory(current_app.static_folder, 'profile.html')
 
 @main.route('/login')
 def login():
