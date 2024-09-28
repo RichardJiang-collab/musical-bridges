@@ -21,7 +21,7 @@ def callback():
     token_info = sp_oauth.get_access_token(code, check_cache=False)
     
     session['token_info'] = token_info
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.genre'))
 
 @main.route('/')
 def index():
@@ -67,9 +67,17 @@ def user_profile():
         return auth_check
     return send_from_directory(current_app.static_folder, 'profile.html')
 
+@main.route('/genres-page', methods=['GET'])
+def genres_page():
+    auth_check = check_auth()
+    if auth_check:
+        return auth_check
+    
+    return send_from_directory(current_app.static_folder, 'genre.html')
+
 @main.route('/genres', methods=['GET'])
 def genres():
-    saved_genres = session.get('selected_genres', ['rock'])  # Default to ['rock'] if no genres saved
+    saved_genres = session.get('selected_genres')
     return jsonify({"genres": saved_genres})
 
 # Update seed genres based on user input
@@ -83,14 +91,6 @@ def update_genres():
     session['selected_genres'] = user_genres
 
     return jsonify({"status": "success", "updated_genres": genres})
-
-@main.route('/genres-page', methods=['GET'])
-def genres_page():
-    auth_check = check_auth()
-    if auth_check:
-        return auth_check
-    
-    return send_from_directory(current_app.static_folder, 'genre.html')
 
 @main.route('/login')
 def login():
