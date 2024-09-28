@@ -35,7 +35,9 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
     combined_genres = list(set(user_genres+random_genres))
     
     # Limit to 5 seed genres, as required by the Spotify API
-    if len(combined_genres) > 5:
+    if user_genres >= 5:
+        combined_genres = random.sample(user_genres, 5)
+    elif len(combined_genres) > 5:
         combined_genres = random.sample(combined_genres, 5)
     
     # Get the attributes based on emotion
