@@ -88,6 +88,10 @@ def update_genres():
     
     combined_genres = list(set(user_genres+random_genres))
     
+    # Limit to 5 seed genres, as required by the Spotify API
+    if len(combined_genres) > 5:
+        combined_genres = random.sample(combined_genres, 5)
+    
     # Save genres to the session
     session['selected_genres'] = combined_genres
 
