@@ -287,13 +287,25 @@
             const genreBlock = document.createElement('div');
             genreBlock.className = 'genre-block hover-effect';
             genreBlock.innerText = genre;
+            genreBlock.addEventListener('click', () => removeGenre(genreBlock, genre)); // Add click event for removing genre
             document.querySelector('.genre-blocks').appendChild(genreBlock);
     
             // Update selectedGenres and send to backend
             selectedGenres.push(genre);
             updateGenresBackend();
         }
+        
+        function removeGenre(genreBlock, genre) {
+            // Remove the genre block from the DOM
+            genreBlock.remove();
     
+            // Remove the genre from selectedGenres
+            selectedGenres = selectedGenres.filter(g => g !== genre);
+    
+            // Update the backend with the modified genres
+            updateGenresBackend();
+        }
+
         function updateGenresBackend() {
             fetch('/update-genres', {
                 method: 'POST',
