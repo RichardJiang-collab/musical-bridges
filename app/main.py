@@ -3,7 +3,7 @@ from .models import Emotion
 from .utils import get_random_tracks, get_top_recommended_tracks, create_spotify_playlist, get_embedded_playlist_code, get_embedded_track_code, get_spotify_client
 from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
-import time, random
+import time
 
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
@@ -77,7 +77,7 @@ def genres_page():
 
 @main.route('/genres', methods=['GET'])
 def genres():
-    saved_genres = session.get('selected_genres')
+    saved_genres = session.get('selectedGenres')
     return jsonify({"genres": saved_genres})
 
 # Update seed genres based on user input
@@ -88,7 +88,7 @@ def update_genres():
     user_genres = [genre.lower() for genre in user_genres]
     
     # Save genres to the session
-    session['selected_genres'] = user_genres
+    session['selectedGenres'] = user_genres
 
     return jsonify({"status": "success", "updated_genres": genres})
 

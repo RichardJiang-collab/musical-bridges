@@ -30,21 +30,19 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
         Emotion.ANGRY_NORMAL: {"valence": "0.5-0.8", "energy": "0.4-0.7"},
     }
 
-    user_genres = session.get('selected_genres')
+    user_genres = session.get('selectedGenres')
     random_genres = random.sample(POPULAR_GENRES, k=3)
     combined_genres = list(set(user_genres+random_genres))
     
     # Limit to 5 seed genres, as required by the Spotify API
-    if user_genres >= 5:
-        combined_genres = random.sample(user_genres, 5)
-    elif len(combined_genres) > 5:
-        combined_genres = random.sample(combined_genres, 5)
+    if user_genres >= 5 or (len(combined_genres) > 5):
+        combined_genres = list(set(random.sample(user_genres, 5)))
     
     # Get the attributes based on emotion
     attributes = emotion_to_attributes.get(emotion, {})
     
     # Use the user's genres in the seed_genres parameter
-    results = sp.recommendations(limit=max_count, seed_genres=user_genres, **attributes)
+    results = sp.recommendations(limit=max_count, seed_genres=combined_genres, **attributes)
 
     # Ensure there are enough tracks in the results
     if len(results['tracks']) < min_count:
@@ -103,20 +101,17 @@ def get_top_recommended_tracks(playlist_id, limit=5):
     # Use Spotify API to pick the top 5 recommended tracks
     sp = get_spotify_client()
 
-    # Error handling
     if not sp:
         raise Exception("Spotify client not authenticated")
 
     playlist_tracks = sp.playlist_tracks(playlist_id)
     track_ids = [item['track']['id'] for item in playlist_tracks['items']]
 
-    # Fetch audio features for all tracks in one API call
     audio_features = sp.audio_features(track_ids)
 
-    # Add tracks to the Song Model
     tracks = []
     for item, features in zip(playlist_tracks['items'], audio_features):
-        if features:  # Sometimes features might be None for certain tracks
+        if features:
             tracks.append(Song(
                 spotify_id=item['track']['id'],
                 title=item['track']['name'],
@@ -134,6 +129,5 @@ def get_top_recommended_tracks(playlist_id, limit=5):
                 tempo=features['tempo']
             ))
 
-    # Sort tracks by composite score
     sorted_tracks = sorted(tracks, key=calculate_composite_score, reverse=True)
-    return sorted_tracks[:limit]  # return the top 5 tracks
+    return sorted_tracks[:limit]

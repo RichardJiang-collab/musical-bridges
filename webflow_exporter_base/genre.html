@@ -208,7 +208,6 @@
             <h1 class="main-heading mb-9 text-black">Favorite Genres</h1>
             <h2 class="item-text mb-9 text-black">We will generate playlists that more align with your musical taste</h2>
 
-            <!-- Genre Blocks Section -->
             <div class="genre-blocks mb-9">
                 <!-- Javascript Filled Up -->
             </div>
@@ -229,19 +228,15 @@
                     <a href="#" onclick="addGenre('Blues')">Blues</a>
                     <a href="#" onclick="addGenre('Country')">Country</a>
                     <a href="#" onclick="addGenre('Instrumental')">Instrumental</a>
-                    <!-- Add more Spotify genres here -->
                 </div>
             </div>
 
-            <!-- Save Button -->
             <button class="save-button" onclick="saveGenres()">Save</button>
 
-            <!-- Success Message -->
             <div id="successMessage" class="success-message">
                 Your genre preferences have been successfully saved!
             </div>
 
-            <!-- Popup for duplicate genre warning -->
             <div id="genrePopup" class="popup">
                 <p>You added this genre previously</p>
                 <button onclick="closePopup()">Got it</button>
@@ -264,8 +259,6 @@
                         genreBlock.addEventListener('click', () => removeGenre(genreBlock, genre)); // Add click event for removing genre
                         genreContainer.appendChild(genreBlock);
                     });
-        
-                    // Update selectedGenres to reflect the saved genres
                     selectedGenres = genres;
                 })
                 .catch(error => {
@@ -276,33 +269,24 @@
         function addGenre(genre) {
             const genreBlocks = document.querySelectorAll('.genre-block');
             const genreNames = Array.from(genreBlocks).map(block => block.innerText);
-    
-            // Check if genre is already added
             if (genreNames.includes(genre)) {
                 showPopup();
                 return;
             }
     
-            // Add new genre if not already added
             const genreBlock = document.createElement('div');
             genreBlock.className = 'genre-block hover-effect';
             genreBlock.innerText = genre;
             genreBlock.addEventListener('click', () => removeGenre(genreBlock, genre)); // Add click event for removing genre
             document.querySelector('.genre-blocks').appendChild(genreBlock);
     
-            // Update selectedGenres and send to backend
             selectedGenres.push(genre);
             updateGenresBackend();
         }
         
         function removeGenre(genreBlock, genre) {
-            // Remove the genre block from the DOM
             genreBlock.remove();
-    
-            // Remove the genre from selectedGenres
             selectedGenres = selectedGenres.filter(g => g !== genre);
-    
-            // Update the backend with the modified genres
             updateGenresBackend();
         }
 
@@ -312,7 +296,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ genres: selectedGenres })
+                body: JSON.stringify({genres: selectedGenres})
             })
             .then(response => response.json())
             .then(data => {
@@ -329,7 +313,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ genres: selectedGenres })
+                body: JSON.stringify({genres: selectedGenres})
             })
             .then(response => response.json())
             .then(data => {
