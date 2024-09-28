@@ -69,7 +69,7 @@ def user_profile():
 
 @main.route('/genres', methods=['GET'])
 def genres():
-    saved_genres = session.get('selected_genres', ['Rock'])  # Default to ['Rock'] if no genres saved
+    saved_genres = session.get('selected_genres', ['rock'])  # Default to ['rock'] if no genres saved
     return jsonify({"genres": saved_genres})
 
 # Update seed genres based on user input
@@ -78,8 +78,16 @@ def update_genres():
     data = request.json
     genres = data.get('genres', [])
     
-    # Save the genres to the session
+    # Ensure all genres are lowercase
+    genres = [genre.lower() for genre in genres]
+
+    # Ensure 'rock' is always included
+    if 'rock' not in genres:
+        genres.append('rock')
+
+    # Save genres to the session
     session['selected_genres'] = genres
+
     return jsonify({"status": "success", "updated_genres": genres})
 
 @main.route('/genres-page', methods=['GET'])

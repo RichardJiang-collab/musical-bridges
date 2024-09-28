@@ -26,7 +26,7 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
     }
 
     # Fetch user genres from the session (or database)
-    user_genres = session.get('selected_genres', ['Rock'])  # Default to ['Rock'] if no user preference
+    user_genres = session.get('selected_genres', ['rock'])  # Default to ['Rock'] if no user preference
 
     # Get the attributes based on emotion
     attributes = emotion_to_attributes.get(emotion, {})

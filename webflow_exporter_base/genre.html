@@ -224,7 +224,7 @@
                     <a href="#" onclick="addGenre('J-pop')">J-pop</a>
                     <a href="#" onclick="addGenre('K-pop')">K-Pop</a>
                     <a href="#" onclick="addGenre('Jazz')">Jazz</a>
-                    <a href="#" onclick="addGenre('Rock')">Rock</a>
+                    <a href="#" onclick="addGenre('rock')">Rock</a>
                     <a href="#" onclick="addGenre('Classical')">Classical</a>
                     <a href="#" onclick="addGenre('Blues')">Blues</a>
                     <a href="#" onclick="addGenre('Country')">Country</a>
@@ -273,9 +273,10 @@
                 });
         });
         
-        let selectedGenres = ['Rock']; // Start with 'Rock'
+        let selectedGenres = ['rock']; // Start with 'rock'
 
         function addGenre(genre) {
+            genre = genre.toLowerCase(); // Convert to lowercase
             const genreBlocks = document.querySelectorAll('.genre-block');
             const genreNames = Array.from(genreBlocks).map(block => block.innerText);
     
