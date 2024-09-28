@@ -1,8 +1,9 @@
-from spotipy.oauth2 import SpotifyOAuth
 import spotipy
-from flask import current_app, session
-import time
+from flask import current_app, session, request, jsonify, Flask
 from .models import Song, Emotion
+
+app = Flask(__name__)
+
 
 def get_spotify_client(access_token=None):
     if not access_token:
@@ -28,7 +29,7 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
 
     attributes = emotion_to_attributes.get(emotion, {})
     
-    results = sp.recommendations(limit=max_count, seed_genres=['rock'], **attributes)
+    results = sp.recommendations(limit=max_count, seed_genres=['rock'], **attributes)  # NOTE
     
     if len(results['tracks']) < min_count:
         return None
@@ -41,6 +42,26 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
         popularity=track['popularity'],
         emotion=emotion
     ) for track in results['tracks']]
+
+# Update seed genres based on user input
+@app.route('/update-genres', methods=['POST'])
+def update_genres():
+    data = request.json
+    genres = data.get('genres', [])
+    
+    # Ensure 'rock' is always in the seed_genres
+    if 'rock' not in genres:
+        genres.append('rock')
+
+    # Use the genres in the Spotify recommendations API
+    sp = get_spotify_client()
+    if not sp:
+        return jsonify({"error": "Spotify client not authenticated"}), 401
+
+    results = sp.recommendations(limit=10, seed_genres=genres)
+    
+    # Return a response (for the frontend)
+    return jsonify({"status": "success", "updated_genres": genres})
 
 # Create the recommended playlist based on the songs we have get from "get_random_tracks" function
 def create_spotify_playlist(tracks):

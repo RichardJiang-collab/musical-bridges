@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorite Genres</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@200;300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Libre Franklin', sans-serif;
+        }
+        /* For Main Heading (Good Morning/Afternoon) */
+        .main-heading {
+            font-size: 38px;
+            font-weight: bold;
+            line-height: 44px;
+        }
+        /* For Sidebar items, Artist Names, and Track Names */
+        .item-text {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 24px;
+        }
+
+        /* For Section Headings */
+        .section-heading {
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 32px;
+        }
+
+        /* Adding smooth animation for hovering */
+        .hover-effect {
+            transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
+        }
+        .hover-effect:hover {
+            transform: scale(1.05);
+            background-color: #6b63ff; /* Hover background color */
+        }
+
+        .hover-sidebar {
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+        .hover-sidebar:hover {
+            background-color: #5bb963;
+            color: white;
+        }
+
+        .hover-signout {
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+        .hover-signout:hover {
+            background-color: rgb(228, 76, 76); /* Hover color for Sign-Out */
+            color: white; /* Change text to white */
+        }
+
+        /* Styling genre blocks */
+        .genre-block {
+            display: inline-block;
+            background-color: #6b63ff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .genre-block:hover {
+            transform: scale(1.05);
+            background-color: #5bb963; /* Hover color */
+        }
+
+        /* Styling the search bar */
+        .search-bar {
+            width: 100%; /* Making the search bar full-width */
+            max-width: 600px; /* Max width to control the length */
+            padding: 10px;
+            margin-top: -5px; /* Moved up for better placement */
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        /* Dropdown styling */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            background-color: #f1f0f5;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(-20px); /* Start with offset */
+            pointer-events: none; /* Prevent interaction until visible */
+            transform-origin: top;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* Smooth appearance */
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        /* When hovering over the input or dropdown, smoothly show content */
+        .dropdown:hover .dropdown-content,
+        .dropdown:focus-within .dropdown-content {
+            opacity: 1;
+            transform: translateY(0); /* Smooth sliding effect */
+            pointer-events: auto; /* Enable interaction */
+        }
+
+        /* Popup styling */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8); /* Start smaller for smooth zoom effect */
+            background-color: rgba(255, 255, 255, 0.8); /* Translucent white background */
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; /* Smooth animation */
+        }
+
+        .popup button {
+            background-color: rgb(228, 76, 76);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .popup button:hover {
+            background-color: #ff4b4b;
+        }
+
+        .popup.show {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1); /* Smooth zooming in */
+        }
+    </style>
+</head>
+<body class="bg-[#f1f0f5] min-h-screen">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="bg-[#f1f0f5] p-6 w-64">
+            <nav class="space-y-4 mt-5">
+                <a href="/user-profile" class="hover-sidebar block item-text text-black rounded p-2">Dashboard</a>
+                <a href="#" class="hover-sidebar block item-text text-black rounded p-2">Saved Playlists</a>
+                <a href="#" class="hover-sidebar block item-text text-black rounded p-2">All Artists</a>
+                <a href="/genres" class="hover-sidebar block item-text text-black rounded p-2">Favorite Genres</a>
+                <a href="#" class="hover-sidebar block item-text text-black rounded p-2">All Tracks</a>
+                <a href="#" class="hover-signout block text-red-600 mt-6 rounded p-2 item-text">Sign Out</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-grow p-10">
+            <!-- Dashboard Header -->
+            <h1 class="main-heading mb-9 text-black">Favorite Genres</h1>
+            <h2 class="item-text mb-9 text-black">We will generate playlists that more align with your musical taste</h2>
+
+            <!-- Genre Blocks Section -->
+            <div class="genre-blocks mb-9">
+                <!-- Javascript Filled Up -->
+            </div>
+
+            <!-- Search Genre Block -->
+            <div class="dropdown">
+                <input type="text" id="searchGenre" class="search-bar" placeholder="Search Genres" onkeyup="filterGenres()">
+                <div class="dropdown-content" id="genreDropdown">
+                    <!-- Dropdown content for genres (populated dynamically) -->
+                    <a href="#" onclick="addGenre('Pop')">Pop</a>
+                    <a href="#" onclick="addGenre('Hip Hop')">Hip Hop</a>
+                    <a href="#" onclick="addGenre('Mando-pop')">Mando-pop</a>
+                    <a href="#" onclick="addGenre('J-pop')">J-pop</a>
+                    <a href="#" onclick="addGenre('K-pop')">K-Pop</a>
+                    <a href="#" onclick="addGenre('Jazz')">Jazz</a>
+                    <a href="#" onclick="addGenre('Rock')">Rock</a>
+                    <a href="#" onclick="addGenre('Classical')">Classical</a>
+                    <a href="#" onclick="addGenre('Blues')">Blues</a>
+                    <a href="#" onclick="addGenre('Country')">Country</a>
+                    <a href="#" onclick="addGenre('Instrumental')">Instrumental</a>
+                    <!-- Add more Spotify genres here -->
+                </div>
+            </div>
+
+            <!-- Popup for duplicate genre warning -->
+            <div id="genrePopup" class="popup">
+                <p>You added this genre previously</p>
+                <button onclick="closePopup()">Got it</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedGenres = ['Rock']; // Start with 'Rock'
+    
+        function addGenre(genre) {
+            const genreBlocks = document.querySelectorAll('.genre-block');
+            const genreNames = Array.from(genreBlocks).map(block => block.innerText);
+    
+            // Check if genre is already added
+            if (genreNames.includes(genre)) {
+                showPopup();
+                return;
+            }
+    
+            // Add new genre if not already added
+            const genreBlock = document.createElement('div');
+            genreBlock.className = 'genre-block hover-effect';
+            genreBlock.innerText = genre;
+            document.querySelector('.genre-blocks').appendChild(genreBlock);
+    
+            // Update selectedGenres and send to backend
+            selectedGenres.push(genre);
+            updateGenresBackend();
+        }
+    
+        function updateGenresBackend() {
+            fetch('/update-genres', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ genres: selectedGenres })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Genres updated successfully:", data);
+            })
+            .catch(error => {
+                console.error("Error updating genres:", error);
+            });
+        }
+    
+        function showPopup() {
+            const popup = document.getElementById('genrePopup');
+            popup.classList.add('show');
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 3000);
+        }
+    
+        function closePopup() {
+            const popup = document.getElementById('genrePopup');
+            popup.classList.remove('show');
+        }
+    
+        function filterGenres() {
+            let input, filter, a, i;
+            input = document.getElementById("searchGenre");
+            filter = input.value.toUpperCase();
+            const dropdown = document.getElementById("genreDropdown");
+            a = dropdown.getElementsByTagName("a");
+            for (i = 0; i < a.length; i++) {
+                let txtValue = a[i].textContent || a[i].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    a[i].style.display = "";
+                } else {
+                    a[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+    
+</body>
+</html>

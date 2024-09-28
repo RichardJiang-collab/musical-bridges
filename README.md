@@ -19,6 +19,8 @@ music_recommendation_system/
 │   ├── recommendations.html
 │   ├── anger-selection.html
 │   ├── sadness-selection.html
+│   ├── genre.html
+│   ├── profile.html
 │   ├── css/
 │   │   ├── webflow-style.css
 │   ├── js/

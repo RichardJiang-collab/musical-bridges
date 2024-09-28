@@ -61,11 +61,18 @@ def recommendations():
     return send_from_directory(current_app.static_folder, 'recommendations.html')
 
 @main.route('/user-profile')
-def recommendations():
+def user_profile():
     auth_check = check_auth()
     if auth_check:
         return auth_check
     return send_from_directory(current_app.static_folder, 'profile.html')
+
+@main.route('/genres')
+def genres():
+    auth_check = check_auth()
+    if auth_check:
+        return auth_check
+    return send_from_directory(current_app.static_folder, 'genre.html')
 
 @main.route('/login')
 def login():

@@ -3,178 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile - Musical Bridges</title>
-    <link href="/css/webflow-style.css" rel="stylesheet" type="text/css" />
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous" />
-    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        WebFont.load({ google: { families: ["Libre Franklin:200,300,regular,600,800,900", "IBM Plex Mono:regular"] } });
-    </script>
+    <title>Emotion Recommendation Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@200;300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        /* Additional styles for the profile page */
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        body {
+            font-family: 'Libre Franklin', sans-serif;
         }
-        .greeting {
-            font-size: 24px;
-            margin-bottom: 20px;
+        /* For Main Heading (Good Morning/Afternoon) */
+        .main-heading {
+            font-size: 38px;
+            font-weight: bold;
+            line-height: 44px;
         }
-        .section-title {
-            font-size: 20px;
-            margin-bottom: 15px;
+
+        /* For Sidebar items, Artist Names, and Track Names */
+        .item-text {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 24px;
         }
-        .artist-list, .playlist-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+
+        /* For Section Headings (Top Artists, etc.) */
+        .section-heading {
+            font-size: 32px;
+            font-weight: bold;
+            line-height: 36px;
         }
-        .artist-item, .playlist-item {
-            width: 150px;
-            text-align: center;
+
+        /* Adding smooth animation for hovering */
+        .hover-effect {
+            transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
         }
-        .artist-image, .playlist-image {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin-bottom: 10px;
+
+        .hover-effect:hover {
+            transform: scale(1.05);
+            background-color: #e7e6eb; /* Hover background color */
         }
-        .track-list {
-            list-style-type: none;
-            padding: 0;
+
+        .hover-sidebar {
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
         }
-        .track-item {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+
+        .hover-sidebar:hover {
+            background-color: #5bb963;
+            color: white;
         }
-        .genre-preferences {
-            margin-top: 30px;
+
+        .hover-signout {
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
         }
-        .genre-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .genre-item {
-            padding: 5px 10px;
-            background-color: #f0f0f0;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .genre-item:hover {
-            background-color: #e0e0e0;
+
+        .hover-signout:hover {
+            background-color: rgb(228, 76, 76); /* Hover color for Sign-Out */
+            color: white; /* Change text to white */
         }
     </style>
 </head>
-<div class="navigation">
-    <div data-collapse="medium" data-animation="default" data-duration="400" data-easing="ease-out"
-            data-easing2="ease-out" role="banner" class="navigation w-nav">
-            <div class="navigation-container">
-                <nav role="navigation" class="nav-menu w-nav-menu">
-                    <a href="#about" class="nav-link w-nav-link">About</a>
-                    <a href="/emotions" class="nav-link w-nav-link">Emotions</a>
-                    <a href="#contact" class="nav-link w-nav-link">Contact</a>
-                </nav>
-                <div class="menu-button w-nav-button">
-                    <div class="icon-2 w-icon-nav-menu"></div>
+<body class="bg-[#f1f0f5] min-h-screen">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="bg-[#f1f0f5] p-6 w-64">
+            <nav class="space-y-4 mt-5">
+                <a href="/user-profile" class="hover-sidebar block item-text text-black rounded p-2">Dashboard</a>
+                <a href="#" class="hover-sidebar block item-text text-black rounded p-2">Saved Playlists</a>
+                <a href="#" class="hover-sidebar block item-text text-black rounded p-2">All Artists</a>
+                <a href="/genres" class="hover-sidebar block item-text text-black rounded p-2">Favorite Genres</a>
+                <a href="#" class="hover-sidebar block item-text text-black rounded p-2">All Tracks</a>
+                <a href="#" class="hover-signout block text-red-600 mt-6 rounded p-2 item-text">Sign Out</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-grow p-10">
+            <!-- Dashboard Header -->
+            <h1 class="main-heading mb-9 text-black">Good Morning/Afternoon/Evening, [User Name]!</h1>
+
+            <!-- Top Artists Section -->
+            <div class="mb-7">
+                <h2 class="section-heading mb-4 text-black">Top Artists</h2>
+                <div class="grid grid-cols-5 gap-4">
+                    <!-- Artist placeholder -->
+                    <div class="bg-[#e7e6eb] p-4 rounded hover-effect">
+                        <div class="h-24 w-24 bg-white rounded-full mx-auto mb-2"></div>
+                        <p class="text-center item-text text-black">Artist 1</p>
+                    </div>
+                    <!-- Repeat for other artists -->
                 </div>
-                <a href="/" aria-current="page" class="navigation-logo w-inline-block w--current">
-                    <img src="/images/unknown.svg" width="265" alt="" />
-                </a>
+            </div>
+
+            <!-- Saved Playlists Section -->
+            <div class="mb-7">
+                <h2 class="section-heading mb-4 text-black">Saved Playlists</h2>
+                <div class="grid grid-cols-4 gap-4">
+                    <!-- Playlist placeholder -->
+                    <div class="bg-[#e7e6eb] p-6 h-32 rounded hover-effect"></div>
+                    <!-- Repeat for other playlists -->
+                </div>
+            </div>
+
+            <!-- Top 5 Tracks Section -->
+            <div>
+                <h2 class="section-heading mb-4 text-black">Top 5 Tracks</h2>
+                <ul>
+                    <!-- Track placeholder -->
+                    <li class="bg-[#e7e6eb] p-4 rounded mb-4 hover-effect item-text">Track 1</li>
+                    <!-- Repeat for other tracks -->
+                </ul>
             </div>
         </div>
     </div>
-    <div class="dashboard-container">
-        <h1 class="greeting">Good <span id="timeOfDay">Morning</span>, <span id="userName">User</span>!</h1>
-        
-        <div class="top-artists">
-            <h2 class="section-title">Top Artists</h2>
-            <div class="artist-list">
-                <!-- Artist items will be dynamically populated -->
-            </div>
-        </div>
-        
-        <div class="saved-playlists">
-            <h2 class="section-title">Saved Playlists</h2>
-            <div class="playlist-list">
-                <!-- Playlist items will be dynamically populated -->
-            </div>
-        </div>
-        
-        <div class="top-tracks">
-            <h2 class="section-title">Top 5 Tracks</h2>
-            <ul class="track-list">
-                <!-- Track items will be dynamically populated -->
-            </ul>
-        </div>
-        
-        <div class="genre-preferences">
-            <h2 class="section-title">Genre Preferences</h2>
-            <div class="genre-list">
-                <!-- Genre items will be dynamically populated -->
-            </div>
-        </div>
-    </div>
-
-    <script src="/js/jquery.js" type="text/javascript"></script>
-    <script src="/js/webflow-script.js" type="text/javascript"></script>
-    <script>
-        // JavaScript for dynamic content and interactions
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set greeting based on time of day
-            const hour = new Date().getHours();
-            const timeOfDay = hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
-            document.getElementById('timeOfDay').textContent = timeOfDay;
-
-            // Populate artists (example data)
-            const artists = ['Artist 1', 'Artist 2', 'Artist 3', 'Artist 4', 'Artist 5'];
-            const artistList = document.querySelector('.artist-list');
-            artists.forEach(artist => {
-                const artistItem = document.createElement('div');
-                artistItem.className = 'artist-item';
-                artistItem.innerHTML = `
-                    <img src="/api/placeholder/100/100" alt="${artist}" class="artist-image">
-                    <p>${artist}</p>
-                `;
-                artistList.appendChild(artistItem);
-            });
-
-            // Populate playlists (example data)
-            const playlists = ['Playlist 1', 'Playlist 2', 'Playlist 3', 'Playlist 4'];
-            const playlistList = document.querySelector('.playlist-list');
-            playlists.forEach(playlist => {
-                const playlistItem = document.createElement('div');
-                playlistItem.className = 'playlist-item';
-                playlistItem.innerHTML = `
-                    <img src="/api/placeholder/100/100" alt="${playlist}" class="playlist-image">
-                    <p>${playlist}</p>
-                `;
-                playlistList.appendChild(playlistItem);
-            });
-
-            // Populate top tracks (example data)
-            const tracks = ['Track 1', 'Track 2', 'Track 3', 'Track 4', 'Track 5'];
-            const trackList = document.querySelector('.track-list');
-            tracks.forEach(track => {
-                const trackItem = document.createElement('li');
-                trackItem.className = 'track-item';
-                trackItem.textContent = track;
-                trackList.appendChild(trackItem);
-            });
-
-            // Populate genre preferences (example data)
-            const genres = ['Rock', 'Pop', 'Jazz', 'Classical', 'Hip Hop', 'Electronic'];
-            const genreList = document.querySelector('.genre-list');
-            genres.forEach(genre => {
-                const genreItem = document.createElement('div');
-                genreItem.className = 'genre-item';
-                genreItem.textContent = genre;
-                genreList.appendChild(genreItem);
-            });
-        });
-    </script>
 </body>
 </html>
