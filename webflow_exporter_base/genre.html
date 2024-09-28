@@ -157,6 +157,35 @@
             opacity: 1;
             transform: translate(-50%, -50%) scale(1); /* Smooth zooming in */
         }
+        .save-button {
+            background-color: rgb(228, 76, 76);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 30px; /* Adjusted for proper positioning */
+            transition: transform 0.4s ease, background-color 0.3s ease;
+            display: block;
+        }
+
+        .save-button:hover {
+            background-color: #ff4b4b;
+            transform: scale(1.05); /* Smooth hover effect */
+        }
+
+        .success-message {
+            display: none;
+            color: #5bb963;
+            margin-top: 15px;
+            font-size: 16px;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .success-message.show {
+            display: block;
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="bg-[#f1f0f5] min-h-screen">
@@ -204,6 +233,14 @@
                 </div>
             </div>
 
+            <!-- Save Button -->
+            <button class="save-button" onclick="saveGenres()">Save</button>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="success-message">
+                Your genre preferences have been successfully saved!
+            </div>
+
             <!-- Popup for duplicate genre warning -->
             <div id="genrePopup" class="popup">
                 <p>You added this genre previously</p>
@@ -213,6 +250,28 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/genres')
+                .then(response => response.json())
+                .then(data => {
+                    // Populate the genre blocks with the saved genres
+                    const genres = data.genres;
+                    const genreContainer = document.querySelector('.genre-blocks');
+                    genres.forEach(genre => {
+                        const genreBlock = document.createElement('div');
+                        genreBlock.className = 'genre-block hover-effect';
+                        genreBlock.innerText = genre;
+                        genreContainer.appendChild(genreBlock);
+                    });
+        
+                    // Update selectedGenres to reflect the saved genres
+                    selectedGenres = genres;
+                })
+                .catch(error => {
+                    console.error("Error fetching genres:", error);
+                });
+        });
+        
         let selectedGenres = ['Rock']; // Start with 'Rock'
     
         function addGenre(genre) {
@@ -252,20 +311,33 @@
                 console.error("Error updating genres:", error);
             });
         }
-    
-        function showPopup() {
-            const popup = document.getElementById('genrePopup');
-            popup.classList.add('show');
+
+        function saveGenres() {
+            fetch('/update-genres', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ genres: selectedGenres })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Genres saved successfully:", data);
+                showSuccessMessage(); // Show success message after saving
+            })
+            .catch(error => {
+                console.error("Error saving genres:", error);
+            });
+        }
+
+        function showSuccessMessage() {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.classList.add('show');
             setTimeout(() => {
-                popup.classList.remove('show');
-            }, 3000);
+                successMessage.classList.remove('show');
+            }, 3000); // Hide message after 3 seconds
         }
-    
-        function closePopup() {
-            const popup = document.getElementById('genrePopup');
-            popup.classList.remove('show');
-        }
-    
+
         function filterGenres() {
             let input, filter, a, i;
             input = document.getElementById("searchGenre");
@@ -281,7 +353,19 @@
                 }
             }
         }
-    </script>
+
+        function showPopup() {
+            const popup = document.getElementById('genrePopup');
+            popup.classList.add('show');
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 3000);
+        }
     
+        function closePopup() {
+            const popup = document.getElementById('genrePopup');
+            popup.classList.remove('show');
+        }
+    </script>
 </body>
 </html>

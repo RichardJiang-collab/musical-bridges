@@ -53,14 +53,9 @@ def update_genres():
     if 'rock' not in genres:
         genres.append('rock')
 
-    # Use the genres in the Spotify recommendations API
-    sp = get_spotify_client()
-    if not sp:
-        return jsonify({"error": "Spotify client not authenticated"}), 401
+    # Store genres in session (or in a database if available)
+    session['selected_genres'] = genres
 
-    results = sp.recommendations(limit=10, seed_genres=genres)
-    
-    # Return a response (for the frontend)
     return jsonify({"status": "success", "updated_genres": genres})
 
 # Create the recommended playlist based on the songs we have get from "get_random_tracks" function

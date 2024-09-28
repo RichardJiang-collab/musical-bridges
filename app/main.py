@@ -67,11 +67,19 @@ def user_profile():
         return auth_check
     return send_from_directory(current_app.static_folder, 'profile.html')
 
-@main.route('/genres')
+@main.route('/genres', methods=['GET'])
 def genres():
     auth_check = check_auth()
     if auth_check:
         return auth_check
+    
+    # Check if the request is an AJAX/fetch request by inspecting the headers
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # This is an AJAX request, return the genres as JSON
+        saved_genres = session.get('selected_genres', ['rock'])
+        return jsonify({"genres": saved_genres})
+    
+    # Otherwise, serve the HTML page for regular requests
     return send_from_directory(current_app.static_folder, 'genre.html')
 
 @main.route('/login')
