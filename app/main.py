@@ -22,7 +22,6 @@ def callback():
     code = request.args.get('code')
     if not code:
         return jsonify({'error': 'Authorization code not found'}), 400
-
     try:
         token_info = sp_oauth.get_access_token(code, check_cache=False)
     except Exception as e:
@@ -33,7 +32,6 @@ def callback():
     user_id = token_info.get('id')
     if not user_id:
         return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
-
     session['user_id'] = user_id
 
     # Check if the user already exists in the database
