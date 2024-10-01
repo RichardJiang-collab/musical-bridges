@@ -37,7 +37,6 @@ def callback():
     # Check if the user already exists in the database
     user = User.query.filter_by(user_id=user_id).first()
     if not user:
-        # Create a new user if they don't exist
         new_user = User(user_id=user_id)
         db.session.add(new_user)
         db.session.commit()
