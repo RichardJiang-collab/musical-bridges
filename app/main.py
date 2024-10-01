@@ -21,16 +21,31 @@ def callback():
     token_info = sp_oauth.get_access_token(code, check_cache=False)
     
     session['token_info'] = token_info
-    return redirect(url_for('main.genres'))
-
-@main.route('/')
-def index():
-    return send_from_directory(current_app.static_folder, 'index.html')
+    return redirect(url_for('main.genres-page'))
 
 def check_auth():
     if 'token_info' not in session:
         return redirect(url_for('main.login'))
     return None
+
+@main.route('/login')
+def login():
+    sp_oauth = SpotifyOAuth(
+        client_id=current_app.config['SPOTIFY_CLIENT_ID'],
+        client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
+        redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
+        scope="playlist-modify-private"
+    )
+    auth_url = sp_oauth.get_authorize_url()
+    return render_template('login.html', auth_url=auth_url)
+
+@main.route('/<path:filename>')
+def serve_static(filename):
+    return send_from_directory(current_app.static_folder, filename)
+
+@main.route('/')
+def index():
+    return send_from_directory(current_app.static_folder, 'index.html')
 
 @main.route('/emotions')
 def emotions():
@@ -92,21 +107,6 @@ def update_genres():
 
     # Return a success response
     return jsonify({"status": "success", "updated_genres": user_genres})
-
-@main.route('/login')
-def login():
-    sp_oauth = SpotifyOAuth(
-        client_id=current_app.config['SPOTIFY_CLIENT_ID'],
-        client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
-        redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-        scope="playlist-modify-private"
-    )
-    auth_url = sp_oauth.get_authorize_url()
-    return render_template('login.html', auth_url=auth_url)
-
-@main.route('/<path:filename>')
-def serve_static(filename):
-    return send_from_directory(current_app.static_folder, filename)
 
 def get_token():
     token_info = session.get('token_info')
