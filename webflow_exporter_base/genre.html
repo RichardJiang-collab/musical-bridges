@@ -198,7 +198,7 @@
                 <a href="#" class="hover-sidebar block item-text text-black rounded p-2">All Artists</a>
                 <a href="/genres-page" class="hover-sidebar block item-text text-black rounded p-2">Favorite Genres</a>
                 <a href="#" class="hover-sidebar block item-text text-black rounded p-2">All Tracks</a>
-                <a href="#" class="hover-signout block text-red-600 mt-6 rounded p-2 item-text">Sign Out</a>
+                <a id="sign-out" href="#" class="hover-signout block text-red-600 mt-6 rounded p-2 item-text">Sign Out</a>
             </nav>
         </div>
 
@@ -264,6 +264,27 @@
                 .catch(error => {
                     console.error("Error fetching genres:", error);
                 });
+        });
+
+        document.getElementById('sign-out').addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent the default anchor behavior
+            fetch('/signout', {
+                method: 'POST', // Assuming you want to make a POST request for security
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect to the main.index page after successful sign-out
+                    window.location.href = '/main.index';
+                } else {
+                    console.error('Failed to sign out.');
+                }
+            })
+            .catch(error => {
+                console.error('Error during sign out:', error);
+            });
         });
         
         function addGenre(genre) {

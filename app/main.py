@@ -1,12 +1,15 @@
 from flask import Blueprint, request, jsonify, current_app, redirect, session, url_for, render_template, send_from_directory
-from .models import Emotion
+from .models import Emotion, User, UserGenre
 from .utils import get_random_tracks, get_top_recommended_tracks, create_spotify_playlist, get_embedded_playlist_code, get_embedded_track_code, get_spotify_client
 from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
 import time
+from .extensions import db
 
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+
+from .models import User
 
 @main.route('/callback')
 def callback():
@@ -21,7 +24,21 @@ def callback():
     token_info = sp_oauth.get_access_token(code, check_cache=False)
     
     session['token_info'] = token_info
-    return redirect(url_for('main.genres-page'))
+
+    # Extract Spotify user ID or generate a random one
+    user_id = token_info['id']  # Assuming 'id' is available from Spotify, else generate one
+    session['user_id'] = user_id
+
+    # Check if the user already exists in the database
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        # Create a new user if they don't exist
+        new_user = User(user_id=user_id)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('main.genres-page'))  # First-time login, redirect to genres
+    else:
+        return redirect(url_for('main.index'))  # Existing user, redirect to index
 
 def check_auth():
     if 'token_info' not in session:
@@ -37,11 +54,29 @@ def login():
         scope="playlist-modify-private"
     )
     auth_url = sp_oauth.get_authorize_url()
+    
+    # After successful Spotify login
+    if 'user_id' in session:
+        user_id = session['user_id']
+        user = User.query.filter_by(user_id=user_id).first()
+        
+        if user:
+            # Redirect to index if the user has logged in before
+            return redirect(url_for('main.index'))
+        else:
+            # New user, redirect to genres page
+            return redirect(url_for('main.genres-page'))
+    
     return render_template('login.html', auth_url=auth_url)
 
 @main.route('/<path:filename>')
 def serve_static(filename):
     return send_from_directory(current_app.static_folder, filename)
+
+@main.route('/signout', methods=['POST'])
+def signout():
+    session.clear()
+    return redirect(url_for('main.index')), 200
 
 @main.route('/')
 def index():
@@ -91,22 +126,36 @@ def genres_page():
     return send_from_directory(current_app.static_folder, 'genre.html')
 
 @main.route('/genres', methods=['GET'])
-def genres():
-    saved_genres = session.get('selectedGenres', ['rock'])  # Default to 'rock' if no genres saved
-    return jsonify({"genres": saved_genres})
+def get_user_genres():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('main.login'))
 
-# Update seed genres based on user input
+    genres = UserGenre.query.filter_by(user_id=user_id).all()
+    genre_list = [genre.genre for genre in genres]
+    
+    return jsonify({'genres': genre_list})
+
 @main.route('/update-genres', methods=['POST'])
 def update_genres():
-    data = request.json
-    user_genres = data.get('genres', [])
-    user_genres = [genre.lower() for genre in user_genres]
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('main.login'))
+    
+    data = request.get_json()
+    selected_genres = data.get('genres', [])
+    
+    # Remove old genres
+    UserGenre.query.filter_by(user_id=user_id).delete()
+    
+    # Add new genres
+    for genre in selected_genres:
+        new_genre = UserGenre(user_id=user_id, genre=genre)
+        db.session.add(new_genre)
+    
+    db.session.commit()
 
-    # Save genres to the session
-    session['selectedGenres'] = user_genres
-
-    # Return a success response
-    return jsonify({"status": "success", "updated_genres": user_genres})
+    return jsonify({'success': True})
 
 def get_token():
     token_info = session.get('token_info')
