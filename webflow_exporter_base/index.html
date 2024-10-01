@@ -38,7 +38,7 @@
         <div class="icon-2 w-icon-nav-menu"></div>
       </div><a href="/" aria-current="page" class="navigation-logo w-inline-block w--current"><img
           src="/images/unknown.svg" width="265" alt="" /></a>
-    </div><a href="/user-profile" class="w-inline-block"><img src="/images/account-circle.png" loading="lazy" width="50"
+    </div><a id="profile-icon" href="/user-profile" class="w-inline-block"><img src="/images/account-circle.png" loading="lazy" width="50"
       alt="" /></a>
   </div>
   <div class="header">
@@ -153,12 +153,13 @@
       });
     }
 
-    var emotionLinks = document.querySelectorAll('a[href="/emotions"]');
-    emotionLinks.forEach(function(link) {
-      link.addEventListener('click', function(event) {
+    // Profile Icon logic
+    var profileIcon = document.getElementById('profile-icon');
+    if (profileIcon) {
+      profileIcon.addEventListener('click', function(event) {
         event.preventDefault();
-        window.location.href = '/emotions';
+        window.location.href = '/user-profile'; // Or dynamically change this based on login status
       });
-    });
+    }
   });
 </script>

@@ -18,13 +18,22 @@ def callback():
         scope="playlist-modify-private",
         cache_handler=None
     )
-    code = request.args.get('code')
-    token_info = sp_oauth.get_access_token(code, check_cache=False)
     
+    code = request.args.get('code')
+    if not code:
+        return jsonify({'error': 'Authorization code not found'}), 400
+
+    try:
+        token_info = sp_oauth.get_access_token(code, check_cache=False)
+    except Exception as e:
+        return jsonify({'error': f'Failed to retrieve access token: {str(e)}'}), 500
+
     session['token_info'] = token_info
 
-    # Extract Spotify user ID or generate a random one
-    user_id = token_info['id']  # Assuming 'id' is available from Spotify, else generate one
+    user_id = token_info.get('id')
+    if not user_id:
+        return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
+
     session['user_id'] = user_id
 
     # Check if the user already exists in the database
@@ -34,7 +43,7 @@ def callback():
         new_user = User(user_id=user_id)
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('main.genres-page'))  # First-time login, redirect to genres
+        return redirect(url_for('main.genres_page'))  # First-time login, redirect to genres
     else:
         return redirect(url_for('main.index'))  # Existing user, redirect to index
 
@@ -59,10 +68,8 @@ def login():
         user = User.query.filter_by(user_id=user_id).first()
         
         if user:
-            # Redirect to index if the user has logged in before
             return redirect(url_for('main.index'))
         else:
-            # New user, redirect to genres page
             return redirect(url_for('main.genres-page'))
     
     return render_template('login.html', auth_url=auth_url)
