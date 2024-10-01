@@ -127,7 +127,7 @@ def genres_page():
 def get_user_genres():
     user_id = session.get('user_id')
     if not user_id:
-        return redirect(url_for('main.login'))
+        return jsonify({'error': 'User not logged in'}), 403
 
     genres = UserGenre.query.filter_by(user_id=user_id).all()
     genre_list = [genre.genre for genre in genres]
@@ -138,21 +138,20 @@ def get_user_genres():
 def update_genres():
     user_id = session.get('user_id')
     if not user_id:
-        return redirect(url_for('main.login'))
+        return jsonify({'error': 'User not logged in'}), 403
     
     data = request.get_json()
     selected_genres = data.get('genres', [])
-    
-    # Remove old genres
+
+    # Delete old genres for the user
     UserGenre.query.filter_by(user_id=user_id).delete()
-    
+
     # Add new genres
     for genre in selected_genres:
         new_genre = UserGenre(user_id=user_id, genre=genre)
         db.session.add(new_genre)
     
     db.session.commit()
-
     return jsonify({'success': True})
 
 def get_token():

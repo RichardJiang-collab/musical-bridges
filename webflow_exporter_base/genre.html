@@ -245,6 +245,8 @@
     </div>
 
     <script>
+        let selectedGenres = [];
+
         document.addEventListener('DOMContentLoaded', function() {
             fetch('/genres')
                 .then(response => response.json())
@@ -336,7 +338,12 @@
                 },
                 body: JSON.stringify({ genres: selectedGenres })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to save genres');
+                }
+                return response.json();
+            })
             .then(data => {
                 console.log("Genres saved successfully:", data);
                 showSuccessMessage();  // Show success message after saving
@@ -344,7 +351,7 @@
             .catch(error => {
                 console.error("Error saving genres:", error);
             });
-        }
+        }        
     
         function showSuccessMessage() {
             const successMessage = document.getElementById('successMessage');
