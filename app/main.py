@@ -21,7 +21,7 @@ def callback():
     token_info = sp_oauth.get_access_token(code, check_cache=False)
     
     session['token_info'] = token_info
-    return redirect(url_for('main.genre'))
+    return redirect(url_for('main.genres'))
 
 @main.route('/')
 def index():
