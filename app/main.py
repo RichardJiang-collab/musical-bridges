@@ -9,8 +9,6 @@ from .extensions import db
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
-from .models import User
-
 @main.route('/callback')
 def callback():
     sp_oauth = SpotifyOAuth(
