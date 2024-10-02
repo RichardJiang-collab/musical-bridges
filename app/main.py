@@ -10,7 +10,6 @@ main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 @main.route('/callback')
-@main.route('/callback')
 def callback():
     sp_oauth = SpotifyOAuth(
         client_id=current_app.config['SPOTIFY_CLIENT_ID'],
@@ -30,25 +29,20 @@ def callback():
         return jsonify({'error': f'Failed to retrieve access token: {str(e)}'}), 500
 
     session['token_info'] = token_info
-
-    # Use the access token to get the user's profile from Spotify
     access_token = token_info['access_token']
     
-    # Make an authenticated request to Spotify API to get the user profile
-    sp = get_spotify_client(access_token)  # Assuming get_spotify_client is defined elsewhere to get a Spotipy client
+    sp = get_spotify_client(access_token)
     try:
         user_profile = sp.current_user()
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve user profile: {str(e)}'}), 500
 
-    # Extract the Spotify user ID from the profile
     user_id = user_profile.get('id')
     if not user_id:
         return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
 
     session['user_id'] = user_id
 
-    # Check if the user already exists in the database
     user = User.query.filter_by(user_id=user_id).first()
     if not user:
         new_user = User(user_id=user_id)
@@ -73,7 +67,6 @@ def login():
     )
     auth_url = sp_oauth.get_authorize_url()
     
-    # After successful Spotify login
     if 'user_id' in session:
         user_id = session['user_id']
         user = User.query.filter_by(user_id=user_id).first()

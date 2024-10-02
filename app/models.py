@@ -13,10 +13,8 @@ from datetime import datetime, timezone
 class User(db.Model):
     __tablename__ = 'users'
 
-    # Primary key, unique identifier for each user
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     
-    # Unique user ID, can be a random number or a Spotify user ID
     user_id = db.Column(db.String(100), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     genres = db.relationship('UserGenre', backref='user', lazy=True)

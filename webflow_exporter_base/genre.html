@@ -251,7 +251,6 @@
             fetch('/genres')
                 .then(response => response.json())
                 .then(data => {
-                    // Populate the genre blocks with the saved genres
                     const genres = data.genres;
                     const genreContainer = document.querySelector('.genre-blocks');
                     genres.forEach(genre => {
@@ -271,7 +270,7 @@
         document.getElementById('sign-out').addEventListener('click', function(event) {
             event.preventDefault();  // Prevent the default anchor behavior
             fetch('/signout', {
-                method: 'POST', // Assuming you want to make a POST request for security
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }
