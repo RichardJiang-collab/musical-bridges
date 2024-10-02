@@ -160,6 +160,9 @@ def update_genres():
     for genre in selected_genres:
         new_genre = UserGenre(user_id=user_id, genre=genre)
         db.session.add(new_genre)
+    
+    # Ensure the changes are committed to the database
+    db.session.commit()
         
     try:
         return jsonify({"success": True}), 200
