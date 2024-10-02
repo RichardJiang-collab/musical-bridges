@@ -278,8 +278,7 @@
             })
             .then(response => {
                 if (response.ok) {
-                    // Redirect to the main.index page after successful sign-out
-                    window.location.href = '/main.index';
+                    window.location.href = '/';
                 } else {
                     console.error('Failed to sign out.');
                 }

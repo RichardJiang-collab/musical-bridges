@@ -92,7 +92,7 @@ def serve_static(filename):
 @main.route('/signout', methods=['POST'])
 def signout():
     session.clear()
-    return redirect('/'), 200
+    return redirect('/')
 
 @main.route('/')
 def index():
