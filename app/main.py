@@ -22,7 +22,6 @@ def callback():
     code = request.args.get('code')
     if not code:
         return jsonify({'error': 'Authorization code not found'}), 400
-
     try:
         token_info = sp_oauth.get_access_token(code, check_cache=False)
     except Exception as e:
@@ -30,8 +29,8 @@ def callback():
 
     session['token_info'] = token_info
     access_token = token_info['access_token']
-    
     sp = get_spotify_client(access_token)
+    
     try:
         user_profile = sp.current_user()
     except Exception as e:
@@ -40,7 +39,6 @@ def callback():
     user_id = user_profile.get('id')
     if not user_id:
         return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
-
     session['user_id'] = user_id
 
     user = User.query.filter_by(user_id=user_id).first()
@@ -200,12 +198,10 @@ def create_playlist():
         data = request.json
         emotion = data.get('emotion')
         intensity = data.get('intensity')
-        print(f"Received emotion: {emotion}, intensity: {intensity}")
+        
+        current_app.logger.info(f'Received emotion: {emotion}, intensity: {intensity}')
 
-        if not emotion or not intensity:
-            print("Emotion or intensity missing")
-            return jsonify({'error': 'Emotion and intensity are required'}), 400
-
+        # Construct emotion key
         emotion_key = f"{emotion.upper()}_{intensity.upper()}"
         print(f"Constructed emotion key: {emotion_key}")
         
@@ -213,17 +209,28 @@ def create_playlist():
             print(f"Invalid emotion key: {emotion_key}")
             return jsonify({'error': 'Invalid emotion or intensity'}), 400
 
+        # Get random tracks based on emotion
         emotion_enum = Emotion[emotion_key]
         tracks = get_random_tracks(emotion_enum)
-        if not tracks:
+        if not tracks:  # If no tracks are found, return an error
             print("No tracks found for the given emotion")
             return jsonify({'error': f'No tracks found for emotion: {emotion_key}'}), 404
 
+        # Create Spotify playlist
         spotify_playlist_id = create_spotify_playlist(tracks)
-        embedded_playlist_code = get_embedded_playlist_code(spotify_playlist_id)
-        top_tracks = get_top_recommended_tracks(spotify_playlist_id)
-        top_tracks_embedded = [get_embedded_track_code(track.spotify_id) for track in top_tracks]
+        if not spotify_playlist_id:  # Handle case where playlist creation fails
+            return jsonify({'error': 'Failed to create Spotify playlist'}), 500
         
+        # Get embedded playlist code
+        embedded_playlist_code = get_embedded_playlist_code(spotify_playlist_id)
+        
+        # Get top recommended tracks
+        top_tracks = get_top_recommended_tracks(spotify_playlist_id)
+        if not top_tracks:  # Ensure top_tracks is not None
+            top_tracks = []
+        
+        top_tracks_embedded = [get_embedded_track_code(track.spotify_id) for track in top_tracks]
+
         return jsonify({
             'embedded_playlist_code': embedded_playlist_code,
             'top_tracks_embedded': top_tracks_embedded
@@ -237,7 +244,6 @@ def create_playlist():
 def recommend_top_tracks(playlist_id):
     try:
         top_tracks = get_top_recommended_tracks(playlist_id)
-
         tracks_data = [{
             'id': track.spotify_id,
             'title': track.title,
@@ -246,7 +252,6 @@ def recommend_top_tracks(playlist_id):
             'popularity': track.popularity,
             'embedded_track_code': get_embedded_track_code(track.spotify_id)
         } for track in top_tracks]
-
         return jsonify({'top_tracks': tracks_data}), 200
     
     except Exception as e:
