@@ -54,9 +54,9 @@ def callback():
         new_user = User(user_id=user_id)
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('main.genres_page'))  # First-time login, redirect to genres
+        return redirect('/genres-page')  # First-time login, redirect to genres
     else:
-        return redirect(url_for('main.index'))  # Existing user, redirect to index
+        return redirect('/')  # Existing user, redirect to index
 
 def check_auth():
     if 'token_info' not in session:
@@ -79,9 +79,9 @@ def login():
         user = User.query.filter_by(user_id=user_id).first()
         
         if user:
-            return redirect(url_for('main.index'))
+            return redirect('/')
         else:
-            return redirect(url_for('main.genres-page'))
+            return redirect('/genres-page')
     
     return render_template('login.html', auth_url=auth_url)
 
@@ -92,7 +92,7 @@ def serve_static(filename):
 @main.route('/signout', methods=['POST'])
 def signout():
     session.clear()
-    return redirect(url_for('main.index')), 200
+    return redirect('/'), 200
 
 @main.route('/')
 def index():
@@ -138,7 +138,6 @@ def genres_page():
     auth_check = check_auth()
     if auth_check:
         return auth_check
-    
     return send_from_directory(current_app.static_folder, 'genre.html')
 
 @main.route('/genres', methods=['GET'])
@@ -168,9 +167,11 @@ def update_genres():
     for genre in selected_genres:
         new_genre = UserGenre(user_id=user_id, genre=genre)
         db.session.add(new_genre)
-    
-    db.session.commit()
-    return jsonify({'success': True})
+        
+    try:
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 def get_token():
     token_info = session.get('token_info')
