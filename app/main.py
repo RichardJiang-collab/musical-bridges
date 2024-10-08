@@ -76,10 +76,6 @@ def login():
     
     return render_template('login.html', auth_url=auth_url)
 
-@main.route('/<path:filename>')
-def serve_static(filename):
-    return send_from_directory(current_app.static_folder, filename)
-
 @main.route('/signout', methods=['POST'])
 def signout():
     session.clear()
@@ -198,7 +194,6 @@ def create_playlist():
         data = request.json
         emotion = data.get('emotion')
         intensity = data.get('intensity')
-        
         current_app.logger.info(f'Received emotion: {emotion}, intensity: {intensity}')
 
         # Construct emotion key
@@ -259,3 +254,7 @@ def recommend_top_tracks(playlist_id):
         current_app.logger.error(error_msg)
         print(error_msg)
         return jsonify({'error': error_msg}), 500
+    
+@main.route('/<path:filename>')
+def serve_static(filename):
+    return send_from_directory(current_app.static_folder, filename)
