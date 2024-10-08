@@ -28,6 +28,7 @@ def callback():
         return jsonify({'error': f'Failed to retrieve access token: {str(e)}'}), 500
 
     session['token_info'] = token_info
+    current_app.logger.info(f"Token info set in session: {session['token_info']}")
     access_token = token_info['access_token']
     sp = get_spotify_client(access_token)
     
@@ -183,8 +184,11 @@ def get_token():
 
 @main.route('/api/create_playlist', methods=['POST'])
 def create_playlist():
+    current_app.logger.info("create_playlist called")
     access_token = get_token()
+    current_app.logger.info(f"Access token: {access_token}")
     if not access_token:
+        current_app.logger.warning("No access token found")
         return jsonify({'error': 'Not authenticated'}), 401
     
     sp = get_spotify_client(access_token)
