@@ -22,7 +22,7 @@ def create_app(config_name='production'):
     app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 
     # Initialize WhiteNoise
-    app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_folder, prefix='static/')
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_folder, prefix='webflow_exporter_base/')
 
     # Ensure the instance folder exists
     try:
