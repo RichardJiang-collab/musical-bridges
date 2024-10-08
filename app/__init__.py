@@ -1,8 +1,10 @@
+# __init__.py
 import os
-from flask import Flask, send_from_directory
+from flask import Flask
 from .extensions import db, migrate
 from .main import main as main_blueprint
 from flask_cors import CORS
+from whitenoise import WhiteNoise
 
 def create_app(config_name='production'):
     # Set up paths to the static folder
@@ -17,8 +19,11 @@ def create_app(config_name='production'):
     app.config['PERMANENT_SESSION_LIFETIME'] = 3600
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_HTTPONLY'] = True
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-    
+    app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+
+    # Initialize WhiteNoise
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_folder, prefix='static/')
+
     # Ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)

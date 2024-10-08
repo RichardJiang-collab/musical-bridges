@@ -135,7 +135,6 @@ def get_user_genres():
 
     genres = UserGenre.query.filter_by(user_id=user_id).all()
     genre_list = [genre.genre for genre in genres]
-    
     return jsonify({'genres': genre_list})
 
 @main.route('/update-genres', methods=['POST'])
@@ -255,6 +254,6 @@ def recommend_top_tracks(playlist_id):
         print(error_msg)
         return jsonify({'error': error_msg}), 500
     
-@main.route('/<path:filename>')
-def serve_static(filename):
-    return send_from_directory(current_app.static_folder, filename)
+# @main.route('/<path:filename>')
+# def serve_static(filename):
+#     return send_from_directory(current_app.static_folder, filename)

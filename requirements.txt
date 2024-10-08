@@ -5,6 +5,6 @@ Flask-SQLAlchemy==3.0.4
 SQLAlchemy==2.0.17
 spotipy==2.23.0
 python-dotenv==1.0.0
-enum34==1.1.10
 gunicorn==20.1.0
 psycopg2-binary==2.9.6
+whitenoise==6.5.0
