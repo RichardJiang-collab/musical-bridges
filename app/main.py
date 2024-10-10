@@ -210,7 +210,7 @@ def create_playlist():
         # Get random tracks based on emotion
         emotion_enum = Emotion[emotion_key]
         tracks = get_random_tracks(emotion_enum)
-        if not tracks:  # If no tracks are found, return an error
+        if not tracks:
             print("No tracks found for the given emotion")
             return jsonify({'error': f'No tracks found for emotion: {emotion_key}'}), 404
 
@@ -221,8 +221,6 @@ def create_playlist():
         
         # Get embedded playlist code
         embedded_playlist_code = get_embedded_playlist_code(spotify_playlist_id)
-        
-        # Get top recommended tracks
         top_tracks = get_top_recommended_tracks(spotify_playlist_id)
         if not top_tracks:  # Ensure top_tracks is not None
             top_tracks = []
@@ -257,7 +255,3 @@ def recommend_top_tracks(playlist_id):
         current_app.logger.error(error_msg)
         print(error_msg)
         return jsonify({'error': error_msg}), 500
-    
-# @main.route('/<path:filename>')
-# def serve_static(filename):
-#     return send_from_directory(current_app.static_folder, filename)

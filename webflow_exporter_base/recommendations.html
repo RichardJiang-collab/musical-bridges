@@ -144,13 +144,11 @@
           headers: {
               'Content-Type': 'application/json',
           },
-          credentials: 'include', // Include this line
+          credentials: 'include',
           body: JSON.stringify({ emotion: emotion, intensity: intensity })
-      })
-      
+        })
         .then(data => {
-            console.log(data);  // Log the received data
-            // Update playlist embed
+            console.log('Response received from backend:', data);
             document.getElementById('playlist-embed').innerHTML = data.embedded_playlist_code;
 
             // Update top 5 tracks

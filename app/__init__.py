@@ -11,14 +11,12 @@ def create_app(config_name='production'):
 
     app = Flask(__name__, instance_relative_config=True, static_folder=static_folder, static_url_path='/static')
     app.config.from_object(f'app.config.{config_name.capitalize()}Config')
-    app.secret_key = os.environ.get('SECRET_KEY')
-
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
     app.config['PERMANENT_SESSION_LIFETIME'] = 3600
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_HTTPONLY'] = True
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Use 'None' if necessary
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
     # Initialize WhiteNoise
     app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_folder, prefix='static/')

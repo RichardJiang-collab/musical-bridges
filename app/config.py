@@ -1,17 +1,15 @@
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
-# Set up configurations (keys and playlists information)
 class Config:
     # Secret key for session management
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-secret-key'
 
     # Database configuration
     basedir = os.path.abspath(os.path.dirname(__file__))
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///' + os.path.join(basedir, '..', 'instance', 'your_database.db')).replace("postgres://", "postgresql://")
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///' + os.path.join(basedir, '..', 'instance', 'your_database.db'))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Spotify API credentials
@@ -19,7 +17,6 @@ class Config:
     SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET')
     SPOTIFY_REDIRECT_URI = os.environ.get('SPOTIFY_REDIRECT_URI', 'https://musical-bridges-063243932240.herokuapp.com/callback')
 
-    # Flask debug mode
     DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')
 
     # Pagination settings
