@@ -164,14 +164,16 @@
             });
         })
         .catch(error => {
-            console.error('Error:', error);
-            if (error.message === 'HTTP error! status: 401') {
-                alert('Your session has expired. Please log in again.');
-                window.location.href = '/login';
-            } else {
-                alert('An error occurred while fetching your playlist. Please try again.');
-            }
-        });
+          console.error('Error:', error);
+          if (error.message.includes('HTTP error! status: 404')) {
+              alert('The playlist resource could not be found. Please check your selected emotion and intensity.');
+          } else if (error.message.includes('HTTP error! status: 401')) {
+              alert('Your session has expired. Please log in again.');
+              window.location.href = '/login';
+          } else {
+              alert('An error occurred while fetching your playlist. Please try again.');
+          }
+      });      
     };
   </script>
 </body>

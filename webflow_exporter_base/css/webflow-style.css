@@ -4112,9 +4112,9 @@ figcaption {
 }
 
 .selection-button:hover {
-  background-color: var(--black);
-  transform: translate(0, -4px);
-  box-shadow: 0 2px 5px #0003;
+  background-color: var(--sea-green);
+  transform: translate(0, -5px);
+  box-shadow: 2px 3px 5px #0003;
 }
 
 .div-block-3 {
