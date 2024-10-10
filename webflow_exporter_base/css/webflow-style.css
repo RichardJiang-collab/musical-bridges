@@ -4097,7 +4097,7 @@ figcaption {
 }
 
 .selection-button {
-  background-color: var(--sea-green);
+  background-color: var(--green);
   text-align: center;
   border-radius: 22px;
   flex-flow: column;
@@ -4106,9 +4106,8 @@ figcaption {
   margin-left: 0;
   margin-right: 0;
   padding: 12px;
-  transition: transform 1s cubic-bezier(.075, .82, .165, 1), box-shadow .2s cubic-bezier(.075, .82, .165, 1), background-color .2s;
+  transition: background-color .2s cubic-bezier(.075, .82, .165, 1), box-shadow .2s cubic-bezier(.075, .82, .165, 1), transform 1s cubic-bezier(.075, .82, .165, 1);
   display: flex;
-  box-shadow: 3px 20px #0000;
 }
 
 .selection-button:hover {
