@@ -54,10 +54,10 @@
         <!-- Sidebar -->
         <div class="bg-[#f1f0f5] p-6 w-64">
             <nav class="space-y-4 mt-5">
-                <a href="/" class="hover-sidebar block item-text text-black rounded p-2">Home</a>
+                <a href="{{ url_for('main.index') }}" class="hover-sidebar block item-text text-black rounded p-2">Home</a>
                 <a href="#" class="hover-sidebar block item-text text-black rounded p-2">Saved Playlists</a>
                 <a href="#" class="hover-sidebar block item-text text-black rounded p-2">All Artists</a>
-                <a href="/genres-page" class="hover-sidebar block item-text text-black rounded p-2">Favorite Genres</a>
+                <a href="{{ url_for('main.genres_page') }}" class="hover-sidebar block item-text text-black rounded p-2">Favorite Genres</a>
                 <a href="#" class="hover-sidebar block item-text text-black rounded p-2">All Tracks</a>
                 <a href="#" class="hover-signout block text-red-600 mt-6 rounded p-2 item-text">Sign Out</a>
             </nav>
@@ -65,7 +65,7 @@
 
         <!-- Main Content -->
         <div class="flex-grow p-10">
-            <h1 class="main-heading mb-9 text-black">Good Morning/Afternoon/Evening, {{ session['display_name'] }}!</h1>
+            <h1 class="main-heading mb-9 text-black">Good Morning/Afternoon/Evening, {{ display_name }}!</h1>
             <div class="mb-7">
                 <h2 class="section-heading mb-4 text-black">Top Artists</h2>
                 <div class="grid grid-cols-5 gap-4">
