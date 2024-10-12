@@ -122,7 +122,7 @@ def user_profile():
     if auth_check:
         return auth_check
     display_name = session.get('display_name', 'User')
-    return render_template('profile.html', display_name=display_name)
+    return send_from_directory(current_app.static_folder, 'profile.html')
 
 @main.route('/genres-page', methods=['GET'])
 def genres_page():
