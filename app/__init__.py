@@ -5,7 +5,7 @@ from .main import main as main_blueprint
 from flask_cors import CORS
 from whitenoise import WhiteNoise # type: ignore
 
-def create_app(config_name='production'):
+def create_app(config_name='development'):
     base_dir = os.path.abspath(os.path.dirname(__file__))
     static_folder = os.path.join(base_dir, '..', 'webflow_exporter_base')
 

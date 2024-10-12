@@ -1,14 +1,13 @@
 from .extensions import db
 from enum import Enum
+from .extensions import db
+from datetime import datetime, timezone
 
 class Emotion(Enum):
     SAD_NORMAL = 'SAD_NORMAL'
     SAD_INTENSE = 'SAD_INTENSE'
     ANGRY_NORMAL = 'ANGRY_NORMAL'
     ANGRY_INTENSE = 'ANGRY_INTENSE'
-
-from .extensions import db
-from datetime import datetime, timezone
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -21,7 +20,6 @@ class User(db.Model):
 
     def __init__(self, user_id):
         self.user_id = user_id
-
 
 class Song(db.Model):
     id = db.Column(db.Integer, primary_key=True)
