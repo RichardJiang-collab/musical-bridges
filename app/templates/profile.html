@@ -59,13 +59,13 @@
                 <a href="#" class="hover-sidebar block item-text text-black rounded p-2">All Artists</a>
                 <a href="{{ url_for('main.genres_page') }}" class="hover-sidebar block item-text text-black rounded p-2">Favorite Genres</a>
                 <a href="#" class="hover-sidebar block item-text text-black rounded p-2">All Tracks</a>
-                <a href="#" class="hover-signout block text-red-600 mt-6 rounded p-2 item-text">Sign Out</a>
+                <a id="sign-out" href="{{ url_for('main.signout') }}" class="hover-signout block text-red-600 mt-6 rounded p-2 item-text">Sign Out</a>
             </nav>
         </div>
 
         <!-- Main Content -->
         <div class="flex-grow p-10">
-            <h1 class="main-heading mb-9 text-black">Good Morning/Afternoon/Evening, {{ display_name }}!</h1>
+            <h1 class="main-heading mb-9 text-black">Welcome {{ display_name }}! Ready to feel elevated 🧘?</h1>
             <div class="mb-7">
                 <h2 class="section-heading mb-4 text-black">Top Artists</h2>
                 <div class="grid grid-cols-5 gap-4">
@@ -82,7 +82,6 @@
             <div class="mb-7">
                 <h2 class="section-heading mb-4 text-black">Saved Playlists</h2>
                 <div class="grid grid-cols-4 gap-4">
-                    <!-- Playlist placeholder -->
                     <div class="bg-[#e7e6eb] p-6 h-32 rounded hover-effect"></div>
                     <!-- Repeat for other playlists -->
                 </div>
@@ -92,12 +91,32 @@
             <div>
                 <h2 class="section-heading mb-4 text-black">Top 5 Tracks</h2>
                 <ul>
-                    <!-- Track placeholder -->
                     <li class="bg-[#e7e6eb] p-4 rounded mb-4 hover-effect item-text">Track 1</li>
                     <!-- Repeat for other tracks -->
                 </ul>
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('sign-out').addEventListener('click', function(event) {
+            event.preventDefault();
+            fetch('/signout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    console.error('Failed to sign out.');
+                }
+            })
+            .catch(error => {
+                console.error('Error during sign out:', error);
+            });
+        });
+    </script>
 </body>
 </html>
