@@ -34,8 +34,10 @@ def callback():
     
     try:
         user_profile = sp.current_user()
+        display_name = user_profile.get('display_name')
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve user profile: {str(e)}'}), 500
+    session['display_name'] = display_name
 
     user_id = user_profile.get('id')
     if not user_id:
@@ -119,7 +121,8 @@ def user_profile():
     auth_check = check_auth()
     if auth_check:
         return auth_check
-    return send_from_directory(current_app.static_folder, 'profile.html')
+    display_name = session.get('display_name', 'User')
+    return render_template('profile.html', display_name=display_name)
 
 @main.route('/genres-page', methods=['GET'])
 def genres_page():

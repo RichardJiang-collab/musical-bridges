@@ -10,53 +10,42 @@
         body {
             font-family: 'Libre Franklin', sans-serif;
         }
-        /* For Main Heading (Good Morning/Afternoon) */
         .main-heading {
             font-size: 38px;
             font-weight: bold;
             line-height: 44px;
         }
-
-        /* For Sidebar items, Artist Names, and Track Names */
         .item-text {
             font-size: 18px;
             font-weight: 600;
             line-height: 24px;
         }
-
-        /* For Section Headings (Top Artists, etc.) */
         .section-heading {
             font-size: 32px;
             font-weight: bold;
             line-height: 36px;
         }
 
-        /* Adding smooth animation for hovering */
         .hover-effect {
             transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
         }
-
         .hover-effect:hover {
             transform: scale(1.05);
-            background-color: #e7e6eb; /* Hover background color */
+            background-color: #e7e6eb;
         }
-
         .hover-sidebar {
             transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
         }
-
         .hover-sidebar:hover {
             background-color: #5bb963;
             color: white;
         }
-
         .hover-signout {
             transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
         }
-
         .hover-signout:hover {
             background-color: rgb(228, 76, 76); /* Hover color for Sign-Out */
-            color: white; /* Change text to white */
+            color: white;
         }
     </style>
 </head>
@@ -76,10 +65,7 @@
 
         <!-- Main Content -->
         <div class="flex-grow p-10">
-            <!-- Dashboard Header -->
-            <h1 class="main-heading mb-9 text-black">Good Morning/Afternoon/Evening, [User Name]!</h1>
-
-            <!-- Top Artists Section -->
+            <h1 class="main-heading mb-9 text-black">Good Morning/Afternoon/Evening, {{ display_name }}!</h1>
             <div class="mb-7">
                 <h2 class="section-heading mb-4 text-black">Top Artists</h2>
                 <div class="grid grid-cols-5 gap-4">

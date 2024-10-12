@@ -1,6 +1,5 @@
 from .extensions import db
 from enum import Enum
-from .extensions import db
 from datetime import datetime, timezone
 
 class Emotion(Enum):
