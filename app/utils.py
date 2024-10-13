@@ -77,9 +77,10 @@ def create_spotify_playlist(tracks):
 
 # Create Embedded Code
 def get_embedded_playlist_code(playlist_id):
-    return f'<iframe src="https://open.spotify.com/embed/playlist/{playlist_id}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>'
+    return f'<iframe src="https://open.spotify.com/embed/playlist/{playlist_id}" width="100%" height="808" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>'
+
 def get_embedded_track_code(track_id):
-    return f'<iframe src="https://open.spotify.com/embed/track/{track_id}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>'
+    return f'<iframe src="https://open.spotify.com/embed/track/{track_id}" width="300" height="380" frameborder="0" allowfullscreen="" allowtransparency="true" allow="encrypted-media"></iframe>'
 
 def calculate_composite_score(track):
     return (
