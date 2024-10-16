@@ -3,8 +3,8 @@ from .models import Emotion, User, UserGenre
 from .utils import get_random_tracks, get_top_recommended_tracks, create_spotify_playlist, get_embedded_playlist_code, get_embedded_track_code, get_spotify_client
 from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
-import time
 from .extensions import db
+import time
 
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
@@ -225,7 +225,7 @@ def create_playlist():
         # Get embedded playlist code
         embedded_playlist_code = get_embedded_playlist_code(spotify_playlist_id)
         top_tracks = get_top_recommended_tracks(spotify_playlist_id)
-        if not top_tracks:  # Ensure top_tracks is not None
+        if not top_tracks:
             top_tracks = []
         
         top_tracks_embedded = [get_embedded_track_code(track.spotify_id) for track in top_tracks]

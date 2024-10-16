@@ -54,7 +54,7 @@
       <div class="menu-button w-nav-button">
         <div class="icon-2 w-icon-nav-menu"></div>
       </div><a href="/" class="navigation-logo w-inline-block"><img src="/static/images/unknown.svg" width="265" alt="" /></a>
-    </div><a href="/user-profile" class="w-inline-block"><img src="/static/images/account-circle.png" loading="lazy" width="50"
+    </div><a href="/user-profile" class="w-inline-block"><img src="webflow_exporter_base/images/account-circle.png" loading="lazy" width="50"
       alt="" /></a>
   </div>
   <div class="header-inner result-page">
@@ -67,38 +67,23 @@
     </div>
   </div>
   <div class="curated-contents">
-
-    <!-- 1. Playlist Container -->
     <div class="curated-playlist-card">
-      
-      <!-- Heading -->
       <div class="h2-container">
-        <h2 class="curated-heading"><span class="text-span">Your Curated Playlist</span></h2><img
-          src="/static/images/star-20icon.png" loading="lazy" width="29" alt="" class="image-3" />
+        <h2 class="curated-heading"><span class="text-span">Your Curated Playlist</span></h2>
       </div>
-
-      <!-- Playlist Embedded -->
       <div class="curated-playlist">
-        <div id="playlist-embed" class="code-embed w-embed w-iframe">
+        <div id="playlist-embed" class="w-embed w-iframe">
+          <!-- Playlist embed will be inserted here by JavaScript -->
         </div>
       </div>
     </div>
-
-    <!-- 2. Top 5 Songs Container -->
+    
     <div id="top-tracks" class="curated-top-songs">
-
-      <!-- Heading -->
       <div class="h2-container">
         <h2 class="curated-heading"><span class="text-span">Top 5 Recommended Songs</span></h2>
       </div>
-
-      <!-- Top Songs Embedded -->
       <div class="curated-songs">
-        <div class="topsongs_div"><img src="images/star-20icon.png" loading="lazy" width="29" alt="" />
-
-          <div class="songcode w-embed w-iframe">
-          </div> 
-        </div>
+        <!-- Top tracks will be inserted here by JavaScript -->
       </div>
     </div>
   </div>
@@ -165,8 +150,6 @@
         })
         .then(data => {
             console.log('Response received from backend:', data);
-
-            // Embed playlist
             document.getElementById('playlist-embed').innerHTML = data.embedded_playlist_code;
 
             // Update top 5 tracks
@@ -174,7 +157,7 @@
             topTracksContainer.innerHTML = '';
             data.top_tracks_embedded.forEach(trackEmbed => {
                 var trackDiv = document.createElement('div');
-                trackDiv.className = 'songcode w-embed w-iframe';
+                trackDiv.className = 'w-embed w-iframe';
                 trackDiv.innerHTML = trackEmbed;
                 topTracksContainer.appendChild(trackDiv);
             });

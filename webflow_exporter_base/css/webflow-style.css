@@ -2683,8 +2683,15 @@ figcaption {
 }
 
 .h2-container {
+  grid-column-gap: 16px;
+  grid-row-gap: 16px;
   color: var(--light-purple);
-  flex-flow: column;
+  flex-flow: row;
+  grid-template-rows: auto auto;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-columns: 1fr;
+  justify-content: flex-start;
+  align-items: center;
   width: 100%;
   margin-bottom: 0;
   padding-left: 20px;
@@ -2704,6 +2711,7 @@ figcaption {
 
 .text-span {
   color: var(--purple);
+  width: auto;
   padding-left: 0;
   font-weight: 800;
 }
@@ -4097,7 +4105,7 @@ figcaption {
 }
 
 .selection-button {
-  background-color: var(--green);
+  background-color: var(--sea-green);
   text-align: center;
   border-radius: 22px;
   flex-flow: column;
@@ -4106,14 +4114,15 @@ figcaption {
   margin-left: 0;
   margin-right: 0;
   padding: 12px;
-  transition: background-color .2s cubic-bezier(.075, .82, .165, 1), box-shadow .2s cubic-bezier(.075, .82, .165, 1), transform 1s cubic-bezier(.075, .82, .165, 1);
+  transition: transform 1s cubic-bezier(.075, .82, .165, 1), box-shadow .2s cubic-bezier(.075, .82, .165, 1), background-color .2s;
   display: flex;
+  box-shadow: 3px 20px #0000;
 }
 
 .selection-button:hover {
-  background-color: var(--sea-green);
-  transform: translate(0, -5px);
-  box-shadow: 2px 3px 5px #0003;
+  background-color: var(--black);
+  transform: translate(0, -4px);
+  box-shadow: 0 2px 5px #0003;
 }
 
 .div-block-3 {
@@ -4296,6 +4305,7 @@ figcaption {
 
 .curated-heading {
   color: var(--purple);
+  width: auto;
   font-family: Libre Franklin, sans-serif;
 }
 
@@ -4390,6 +4400,33 @@ figcaption {
   background-color: var(--black);
   transform: translate(0, -5px);
   box-shadow: 2px 3px 5px #0003;
+}
+
+.topsongs_div {
+  grid-column-gap: 16px;
+  grid-row-gap: 16px;
+  flex-flow: wrap;
+  flex: 0 auto;
+  grid-template-rows: auto auto;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-columns: 1fr;
+  justify-content: flex-start;
+  align-self: flex-start;
+  align-items: center;
+  width: 650px;
+  display: flex;
+}
+
+.songcode {
+  width: 600px;
+  max-width: 600px;
+  height: 155px;
+  font-size: 70px;
+}
+
+.image-3 {
+  align-self: center;
+  padding-top: 10px;
 }
 
 @media screen and (max-width: 991px) {
