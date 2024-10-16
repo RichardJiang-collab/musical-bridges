@@ -1,8 +1,9 @@
 # 🎵 Musical Bridges
 
-Welcome to Musical Bridges, a Spotify playlist generator that creates personalized playlists based on emotions and recommends top tracks!
+Embark on a musical journey with Musical Bridges, a dynamic Spotify playlist generator that tailors playlists to your emotional state and suggests top tracks to elevate your listening experience.
 
-## 📁 Project Structure
+## 📂 Navigating the Project
+Here's a glimpse into the structure of our music recommendation system:
 
 ```
 music_recommendation_system/
@@ -39,30 +40,27 @@ music_recommendation_system/
 └── run.py
 ```
 
-## 🚀 Main Functionalities
+## 🌟 Key Features
 
-### Backend
+### Backend Capabilities
+1. **Emotion-Driven Playlists**: Craft a playlist of 10-20 songs that resonate with your current mood.
+2. **Top Hits Highlight**: Returns the top 5 most popular songs from the generated playlist as embedded track links.
 
-1. **Create Spotify Playlist**: Generates a playlist of 10-20 songs based on emotion and song features.
-2. **Top 5 Recommended Songs**: Returns the top 5 most popular songs from the generated playlist as embedded track links.
+## 🧩 How It Works
 
-## 🧠 Algorithm
-
-### Playlist Creation
-1. The system selects songs from the database that match the given emotion.
-2. It then randomly selects 10-20 tracks from this pool.
-3. The selection process considers various song features such as danceability, energy, loudness, speechiness, acousticness, instrumentalness, liveness, valence, tempo, and popularity.
+### Playlist Generation
+1. Our system scours the database for songs that align with your specified emotion.
+2. It then handpicks 10-20 tracks from this curated selection.
+3. The selection takes into account song attributes like danceability, energy, loudness, and more.
 
 ### Top 5 Recommendations
-1. From the generated playlist, the system sorts the songs based on their popularity.
-2. It then selects the top 5 most popular songs.
-3. For each of these songs, it generates a Spotify embedded track link for easy listening.
+1. The system ranks the songs in your playlist based on their popularity.
+2. It selects the top 5 most beloved tracks.
+3. For your convenience, it generates Spotify embedded track links for these songs.
 
-## Addressing Filter Bubble Problem （信息茧房问题）
+## Breaking the Filter Bubble（信息茧房问题）
 
-In a music system with a filter bubble problem, users may be stuck in a narrow range of musical styles and genres. For example, if you initially listen to pop music, the system may continuously recommend similar pop tunes, preventing you from discovering other rich musical forms such as classical, jazz, or world music. This limits your musical exploration and reduces the excitement and surprise that comes from encountering new sounds. 
-
-To properly address this problem, we implemented an algorithm to enhance our recommendation system by incorporating a diverse range of genres into our final suggestions. This approach not only caters to users' personalized preferences but also introduces them to a broader spectrum of genres they might not have been aware of or interested in previously. By doing so, we aim to expand their horizons and enrich their experience with a more eclectic selection of content.
+Musical Bridges is designed to prevent the filter bubble effect, where users might get stuck in a loop of similar music. By intentionally diversifying the genres in our recommendations, we ensure that you're exposed to a rich tapestry of music beyond your initial preferences. This approach aims to broaden your musical horizons and spark excitement in discovering new sounds.
 
 ## 🛠 Usage Instructions
 Go to the current Musical Bridges official website https://musical-bridges-063243932240.herokuapp.com/ to check out!
