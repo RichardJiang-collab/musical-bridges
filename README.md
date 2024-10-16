@@ -42,7 +42,6 @@ music_recommendation_system/
 
 ## 🌟 Key Features
 
-### Backend Capabilities
 1. **Emotion-Driven Playlists**: Craft a playlist of 10-20 songs that resonate with your current mood.
 2. **Top Hits Highlight**: Returns the top 5 most popular songs from the generated playlist as embedded track links.
 
