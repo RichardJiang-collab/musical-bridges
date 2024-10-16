@@ -46,6 +46,7 @@ music_recommendation_system/
 1. **Emotion-Driven Playlists**: Craft a playlist of 10-20 songs that resonate with your current mood.
 2. **Top Hits Highlight**: Returns the top 5 most popular songs from the generated playlist as embedded track links.
 
+
 ## 🧩 How It Works
 
 ### Playlist Generation
@@ -58,6 +59,7 @@ music_recommendation_system/
 2. It selects the top 5 most beloved tracks.
 3. For your convenience, it generates Spotify embedded track links for these songs.
 
+
 ## Breaking the Filter Bubble（信息茧房问题）
 
 Musical Bridges is designed to prevent the filter bubble effect, where users might get stuck in a loop of similar music. By intentionally diversifying the genres in our recommendations, we ensure that you're exposed to a rich tapestry of music beyond your initial preferences. This approach aims to broaden your musical horizons and spark excitement in discovering new sounds.
@@ -65,13 +67,16 @@ Musical Bridges is designed to prevent the filter bubble effect, where users mig
 ## 🛠 Usage Instructions
 Go to the current Musical Bridges official website https://musical-bridges-063243932240.herokuapp.com/ to check out!
 
+
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check [issues page](https://github.com/RichardJiang-collab/musical-bridges/issues).
 
+
 ## 📝 License
 
 This project is [MIT](https://choosealicense.com/licenses/mit/) licensed.
+
 
 ## 🎉 Acknowledgements
 
