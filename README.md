@@ -58,44 +58,8 @@ music_recommendation_system/
 2. It then selects the top 5 most popular songs.
 3. For each of these songs, it generates a Spotify embedded track link for easy listening.
 
-## 🛠 Setup Instructions
-
-1. Clone the repository:
-   ```
-   git clone https://github.com/RichardJiang-collab/musical-bridges.git
-   cd musical-bridges
-   ```
-
-2. Set up a virtual environment:
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-   ```
-
-3. Install the required packages:
-   ```
-   pip install -r requirements.txt
-   ```
-
-4. Set up your .env file with the following variables:
-   ```
-   SECRET_KEY=your_secret_key
-   SPOTIFY_CLIENT_ID=your_spotify_client_id
-   SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-   FLASK_DEBUG=True  # Set to False in production
-   ```
-
-5. Initialize the database:
-   ```
-   flask db init
-   flask db migrate
-   flask db upgrade
-   ```
-
-6. Run the application (it will go to the test page):
-   ```
-   flask run
-   ```
+## 🛠 Usage Instructions
+Go to the current Musical Bridges official website https://musical-bridges-063243932240.herokuapp.com/ to check out!
 
 ## 🤝 Contributing
 
