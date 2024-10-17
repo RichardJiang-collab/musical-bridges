@@ -133,7 +133,6 @@
     </div>
   </div>
 
-
   <!-- Footer -->
   <div class="footer">
     <div class="container cc-footer">
@@ -198,8 +197,6 @@
         })
         .then(data => {
           console.log('Response received from backend:', data);
-      
-          // Embed playlist
           document.getElementById('playlist-embed').innerHTML = data.embedded_playlist_code;
       
           // Update top 5 tracks
@@ -207,7 +204,6 @@
           topTracksContainer.innerHTML = ''; // Clear previous content
       
           data.top_tracks_embedded.forEach(trackEmbed => {
-              // Create the main container for each track
               const trackContainer = document.createElement('div');
               trackContainer.className = 'topsongs_div';
       
@@ -224,11 +220,9 @@
               iframeContainer.className = 'songcode w-embed w-iframe';
               iframeContainer.innerHTML = trackEmbed; // Insert the iframe embed code
       
-              // Append image and iframe container to the main track container
               trackContainer.appendChild(imgElement);
               trackContainer.appendChild(iframeContainer);
       
-              // Add each track's container to the top tracks container
               topTracksContainer.appendChild(trackContainer);
           });
         })      
@@ -248,13 +242,12 @@
     // Click the star icon and showing success message
     document.addEventListener("DOMContentLoaded", function() {
       const playlistStarIcon = document.getElementById("playlist-star-icon");
-      const songStarIcons = document.querySelectorId("star-icon");
+      const songStarIcons = document.queryElementId("star-icon");
       const successContainer = document.getElementById("success-container");
       const successMessage = document.getElementById("successMessage");
     
       // Function to toggle star icon and show success message
       function handleStarClick(icon, isPlaylist) {
-        // Toggle star icon image
         if (icon.src.includes("star-20icon.png")) {
           icon.src = "/static/images/star-20icon-fill.png";
           icon.classList.add("clicked");
@@ -281,10 +274,8 @@
       });
     
       // Event listeners for each song star icon
-      songStarIcons.forEach(icon => {
-        icon.addEventListener("click", function() {
-          handleStarClick(icon, false);
-        });
+      songStarIcons.addEventListener("click", function() {
+        handleStarClick(songStarIcons, true);
       });
     });    
   </script>

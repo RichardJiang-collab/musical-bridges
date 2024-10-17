@@ -4291,10 +4291,10 @@ figcaption {
 
 .main-content {
   display: flex;
-  flex-flow: row nowrap; /* Keeps playlist and top songs in a row */
+  flex-flow: row nowrap;
   justify-content: center;
-  gap: 50px; /* Adjust spacing between playlist and top songs */
-  width: 100%; /* Adjusts to the full width of container */
+  gap: 50px;
+  width: 100%;
 }
 
 .curated-top-songs {
