@@ -4280,13 +4280,21 @@ figcaption {
 }
 
 .curated-contents {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+  padding: 160px;
   grid-column-gap: 50px;
   grid-row-gap: 50px;
-  flex-flow: row;
-  justify-content: center;
-  padding: 160px;
-  display: flex;
   box-shadow: 0 0 #0000, 0 1px .4px #00000008, 0 2px .8px #0000000a, 0 3.4px 1.6px #0000000b, 0 5.4px 2.9px #0000000c, 0 8.9px 5.3px #0000000c, 0 15.4px 10.4px #0000000d, 0 30.6px 22.8px #0000000e;
+}
+
+.main-content {
+  display: flex;
+  flex-flow: row nowrap; /* Keeps playlist and top songs in a row */
+  justify-content: center;
+  gap: 50px; /* Adjust spacing between playlist and top songs */
+  width: 100%; /* Adjusts to the full width of container */
 }
 
 .curated-top-songs {

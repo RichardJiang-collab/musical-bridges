@@ -94,42 +94,44 @@
       </div>
     </div>
   </div>
+
+  <!-- Curated Contents Section (Main)-->
   <div class="curated-contents">
-    <!-- 1. Playlist Container -->
-    <div class="curated-playlist-card">
-      <div class="h2-container">
-        <h2 class="curated-heading"><span class="text-span">Your Curated Playlist</span></h2>
-        <img id="playlist-star-icon" src="/static/images/star-20icon.png" loading="lazy" width="29" alt="" class="image-3 star-icon" />
-      </div>
-      <!-- Playlist Embedded -->
-      <div class="curated-playlist">
-        <div id="playlist-embed" class="code-embed w-embed w-iframe"></div>
-      </div>
-    </div>
-
-    <!-- 2. Top 5 Songs Container -->
-    <div id="top-tracks" class="curated-top-songs">
-      <div class="h2-container">
-        <h2 class="curated-heading"><span class="text-span">Top 5 Recommended Songs</span></h2>
-      </div>
-      <!-- Top 5 Songs Embedded -->
-      <div class="curated-songs">
-        <!-- Example of song with a star icon -->
-        <div class="song-item">
-          <img class="star-icon" src="/static/images/star-20icon.png" loading="lazy" width="29" alt="Star Icon" />
-          <!-- Add other song details here -->
+    <!-- Main Content: Playlist and Top Songs Side by Side -->
+    <div class="main-content">
+        <!-- Playlist Container -->
+        <div class="curated-playlist-card">
+          <div class="h2-container">
+            <h2 class="curated-heading"><span class="text-span">Your Curated Playlist</span></h2>
+            <img id="playlist-star-icon" src="/static/images/star-20icon.png" loading="lazy" width="29" alt="" class="image-3 star-icon" />
+          </div>
+          <div class="curated-playlist">
+            <div id="playlist-embed" class="code-embed w-embed w-iframe"></div>
+          </div>
         </div>
-      </div>
+
+        <!-- Top 5 Songs Container -->
+        <div id="top-tracks" class="curated-top-songs">
+          <div class="h2-container">
+            <h2 class="curated-heading"><span class="text-span">Top 5 Recommended Songs</span></h2>
+          </div>
+          <div class="curated-songs">
+            <!-- Song item with star icon -->
+            <div class="song-item">
+              <img class="star-icon" src="/static/images/star-20icon.png" loading="lazy" width="29" alt="Star Icon" />
+            </div>
+          </div>
+        </div>
     </div>
 
-    <!-- 3. Success Message Container -->
+    <!-- Success Message Container - Positioned below main content -->
     <div id="success-container" class="success-container">
       <img id="check-image" src="/static/images/check-circle.png" loading="lazy" width="29" alt="" class="check-image" />
       <div id="successMessage" class="success-message">
         Your song/playlist is successfully saved in your library! Go check it out in your profile!
       </div>
     </div>
-</div>
+  </div>
 
 
   <!-- Footer -->
@@ -246,7 +248,7 @@
     // Click the star icon and showing success message
     document.addEventListener("DOMContentLoaded", function() {
       const playlistStarIcon = document.getElementById("playlist-star-icon");
-      const songStarIcons = document.querySelectorAll(".curated-songs .star-icon");
+      const songStarIcons = document.querySelectorId("star-icon");
       const successContainer = document.getElementById("success-container");
       const successMessage = document.getElementById("successMessage");
     
