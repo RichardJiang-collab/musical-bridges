@@ -158,9 +158,7 @@ def update_genres():
         new_genre = UserGenre(user_id=user_id, genre=genre)
         db.session.add(new_genre)
     
-    # Ensure the changes are committed to the database
     db.session.commit()
-        
     try:
         return jsonify({"success": True}), 200
     except Exception as e:
@@ -219,7 +217,7 @@ def create_playlist():
 
         # Create Spotify playlist
         spotify_playlist_id = create_spotify_playlist(tracks)
-        if not spotify_playlist_id:  # Handle case where playlist creation fails
+        if not spotify_playlist_id:
             return jsonify({'error': 'Failed to create Spotify playlist'}), 500
         
         # Get embedded playlist code

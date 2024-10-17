@@ -92,13 +92,9 @@
         <h2 class="curated-heading"><span class="text-span">Top 5 Recommended Songs</span></h2>
       </div>
 
-      <!-- Top Songs Embedded -->
+      <!-- Top 5 Songs Embedded -->
       <div class="curated-songs">
-        <div class="topsongs_div"><img src="images/star-20icon.png" loading="lazy" width="29" alt="" />
-
-          <div class="songcode w-embed w-iframe">
-          </div> 
-        </div>
+        <!-- JavaScript will populate this with top songs -->
       </div>
     </div>
   </div>
@@ -164,21 +160,40 @@
           body: JSON.stringify({ emotion: emotion, intensity: intensity })
         })
         .then(data => {
-            console.log('Response received from backend:', data);
-
-            // Embed playlist
-            document.getElementById('playlist-embed').innerHTML = data.embedded_playlist_code;
-
-            // Update top 5 tracks
-            var topTracksContainer = document.querySelector('#top-tracks .curated-songs');
-            topTracksContainer.innerHTML = '';
-            data.top_tracks_embedded.forEach(trackEmbed => {
-                var trackDiv = document.createElement('div');
-                trackDiv.className = 'songcode w-embed w-iframe';
-                trackDiv.innerHTML = trackEmbed;
-                topTracksContainer.appendChild(trackDiv);
-            });
-        })
+          console.log('Response received from backend:', data);
+      
+          // Embed playlist
+          document.getElementById('playlist-embed').innerHTML = data.embedded_playlist_code;
+      
+          // Update top 5 tracks
+          const topTracksContainer = document.querySelector('#top-tracks .curated-songs');
+          topTracksContainer.innerHTML = ''; // Clear previous content
+      
+          data.top_tracks_embedded.forEach(trackEmbed => {
+              // Create the main container for each track
+              const trackContainer = document.createElement('div');
+              trackContainer.className = 'topsongs_div';
+      
+              // Create the image element
+              const imgElement = document.createElement('img');
+              imgElement.src = 'images/star-20icon.png';
+              imgElement.loading = 'lazy';
+              imgElement.width = 29;
+              imgElement.alt = '';
+      
+              // Create the song iframe container
+              const iframeContainer = document.createElement('div');
+              iframeContainer.className = 'songcode w-embed w-iframe';
+              iframeContainer.innerHTML = trackEmbed; // Insert the iframe embed code
+      
+              // Append image and iframe container to the main track container
+              trackContainer.appendChild(imgElement);
+              trackContainer.appendChild(iframeContainer);
+      
+              // Add each track's container to the top tracks container
+              topTracksContainer.appendChild(trackContainer);
+          });
+        })      
         .catch(error => {
           console.error('Error:', error);
           if (error.message.includes('HTTP error! status: 404')) {

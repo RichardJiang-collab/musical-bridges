@@ -77,7 +77,7 @@
         </div>
       </div>
     </div>
-    
+
     <div id="top-tracks" class="curated-top-songs">
       <div class="h2-container">
         <h2 class="curated-heading"><span class="text-span">Top 5 Recommended Songs</span></h2>
@@ -122,7 +122,7 @@
                         if (maxRetries > 0) {
                             console.log(`Retrying... Attempts left: ${maxRetries - 1}`);
                             maxRetries--;
-                            setTimeout(attempt, 1000); // Wait 1 second before retrying
+                            setTimeout(attempt, 1000);
                         } else {
                             reject(error);
                         }
