@@ -4428,6 +4428,11 @@ figcaption {
   padding-top: 10px;
 }
 
+.check-image {
+  align-self: center;
+  padding-top: 10px;
+}
+
 @media screen and (max-width: 991px) {
   .navigation {
     z-index: 999;

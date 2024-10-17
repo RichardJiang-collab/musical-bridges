@@ -42,6 +42,34 @@
     .curated-songs .w-embed {
       margin-bottom: 10px;
     }
+    #star-icon,
+    .star-icon {
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      cursor: pointer;
+    }
+
+    .star-icon.clicked {
+      transform: scale(1.2);
+    }
+
+    .success-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 15px;
+      opacity: 0;
+      transition: opacity 0.4s ease-in-out;
+    }
+
+    .success-container.show {
+      opacity: 1;
+    }
+
+    .success-message {
+      color: #5bb963;
+      font-size: 16px;
+      margin-left: 10px;
+    }
   </style>
 </head>
 <body>
@@ -67,37 +95,44 @@
     </div>
   </div>
   <div class="curated-contents">
-
     <!-- 1. Playlist Container -->
     <div class="curated-playlist-card">
-      
-      <!-- Heading -->
       <div class="h2-container">
-        <h2 class="curated-heading"><span class="text-span">Your Curated Playlist</span></h2><img
-          src="/static/images/star-20icon.png" loading="lazy" width="29" alt="" class="image-3" />
+        <h2 class="curated-heading"><span class="text-span">Your Curated Playlist</span></h2>
+        <img id="playlist-star-icon" src="/static/images/star-20icon.png" loading="lazy" width="29" alt="" class="image-3 star-icon" />
       </div>
-
       <!-- Playlist Embedded -->
       <div class="curated-playlist">
-        <div id="playlist-embed" class="code-embed w-embed w-iframe">
-        </div>
+        <div id="playlist-embed" class="code-embed w-embed w-iframe"></div>
       </div>
     </div>
 
     <!-- 2. Top 5 Songs Container -->
     <div id="top-tracks" class="curated-top-songs">
-
-      <!-- Heading -->
       <div class="h2-container">
         <h2 class="curated-heading"><span class="text-span">Top 5 Recommended Songs</span></h2>
       </div>
-
       <!-- Top 5 Songs Embedded -->
       <div class="curated-songs">
-        <!-- JavaScript will populate this with top songs -->
+        <!-- Example of song with a star icon -->
+        <div class="song-item">
+          <img class="star-icon" src="/static/images/star-20icon.png" loading="lazy" width="29" alt="Star Icon" />
+          <!-- Add other song details here -->
+        </div>
       </div>
     </div>
-  </div>
+
+    <!-- 3. Success Message Container -->
+    <div id="success-container" class="success-container">
+      <img id="check-image" src="/static/images/check-circle.png" loading="lazy" width="29" alt="" class="check-image" />
+      <div id="successMessage" class="success-message">
+        Your song/playlist is successfully saved in your library! Go check it out in your profile!
+      </div>
+    </div>
+</div>
+
+
+  <!-- Footer -->
   <div class="footer">
     <div class="container cc-footer">
       <div class="footer-column cc-footer"><a href="/" class="navigation-logo w-inline-block"><img
@@ -176,6 +211,7 @@
       
               // Create the image element
               const imgElement = document.createElement('img');
+              imgElement.id = 'star-icon';
               imgElement.src = '/static/images/star-20icon.png';
               imgElement.loading = 'lazy';
               imgElement.width = 29;
@@ -206,6 +242,49 @@
           }
       });      
     };
+
+    // Click the star icon and showing success message
+    document.addEventListener("DOMContentLoaded", function() {
+      const playlistStarIcon = document.getElementById("playlist-star-icon");
+      const songStarIcons = document.querySelectorAll(".curated-songs .star-icon");
+      const successContainer = document.getElementById("success-container");
+      const successMessage = document.getElementById("successMessage");
+    
+      // Function to toggle star icon and show success message
+      function handleStarClick(icon, isPlaylist) {
+        // Toggle star icon image
+        if (icon.src.includes("star-20icon.png")) {
+          icon.src = "/static/images/star-20icon-fill.png";
+          icon.classList.add("clicked");
+        } else {
+          icon.src = "/static/images/star-20icon.png";
+          icon.classList.remove("clicked");
+        }
+    
+        // Set success message based on type
+        successMessage.textContent = isPlaylist
+          ? "Your playlist is successfully saved in your library! Go check it out in your profile!"
+          : "Your song is successfully saved in your library! Go check it out in your profile!";
+    
+        // Show success message
+        successContainer.classList.add("show");
+        setTimeout(() => {
+          successContainer.classList.remove("show");
+        }, 3000); // Hide after 3 seconds
+      }
+    
+      // Event listener for playlist star icon
+      playlistStarIcon.addEventListener("click", function() {
+        handleStarClick(playlistStarIcon, true);
+      });
+    
+      // Event listeners for each song star icon
+      songStarIcons.forEach(icon => {
+        icon.addEventListener("click", function() {
+          handleStarClick(icon, false);
+        });
+      });
+    });    
   </script>
 </body>
 </html>
