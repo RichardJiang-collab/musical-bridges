@@ -242,7 +242,7 @@
     // Click the star icon and showing success message
     document.addEventListener("DOMContentLoaded", function() {
       const playlistStarIcon = document.getElementById("playlist-star-icon");
-      const songStarIcons = document.getElementById("star-icon");
+      const songStarIcons = document.querySelectorAll(".star-icon"); // Select all elements with class "star-icon"
       const successContainer = document.getElementById("success-container");
       const successMessage = document.getElementById("successMessage");
     
@@ -274,8 +274,10 @@
       });
     
       // Event listeners for each song star icon
-      songStarIcons.addEventListener("click", function() {
-        handleStarClick(songStarIcons, false);
+      songStarIcons.forEach((icon) => {
+        icon.addEventListener("click", function() {
+          handleStarClick(icon, false);
+        });
       });
     });    
   </script>
