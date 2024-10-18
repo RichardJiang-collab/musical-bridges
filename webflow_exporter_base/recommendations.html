@@ -179,107 +179,82 @@
         });
     }
 
-    window.onload = function() {
-        var urlParams = new URLSearchParams(window.location.search);
-        var emotion = urlParams.get('emotion_type');
-        var intensity = urlParams.get('intensity_type');
+    window.onload = function () {
+      // Fetch playlist and tracks on page load
+      var urlParams = new URLSearchParams(window.location.search);
+      var emotion = urlParams.get('emotion_type');
+      var intensity = urlParams.get('intensity_type');
     
-        console.log('Emotion Type: ' + emotion);
-        console.log('Intensity Type: ' + intensity);
+      console.log('Emotion Type: ' + emotion);
+      console.log('Intensity Type: ' + intensity);
     
-        fetchWithRetry('/api/create_playlist', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({ emotion: emotion, intensity: intensity })
-        })
-        .then(data => {
-          console.log('Response received from backend:', data);
-          document.getElementById('playlist-embed').innerHTML = data.embedded_playlist_code;
-      
-          // Update top 5 tracks
-          const topTracksContainer = document.querySelector('#top-tracks .curated-songs');
-          topTracksContainer.innerHTML = ''; // Clear previous content
-      
-          data.top_tracks_embedded.forEach(trackEmbed => {
-              const trackContainer = document.createElement('div');
-              trackContainer.className = 'topsongs_div';
-      
-              // Create the image element
-              const imgElement = document.createElement('img');
-              imgElement.id = 'star-icon';
-              imgElement.src = '/static/images/star-20icon.png';
-              imgElement.loading = 'lazy';
-              imgElement.width = 29;
-              imgElement.alt = '';
-      
-              // Create the song iframe container
-              const iframeContainer = document.createElement('div');
-              iframeContainer.className = 'songcode w-embed w-iframe';
-              iframeContainer.innerHTML = trackEmbed; // Insert the iframe embed code
-      
-              trackContainer.appendChild(imgElement);
-              trackContainer.appendChild(iframeContainer);
-      
-              topTracksContainer.appendChild(trackContainer);
-          });
-        })      
-        .catch(error => {
-          console.error('Error:', error);
-          if (error.message.includes('HTTP error! status: 404')) {
-              alert('The playlist resource could not be found. Please check your selected emotion and intensity.');
-          } else if (error.message.includes('HTTP error! status: 401')) {
-              alert('Your session has expired. Please log in again.');
-              window.location.href = '/login';
-          } else {
-              alert('An error occurred while fetching your playlist. Please try again.');
-          }
-      });      
-    };
-
-    // Click the star icon and showing success message
-    document.addEventListener("DOMContentLoaded", function() {
-      const playlistStarIcon = document.getElementById("playlist-star-icon");
-      const songStarIcons = document.querySelectorAll(".star-icon"); // Select all elements with class "star-icon"
-      const successContainer = document.getElementById("success-container");
-      const successMessage = document.getElementById("successMessage");
+      fetchWithRetry('/api/create_playlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ emotion, intensity })
+      })
+      .then(data => {
+        console.log('Response received from backend:', data);
+        document.getElementById('playlist-embed').innerHTML = data.embedded_playlist_code;
     
-      // Function to toggle star icon and show success message
+        const topTracksContainer = document.querySelector('#top-tracks .curated-songs');
+        topTracksContainer.innerHTML = ''; // Clear previous content
+    
+        data.top_tracks_embedded.forEach(trackEmbed => {
+          const trackContainer = document.createElement('div');
+          trackContainer.className = 'topsongs_div';
+    
+          const imgElement = document.createElement('img');
+          imgElement.src = '/static/images/star-20icon.png';
+          imgElement.loading = 'lazy';
+          imgElement.width = 29;
+          imgElement.alt = '';
+          imgElement.classList.add('star-icon'); // Ensure it's selectable via class
+    
+          const iframeContainer = document.createElement('div');
+          iframeContainer.className = 'songcode w-embed w-iframe';
+          iframeContainer.innerHTML = trackEmbed;
+    
+          trackContainer.appendChild(imgElement);
+          trackContainer.appendChild(iframeContainer);
+          topTracksContainer.appendChild(trackContainer);
+        });
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while fetching your playlist. Please try again.');
+      });
+    
+      // Event Delegation for star icons
+      document.body.addEventListener('click', function (event) {
+        if (event.target.classList.contains('star-icon')) {
+          const isPlaylist = event.target.id === 'playlist-star-icon';
+          handleStarClick(event.target, isPlaylist);
+        }
+      });
+    
       function handleStarClick(icon, isPlaylist) {
-        if (icon.src.includes("star-20icon.png")) {
-          icon.src = "/static/images/star-20icon-fill.png";
-          icon.classList.add("clicked");
+        if (icon.src.includes('star-20icon.png')) {
+          icon.src = '/static/images/star-20icon-fill.png';
+          icon.classList.add('clicked');
         } else {
-          icon.src = "/static/images/star-20icon.png";
-          icon.classList.remove("clicked");
+          icon.src = '/static/images/star-20icon.png';
+          icon.classList.remove('clicked');
         }
     
-        // Set success message based on type
+        const successContainer = document.getElementById('success-container');
+        const successMessage = document.getElementById('successMessage');
         successMessage.textContent = isPlaylist
-          ? "Your playlist is successfully saved in your library! Go check it out in your profile!"
-          : "Your song is successfully saved in your library! Go check it out in your profile!";
+          ? 'Your playlist is successfully saved in your library! Go check it out in your profile!'
+          : 'Your song is successfully saved in your library! Go check it out in your profile!';
     
-        // Show success message
-        successContainer.classList.add("show");
+        successContainer.classList.add('show');
         setTimeout(() => {
-          successContainer.classList.remove("show");
-        }, 3000); // Hide after 3 seconds
+          successContainer.classList.remove('show');
+        }, 3000);
       }
-    
-      // Event listener for playlist star icon
-      playlistStarIcon.addEventListener("click", function() {
-        handleStarClick(playlistStarIcon, true);
-      });
-    
-      // Event listeners for each song star icon
-      songStarIcons.forEach((icon) => {
-        icon.addEventListener("click", function() {
-          handleStarClick(icon, false);
-        });
-      });
-    });    
+    };     
   </script>
 </body>
 </html>
