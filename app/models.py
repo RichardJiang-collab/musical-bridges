@@ -64,3 +64,25 @@ class UserGenre(db.Model):
     def __init__(self, user_id, genre):
         self.user_id = user_id
         self.genre = genre
+
+class SavedPlaylistLinks(db.Model):
+    __tablename__ = 'saved_playlist_links'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String, db.ForeignKey('users.user_id'), nullable=False)
+    playlist_link = db.Column(db.Text, nullable=False)
+
+    def __init__(self, user_id, playlist_link):
+        self.user_id = user_id
+        self.playlist_link = playlist_link
+
+class SavedTopSongsLinks(db.Model):
+    __tablename__ = 'saved_top_songs_links'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String, db.ForeignKey('users.user_id'), nullable=False)
+    top_songs_links = db.Column(db.Text, nullable=False)
+
+    def __init__(self, user_id, top_songs_links):
+        self.user_id = user_id
+        self.top_songs_links = top_songs_links

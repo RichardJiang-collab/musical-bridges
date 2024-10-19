@@ -47,7 +47,6 @@
       transition: transform 0.3s ease, opacity 0.3s ease;
       cursor: pointer;
     }
-
     .star-icon.clicked {
       transform: scale(1.2);
     }
@@ -60,11 +59,9 @@
       opacity: 0;
       transition: opacity 0.4s ease-in-out;
     }
-
     .success-container.show {
       opacity: 1;
     }
-
     .success-message {
       color: #5bb963;
       font-size: 16px;
@@ -235,6 +232,8 @@
       });
     
       function handleStarClick(icon, isPlaylist) {
+        const user_id = 'current_user_id'; // Replace this with the actual user ID from your app's session or context
+      
         if (icon.src.includes('star-20icon.png')) {
           icon.src = '/static/images/star-20icon-fill.png';
           icon.classList.add('clicked');
@@ -242,18 +241,47 @@
           icon.src = '/static/images/star-20icon.png';
           icon.classList.remove('clicked');
         }
-    
+      
+        const link = isPlaylist 
+          ? document.getElementById('playlist-embed').innerHTML 
+          : icon.closest('.topsongs_div').querySelector('.songcode').innerHTML;
+      
+        const apiEndpoint = isPlaylist ? '/api/save_playlist' : '/api/save_top_song';
+        
+        fetch(apiEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ user_id, link })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Failed to save: ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Save successful:', data);
+          showSuccessMessage(isPlaylist);
+        })
+        .catch(error => {
+          console.error('Save error:', error);
+          alert('Failed to save. Please try again.');
+        });
+      }
+      
+      function showSuccessMessage(isPlaylist) {
         const successContainer = document.getElementById('success-container');
         const successMessage = document.getElementById('successMessage');
         successMessage.textContent = isPlaylist
           ? 'Your playlist is successfully saved in your library! Go check it out in your profile!'
           : 'Your song is successfully saved in your library! Go check it out in your profile!';
-    
+      
         successContainer.classList.add('show');
         setTimeout(() => {
           successContainer.classList.remove('show');
         }, 3000);
-      }
+      }      
     };     
   </script>
 </body>

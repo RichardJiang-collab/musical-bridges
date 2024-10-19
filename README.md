@@ -8,6 +8,9 @@ Here's a glimpse into the structure of our music recommendation system:
 ```
 music_recommendation_system/
 ├── app/
+│   ├── templates/
+│   │   ├── login.html
+│   │   ├── profile.html
 │   ├── __init__.py
 │   ├── config.py
 │   ├── models.py
@@ -21,7 +24,6 @@ music_recommendation_system/
 │   ├── anger-selection.html
 │   ├── sadness-selection.html
 │   ├── genre.html
-│   ├── profile.html
 │   ├── css/
 │   │   ├── webflow-style.css
 │   ├── js/

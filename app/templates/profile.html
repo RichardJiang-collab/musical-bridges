@@ -66,57 +66,147 @@
         <!-- Main Content -->
         <div class="flex-grow p-10">
             <h1 class="main-heading mb-9 text-black">Welcome {{ display_name }}! Ready to feel elevated 🧘?</h1>
+            
+            <!-- 1. Top Artists Section -->
             <div class="mb-7">
-                <h2 class="section-heading mb-4 text-black">Top Artists</h2>
+                <h2 class="section-heading mb-4 text-black">Most Listened Artists</h2>
                 <div class="grid grid-cols-5 gap-4">
-                    <!-- Artist placeholder -->
-                    <div class="bg-[#e7e6eb] p-4 rounded hover-effect">
-                        <div class="h-24 w-24 bg-white rounded-full mx-auto mb-2"></div>
-                        <p class="text-center item-text text-black">Artist 1</p>
+                    <div id="saved_artist_container" class="bg-[#e7e6eb] p-4 rounded hover-effect">
+                        <div id='artist_image' class="h-24 w-24 bg-white rounded-full mx-auto mb-2"></div>
+                        <p id='artist_name' class="text-center item-text text-black">Artist Name</p>
                     </div>
                     <!-- Repeat for other artists -->
                 </div>
             </div>
 
-            <!-- Saved Playlists Section -->
+            <!-- 2. Saved Playlists Section -->
             <div class="mb-7">
                 <h2 class="section-heading mb-4 text-black">Saved Playlists</h2>
-                <div class="grid grid-cols-4 gap-4">
-                    <div class="bg-[#e7e6eb] p-6 h-32 rounded hover-effect"></div>
-                    <!-- Repeat for other playlists -->
-                </div>
+                <div class="grid grid-cols-5 gap-4">  <!-- Dynamic content inserted here by JS --> </div>
             </div>
 
-            <!-- Top 5 Tracks Section -->
+            <!-- 3. Top 5 Tracks Section -->
             <div>
-                <h2 class="section-heading mb-4 text-black">Top 5 Tracks</h2>
-                <ul>
-                    <li class="bg-[#e7e6eb] p-4 rounded mb-4 hover-effect item-text">Track 1</li>
-                    <!-- Repeat for other tracks -->
-                </ul>
+                <h2 class="section-heading mb-4 text-black">Saved Tracks</h2>
+                <ul> <!-- Dynamic content inserted here by JS --> </ul>
             </div>
         </div>
     </div>
     <script>
-        document.getElementById('sign-out').addEventListener('click', function(event) {
-            event.preventDefault();
-            fetch('/signout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+        window.onload = async function () {
+            const playlistContainer = document.querySelector('.grid.grid-cols-5.gap-4');
+            const trackList = document.querySelector('ul');
+        
+            // Ensure containers exist to avoid runtime errors
+            if (!playlistContainer) {
+                console.error('Playlist container not found');
+                return;
+            }
+            if (!trackList) {
+                console.error('Track list container not found');
+                return;
+            }
+        
+            // Display Playlists
+            try {
+                const playlistResponse = await fetch('/api/get_saved_playlists');
+                const playlists = await playlistResponse.json();
+        
+                playlistContainer.innerHTML = ''; // Clear placeholder content
+        
+                if (playlists.length === 0) {
+                    playlistContainer.innerHTML = '<p>No saved playlists found.</p>';
+                } else {
+                    for (const playlist of playlists) {
+                        const div = document.createElement('div');
+                        div.className = 'bg-[#e7e6eb] p-4 rounded hover-effect';
+        
+                        const playlistImage = document.createElement('div');
+                        playlistImage.className = 'h-24 w-24 bg-white rounded-full mx-auto mb-2';
+        
+                        // Fetch both name and image in a single request
+                        const { name, imageUrl } = await getPlaylistDetails(playlist.playlist_link);
+                        playlistImage.style.backgroundImage = `url(${imageUrl})`;
+                        playlistImage.style.backgroundSize = 'cover';
+        
+                        const playlistName = document.createElement('p');
+                        playlistName.className = 'text-center item-text text-black';
+                        playlistName.textContent = name;
+        
+                        div.appendChild(playlistImage);
+                        div.appendChild(playlistName);
+                        playlistContainer.appendChild(div);
+                    }
                 }
-            })
-            .then(response => {
+            } catch (error) {
+                console.error('Error fetching playlists:', error);
+                playlistContainer.innerHTML = '<p class="text-red-600">Failed to load playlists. Please try again later.</p>';
+            }
+        
+            // Display Tracks
+            try {
+                const loadingMessage = document.createElement('p');
+                loadingMessage.textContent = 'Loading tracks...';
+                trackList.appendChild(loadingMessage);
+        
+                const trackResponse = await fetch('/api/get_saved_tracks');
+                const tracks = await trackResponse.json();
+        
+                trackList.innerHTML = ''; // Clear loading message
+        
+                if (tracks.length === 0) {
+                    trackList.innerHTML = '<p>No saved tracks found.</p>';
+                } else {
+                    tracks.forEach(track => {
+                        const iframe = document.createElement('iframe');
+                        iframe.style.borderRadius = '12px';
+                        iframe.width = '100%';
+                        iframe.height = '152';
+                        iframe.frameBorder = '0';
+                        iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+                        iframe.src = `${track.track_link}`;
+                        iframe.loading = 'lazy';
+        
+                        trackList.appendChild(iframe);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching tracks:', error);
+                trackList.innerHTML = '<p class="text-red-600">Failed to load tracks. Please try again later.</p>';
+            }
+        };
+        
+        // Helper function to fetch both playlist name and image in a single API call
+        async function getPlaylistDetails(playlistLink) {
+            try {
+                const response = await fetch(`/api/playlist_info?link=${encodeURIComponent(playlistLink)}`);
+                const data = await response.json();
+                return { name: data.name, imageUrl: data.image_url };
+            } catch (error) {
+                console.error('Error fetching playlist details:', error);
+                return { name: 'Unknown Playlist', imageUrl: 'https://via.placeholder.com/150' };
+            }
+        }
+        
+        // Sign-out functionality
+        document.getElementById('sign-out').addEventListener('click', async function (event) {
+            event.preventDefault();
+            try {
+                const response = await fetch('/signout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+        
                 if (response.ok) {
                     window.location.href = '/';
                 } else {
-                    console.error('Failed to sign out.');
+                    alert('Failed to sign out. Please try again.');
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error during sign out:', error);
-            });
-        });
+                alert('Error during sign out. Please try again.');
+            }
+        });                
     </script>
 </body>
 </html>

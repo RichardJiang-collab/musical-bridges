@@ -1,13 +1,16 @@
 from flask import Blueprint, request, jsonify, current_app, redirect, session, url_for, render_template, send_from_directory
-from .models import Emotion, User, UserGenre
+from .models import Emotion, User, UserGenre, SavedPlaylistLinks, SavedTopSongsLinks
 from .utils import get_random_tracks, get_top_recommended_tracks, create_spotify_playlist, get_embedded_playlist_code, get_embedded_track_code, get_spotify_client
 from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
 from .extensions import db
-import time
+import time, os, requests
 
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+
+SPOTIFY_CLIENT_ID = os.getenv('CLIENT_ID')
+SPOTIFY_CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
 @main.route('/callback')
 def callback():
@@ -169,7 +172,7 @@ def get_token():
     if not token_info:
         return None
     now = int(time.time())
-    is_expired = token_info['expires_at'] - now < 60
+    is_expired = token_info['expires_at'] - now < 1440
     
     if is_expired:
         sp_oauth = SpotifyOAuth(
@@ -256,3 +259,65 @@ def recommend_top_tracks(playlist_id):
         current_app.logger.error(error_msg)
         print(error_msg)
         return jsonify({'error': error_msg}), 500
+
+# Retreive saved playlists and tracks
+@main.route('/api/save_playlist', methods=['POST'])
+def save_playlist():
+    data = request.get_json()
+    new_playlist = SavedPlaylistLinks(user_id=data['user_id'], playlist_link=data['link'])
+    db.session.add(new_playlist)
+    db.session.commit()
+    return jsonify({'message': 'Playlist saved successfully!'}), 201
+
+@main.route('/api/save_top_song', methods=['POST'])
+def save_top_song():
+    data = request.get_json()
+    new_song = SavedTopSongsLinks(user_id=data['user_id'], top_songs_links=data['link'])
+    db.session.add(new_song)
+    db.session.commit()
+    return jsonify({'message': 'Song saved successfully!'}), 201
+
+@main.route('/api/get_saved_playlists', methods=['GET'])
+def get_saved_playlists():
+    playlists = SavedPlaylistLinks.query.all()
+    playlist_data = [
+        {"playlist_link": p.playlist_link} for p in playlists
+    ]
+    return jsonify(playlist_data), 200
+
+@main.route('/api/playlist_info', methods=['GET'])
+def get_playlist_info():
+    playlist_link = request.args.get('link')  # Get the link from query param
+    playlist_id = playlist_link.split("/")[-1].split("?")[0]  # Extract ID from URL
+    token = get_spotify_token()
+
+    url = f"https://api.spotify.com/v1/playlists/{playlist_id}"
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    response = requests.get(url, headers=headers)
+    data = response.json()
+
+    if response.status_code == 200:
+        return jsonify({
+            "name": data["name"],
+            "image_url": data["images"][0]["url"]
+        }), 200
+    else:
+        return jsonify({"error": "Unable to fetch playlist data"}), 400
+
+@main.route('/api/get_saved_tracks', methods=['GET'])
+def get_saved_tracks():
+    tracks = SavedTopSongsLinks.query.all()
+    track_data = [
+        {"track_link": t.top_songs_links} for t in tracks
+    ]
+    return jsonify(track_data), 200
+
+# Get Spotify Token
+def get_spotify_token():
+    response = requests.post(
+        "https://accounts.spotify.com/api/token", 
+        headers={"Content-Type": "application/x-www-form-urlencoded"}, 
+        data={"grant_type": "client_credentials", "client_id": SPOTIFY_CLIENT_ID, "client_secret": SPOTIFY_CLIENT_SECRET}
+    )
+    return response.json().get("access_token")
