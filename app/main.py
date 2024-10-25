@@ -288,7 +288,14 @@ def save_top_song():
     if not user_id:
         return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
 
-    # Save song for the user
+    # Check if the user exists; if not, create them
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        new_user = User(user_id=user_id)
+        db.session.add(new_user)
+        db.session.commit()
+
+    # Now save the song for the user
     new_song = SavedTopSongsLinks(user_id=user_id, top_songs_links=song_link)
     db.session.add(new_song)
     db.session.commit()
