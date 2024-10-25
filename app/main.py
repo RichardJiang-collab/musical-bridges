@@ -12,6 +12,16 @@ CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 SPOTIFY_CLIENT_ID = os.getenv('CLIENT_ID')
 SPOTIFY_CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
+# Get Spotify Token
+def get_spotify_token():
+    response = requests.post(
+        "https://accounts.spotify.com/api/token", 
+        headers={"Content-Type": "application/x-www-form-urlencoded"}, 
+        data={"grant_type": "client_credentials", "client_id": SPOTIFY_CLIENT_ID, "client_secret": SPOTIFY_CLIENT_SECRET}
+    )
+    return response.json().get("access_token")
+
+# Part 1. Login, Authentication, and Signout
 @main.route('/callback')
 def callback():
     sp_oauth = SpotifyOAuth(
@@ -87,6 +97,8 @@ def signout():
     session.clear()
     return redirect('/')
 
+
+# Part 2. Routes for each page
 @main.route('/')
 def index():
     return send_from_directory(current_app.static_folder, 'index.html')
@@ -134,6 +146,7 @@ def genres_page():
         return auth_check
     return send_from_directory(current_app.static_folder, 'genre.html')
 
+# Part 2.1 Get user's genres
 @main.route('/genres', methods=['GET'])
 def get_user_genres():
     user_id = session.get('user_id')
@@ -167,6 +180,7 @@ def update_genres():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Part 3. Recommending playlist and top tracks
 def get_token():
     token_info = session.get('token_info')
     if not token_info:
@@ -260,7 +274,7 @@ def recommend_top_tracks(playlist_id):
         print(error_msg)
         return jsonify({'error': error_msg}), 500
 
-# Retreive saved playlists and songs
+# Part 4. Retrieve links and resources for starred playlists and songs
 @main.route('/api/save_playlist', methods=['POST'])
 def save_playlist():    
     user_id = session.get('user_id')
@@ -283,15 +297,14 @@ def save_playlist():
 @main.route('/api/save_top_song', methods=['POST'])
 def save_top_song():
     user_id = session.get('user_id')
-    song_link = request.json.get('link')  # Assume this might be a full Spotify link
+    song_link = request.json.get('link')
 
     if not user_id:
         return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
 
-    # Ensure the song_link is only the URL needed for embedding (extract track ID)
-    if "embed" not in song_link:
-        track_id = song_link.split("/")[-1].split("?")[0]
-        song_link = f"https://open.spotify.com/embed/track/{track_id}?utm_source=generator"
+    # Ensure the song_link is formatted correctly for embedding
+    track_id = song_link.split("/")[-1].split("?")[0]
+    embed_url = f"https://open.spotify.com/embed/track/{track_id}?utm_source=generator"
 
     # Check if the user exists; if not, create them
     user = User.query.filter_by(user_id=user_id).first()
@@ -300,8 +313,8 @@ def save_top_song():
         db.session.add(new_user)
         db.session.commit()
 
-    # Save only the cleaned song link
-    new_song = SavedTopSongsLinks(user_id=user_id, top_songs_links=song_link)
+    # Save only the embed URL
+    new_song = SavedTopSongsLinks(user_id=user_id, top_songs_links=embed_url)
     db.session.add(new_song)
     db.session.commit()
     return jsonify({'message': 'Song saved successfully!'}), 201
@@ -313,6 +326,16 @@ def get_saved_playlists():
         {"playlist_link": p.playlist_link} for p in playlists
     ]
     return jsonify(playlist_data), 200
+
+@main.route('/api/get_saved_tracks', methods=['GET'])
+def get_saved_tracks():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({"error": "User not logged in"}), 401
+
+    tracks = SavedTopSongsLinks.query.filter_by(user_id=user_id).all()
+    track_data = [{"track_link": t.top_songs_links} for t in tracks]
+    return jsonify(track_data), 200
 
 @main.route('/api/playlist_info', methods=['GET'])
 def get_playlist_info():
@@ -334,29 +357,10 @@ def get_playlist_info():
     else:
         return jsonify({"error": "Unable to fetch playlist data"}), 400
 
-@main.route('/api/get_saved_tracks', methods=['GET'])
-def get_saved_tracks():
-    user_id = session.get('user_id')
-    if not user_id:
-        return jsonify({"error": "User not logged in"}), 401
-
-    tracks = SavedTopSongsLinks.query.filter_by(user_id=user_id).all()
-    track_data = [{"track_link": t.top_songs_links} for t in tracks]
-    return jsonify(track_data), 200
-
-# Get Spotify Token
-def get_spotify_token():
-    response = requests.post(
-        "https://accounts.spotify.com/api/token", 
-        headers={"Content-Type": "application/x-www-form-urlencoded"}, 
-        data={"grant_type": "client_credentials", "client_id": SPOTIFY_CLIENT_ID, "client_secret": SPOTIFY_CLIENT_SECRET}
-    )
-    return response.json().get("access_token")
-
-# Simulate a User Login and Set user_id
-@main.route('/test_login', methods=['GET'])
-def test_login():
-    # Set user_id manually for testing purposes
-    session['user_id'] = 'test_user_id'
-    session.permanent = True  # This should respect PERMANENT_SESSION_LIFETIME in config
-    return jsonify({'message': 'Test login successful. User ID set in session.'}), 200
+# # Simulate a User Login and Set user_id
+# @main.route('/test_login', methods=['GET'])
+# def test_login():
+#     # Set user_id manually for testing purposes
+#     session['user_id'] = 'test_user_id'
+#     session.permanent = True  # This should respect PERMANENT_SESSION_LIFETIME in config
+#     return jsonify({'message': 'Test login successful. User ID set in session.'}), 200
