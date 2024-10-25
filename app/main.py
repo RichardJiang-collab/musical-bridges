@@ -286,10 +286,10 @@ def save_top_song():
     main.logger.info(f"User ID in session: {user_id}")  # Log user_id for verification
     song_link = request.json.get('link')
 
-    if not user_id:
+    if not user_id or not song_link:
         return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
+    
     session['user_id'] = user_id
-
     user = User.query.filter_by(user_id=user_id).first()
     if not user:
         new_user = User(user_id=user_id)
