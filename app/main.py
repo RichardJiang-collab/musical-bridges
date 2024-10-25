@@ -262,15 +262,42 @@ def recommend_top_tracks(playlist_id):
 
 # Retreive saved playlists and tracks
 @main.route('/api/save_playlist', methods=['POST'])
-def save_playlist():
+def save_playlist():    
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
+    session['user_id'] = user_id
+
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        new_user = User(user_id=user_id)
+        db.session.add(new_user)
+        db.session.commit()
+
     data = request.get_json()
-    new_playlist = SavedPlaylistLinks(user_id=data['user_id'], playlist_link=data['link'])
+    new_playlist = SavedPlaylistLinks(user_id=user_id, playlist_link=data['link'])
     db.session.add(new_playlist)
     db.session.commit()
     return jsonify({'message': 'Playlist saved successfully!'}), 201
 
 @main.route('/api/save_top_song', methods=['POST'])
 def save_top_song():
+    user_id = session.get('user_id')
+    song_link = request.json.get('link')
+
+    if not user_id:
+        return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
+    session['user_id'] = user_id
+
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        new_user = User(user_id=user_id)
+        db.session.add(new_user)
+        db.session.commit()
+
+    new_entry = SavedTopSongsLinks(user_id=user_id, top_songs_links=song_link)
+    db.session.add(new_entry)
+    
     data = request.get_json()
     new_song = SavedTopSongsLinks(user_id=data['user_id'], top_songs_links=data['link'])
     db.session.add(new_song)
