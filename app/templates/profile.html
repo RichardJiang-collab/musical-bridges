@@ -107,7 +107,7 @@
                 return;
             }
         
-            // Display Playlists
+            // Part 1. Display Playlists
             try {
                 const playlistResponse = await fetch('/api/get_saved_playlists');
                 const playlists = await playlistResponse.json();
@@ -143,7 +143,7 @@
                 playlistContainer.innerHTML = '<p class="text-red-600">Failed to load playlists. Please try again later.</p>';
             }
         
-            // Display Tracks
+            // Part 2. Display Tracks
             try {
                 const loadingMessage = document.createElement('p');
                 loadingMessage.textContent = 'Loading tracks...';

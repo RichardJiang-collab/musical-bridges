@@ -13,12 +13,6 @@ def create_app(config_name='development'):
     app.config.from_object(f'app.config.{config_name.capitalize()}Config')
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
-    # Remove redundant session settings since they're in config.py
-    # app.config['PERMANENT_SESSION_LIFETIME'] = 3600
-    # app.config['SESSION_COOKIE_SECURE'] = True
-    # app.config['SESSION_COOKIE_HTTPONLY'] = True
-    # app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-
     app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_folder, prefix='static/')
 
     try:

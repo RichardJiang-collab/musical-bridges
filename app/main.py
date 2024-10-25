@@ -283,27 +283,15 @@ def save_playlist():
 @main.route('/api/save_top_song', methods=['POST'])
 def save_top_song():
     user_id = session.get('user_id')
-    main.logger.info(f"User ID in session: {user_id}")  # Log user_id for verification
     song_link = request.json.get('link')
 
-    if not user_id or not song_link:
+    if not user_id:
         return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
-    
-    session['user_id'] = user_id
-    user = User.query.filter_by(user_id=user_id).first()
-    if not user:
-        new_user = User(user_id=user_id)
-        db.session.add(new_user)
-        db.session.commit()
 
-    new_entry = SavedTopSongsLinks(user_id=user_id, top_songs_links=song_link)
-    db.session.add(new_entry)
+    # Save song for the user
+    new_song = SavedTopSongsLinks(user_id=user_id, top_songs_links=song_link)
+    db.session.add(new_song)
     db.session.commit()
-    
-    # data = request.get_json()
-    # new_song = SavedTopSongsLinks(user_id=data['user_id'], top_songs_links=data['link'])
-    # db.session.add(new_song)
-    # db.session.commit()
     return jsonify({'message': 'Song saved successfully!'}), 201
 
 @main.route('/api/get_saved_playlists', methods=['GET'])
@@ -337,12 +325,8 @@ def get_playlist_info():
 @main.route('/api/get_saved_tracks', methods=['GET'])
 def get_saved_tracks():
     user_id = session.get('user_id')
-    main.logger.info(f"Fetching saved tracks for user: {user_id}")
     if not user_id:
         return jsonify({"error": "User not logged in"}), 401
-    
-    # Log the user ID to confirm
-    main.logger.info(f"Fetching tracks for user: {user_id}")
 
     tracks = SavedTopSongsLinks.query.filter_by(user_id=user_id).all()
     track_data = [{"track_link": t.top_songs_links} for t in tracks]
