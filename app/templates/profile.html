@@ -152,8 +152,8 @@
                 const trackResponse = await fetch('/api/get_saved_tracks');
                 const tracks = await trackResponse.json();
         
-                trackList.innerHTML = ''; // Clear loading message
-        
+                trackList.innerHTML = ''; // Clear previous content
+
                 if (tracks.length === 0) {
                     trackList.innerHTML = '<p>No saved tracks found.</p>';
                 } else {
@@ -164,9 +164,9 @@
                         iframe.height = '152';
                         iframe.frameBorder = '0';
                         iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
-                        iframe.src = `${track.track_link}`;
                         iframe.loading = 'lazy';
-        
+                        iframe.src = track.track_link;  // Use the link saved in the backend for src
+
                         trackList.appendChild(iframe);
                     });
                 }
