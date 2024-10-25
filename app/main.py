@@ -260,7 +260,7 @@ def recommend_top_tracks(playlist_id):
         print(error_msg)
         return jsonify({'error': error_msg}), 500
 
-# Retreive saved playlists and tracks
+# Retreive saved playlists and songs
 @main.route('/api/save_playlist', methods=['POST'])
 def save_playlist():    
     user_id = session.get('user_id')
@@ -283,6 +283,7 @@ def save_playlist():
 @main.route('/api/save_top_song', methods=['POST'])
 def save_top_song():
     user_id = session.get('user_id')
+    main.logger.info(f"User ID in session: {user_id}")  # Log user_id for verification
     song_link = request.json.get('link')
 
     if not user_id:
@@ -297,11 +298,12 @@ def save_top_song():
 
     new_entry = SavedTopSongsLinks(user_id=user_id, top_songs_links=song_link)
     db.session.add(new_entry)
-    
-    data = request.get_json()
-    new_song = SavedTopSongsLinks(user_id=data['user_id'], top_songs_links=data['link'])
-    db.session.add(new_song)
     db.session.commit()
+    
+    # data = request.get_json()
+    # new_song = SavedTopSongsLinks(user_id=data['user_id'], top_songs_links=data['link'])
+    # db.session.add(new_song)
+    # db.session.commit()
     return jsonify({'message': 'Song saved successfully!'}), 201
 
 @main.route('/api/get_saved_playlists', methods=['GET'])
@@ -334,10 +336,15 @@ def get_playlist_info():
 
 @main.route('/api/get_saved_tracks', methods=['GET'])
 def get_saved_tracks():
-    tracks = SavedTopSongsLinks.query.all()
-    track_data = [
-        {"track_link": t.top_songs_links} for t in tracks
-    ]
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({"error": "User not logged in"}), 401
+    
+    # Log the user ID to confirm
+    main.logger.info(f"Fetching tracks for user: {user_id}")
+
+    tracks = SavedTopSongsLinks.query.filter_by(user_id=user_id).all()
+    track_data = [{"track_link": t.top_songs_links} for t in tracks]
     return jsonify(track_data), 200
 
 # Get Spotify Token
@@ -348,3 +355,11 @@ def get_spotify_token():
         data={"grant_type": "client_credentials", "client_id": SPOTIFY_CLIENT_ID, "client_secret": SPOTIFY_CLIENT_SECRET}
     )
     return response.json().get("access_token")
+
+# Simulate a User Login and Set user_id
+@main.route('/test_login', methods=['GET'])
+def test_login():
+    # Set user_id manually for testing purposes
+    session['user_id'] = 'test_user_id'
+    session.permanent = True  # This should respect PERMANENT_SESSION_LIFETIME in config
+    return jsonify({'message': 'Test login successful. User ID set in session.'}), 200

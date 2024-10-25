@@ -3,7 +3,7 @@ from flask import Flask
 from .extensions import db, migrate
 from .main import main as main_blueprint
 from flask_cors import CORS
-from whitenoise import WhiteNoise # type: ignore
+from whitenoise import WhiteNoise  # type: ignore
 
 def create_app(config_name='development'):
     base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -13,10 +13,11 @@ def create_app(config_name='development'):
     app.config.from_object(f'app.config.{config_name.capitalize()}Config')
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
-    app.config['PERMANENT_SESSION_LIFETIME'] = 3600
-    app.config['SESSION_COOKIE_SECURE'] = True
-    app.config['SESSION_COOKIE_HTTPONLY'] = True
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    # Remove redundant session settings since they're in config.py
+    # app.config['PERMANENT_SESSION_LIFETIME'] = 3600
+    # app.config['SESSION_COOKIE_SECURE'] = True
+    # app.config['SESSION_COOKIE_HTTPONLY'] = True
+    # app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
     app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_folder, prefix='static/')
 

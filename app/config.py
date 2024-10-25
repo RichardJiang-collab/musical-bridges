@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta  # Import timedelta for session lifetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -25,6 +26,13 @@ class Config:
     # Playlist settings
     MIN_PLAYLIST_TRACKS = 10
     MAX_PLAYLIST_TRACKS = 20
+
+    # Session configuration
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=1)  # Set session lifetime to 1 hour
+    SESSION_PERMANENT = True                         # Enable permanent sessions
+    SESSION_COOKIE_SECURE = True                     # Secure cookies for HTTPS
+    SESSION_COOKIE_HTTPONLY = True                   # HttpOnly cookies
+    SESSION_COOKIE_SAMESITE = 'Lax'                  # Cross-site cookie policy
 
 class DevelopmentConfig(Config):
     DEBUG = True
