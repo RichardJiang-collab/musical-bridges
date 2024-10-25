@@ -337,6 +337,7 @@ def get_playlist_info():
 @main.route('/api/get_saved_tracks', methods=['GET'])
 def get_saved_tracks():
     user_id = session.get('user_id')
+    main.logger.info(f"Fetching saved tracks for user: {user_id}")
     if not user_id:
         return jsonify({"error": "User not logged in"}), 401
     
