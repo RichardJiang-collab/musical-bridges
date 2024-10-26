@@ -302,11 +302,16 @@ def save_top_song():
     if not user_id:
         return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
 
-    # Ensure the song_link is formatted correctly for embedding
-    track_id = song_link.split("/")[-1].split("?")[0]
+    # Split to get the track ID, ensuring we handle any URL variations
+    try:
+        track_id = song_link.split("/track/")[-1].split("?")[0]
+    except IndexError:
+        return jsonify({'error': 'Invalid song link format'}), 400
+
+    # Format the URL correctly for embedding
     embed_url = f"https://open.spotify.com/embed/track/{track_id}?utm_source=generator"
 
-    # Save only the embed URL
+    # Save only the embed URL to the database
     new_song = SavedTopSongsLinks(user_id=user_id, top_songs_links=embed_url)
     db.session.add(new_song)
     db.session.commit()
