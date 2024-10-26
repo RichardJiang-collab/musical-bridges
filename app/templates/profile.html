@@ -82,8 +82,8 @@
             <!-- 2. Saved Playlists Section -->
             <div class="mb-7">
                 <h2 class="section-heading mb-4 text-black">Saved Playlists</h2>
-                <div class="grid grid-cols-5 gap-4">  <!-- Dynamic content inserted here by JS --> </div>
-            </div>
+                <div class="saved-playlists-container grid grid-cols-5 gap-4">  <!-- Targeted by JavaScript --> </div>
+            </div>            
 
             <!-- 3. Top 5 Tracks Section -->
             <div>
@@ -94,9 +94,9 @@
     </div>
     <script>
         window.onload = async function () {
-            const playlistContainer = document.querySelector('.grid.grid-cols-5.gap-4');
+            const playlistContainer = document.querySelector('.saved-playlists-container'); // Now specifically targets "Saved Playlists" section
             const trackList = document.querySelector('ul');
-        
+
             // Ensure containers exist to avoid runtime errors
             if (!playlistContainer) {
                 console.error('Playlist container not found');
@@ -106,33 +106,34 @@
                 console.error('Track list container not found');
                 return;
             }
-        
+
             // Part 1. Display Playlists
             try {
                 const playlistResponse = await fetch('/api/get_saved_playlists');
                 const playlists = await playlistResponse.json();
-        
+    
                 playlistContainer.innerHTML = ''; // Clear placeholder content
-        
+    
                 if (playlists.length === 0) {
                     playlistContainer.innerHTML = '<p>No saved playlists found.</p>';
                 } else {
-                    for (const playlist of playlists) {
+                    for (let i = 0; i < Math.min(playlists.length, 4); i++) {  // Limit to 4 playlists
+                        const playlist = playlists[i];
                         const div = document.createElement('div');
-                        div.className = 'bg-[#e7e6eb] p-4 rounded hover-effect';
-        
-                        const playlistImage = document.createElement('div');
-                        playlistImage.className = 'h-24 w-24 bg-white rounded-full mx-auto mb-2';
-        
-                        // Fetch both name and image in a single request
+                        div.className = 'bg-[#e7e6eb] p-4 rounded hover-effect'; // Styling with rounded corners
+    
+                        // Fetch playlist details
                         const { name, imageUrl } = await getPlaylistDetails(playlist.playlist_link);
+                        
+                        const playlistImage = document.createElement('div');
+                        playlistImage.className = 'h-40 w-40 bg-white rounded-full mx-auto mb-2';
                         playlistImage.style.backgroundImage = `url(${imageUrl})`;
                         playlistImage.style.backgroundSize = 'cover';
-        
+    
                         const playlistName = document.createElement('p');
                         playlistName.className = 'text-center item-text text-black';
                         playlistName.textContent = name;
-        
+    
                         div.appendChild(playlistImage);
                         div.appendChild(playlistName);
                         playlistContainer.appendChild(div);
@@ -185,7 +186,7 @@
                 return { name: data.name, imageUrl: data.image_url };
             } catch (error) {
                 console.error('Error fetching playlist details:', error);
-                return { name: 'Unknown Playlist', imageUrl: 'https://via.placeholder.com/150' };
+                return { name: 'Unknown Playlist', imageUrl: 'https://via.placeholder.com/640' }; // Placeholder in case of error
             }
         }
         

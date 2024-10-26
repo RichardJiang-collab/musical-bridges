@@ -9,18 +9,6 @@ import time, os, requests
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
-SPOTIFY_CLIENT_ID = os.getenv('CLIENT_ID')
-SPOTIFY_CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-
-# Get Spotify Token
-def get_spotify_token():
-    response = requests.post(
-        "https://accounts.spotify.com/api/token", 
-        headers={"Content-Type": "application/x-www-form-urlencoded"}, 
-        data={"grant_type": "client_credentials", "client_id": SPOTIFY_CLIENT_ID, "client_secret": SPOTIFY_CLIENT_SECRET}
-    )
-    return response.json().get("access_token")
-
 # Part 1. Login, Authentication, and Signout
 @main.route('/callback')
 def callback():
@@ -279,16 +267,23 @@ def recommend_top_tracks(playlist_id):
 def save_playlist():    
     user_id = session.get('user_id')
     if not user_id:
-        return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
-    session['user_id'] = user_id
+        return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 401
 
     user = User.query.filter_by(user_id=user_id).first()
     if not user:
-        new_user = User(user_id=user_id)
-        db.session.add(new_user)
+        user = User(user_id=user_id)
+        db.session.add(user)
         db.session.commit()
 
     data = request.get_json()
+    if 'link' not in data:
+        return jsonify({'error': 'Playlist link is required'}), 400
+
+    # Check for duplicate playlist
+    existing_playlist = SavedPlaylistLinks.query.filter_by(user_id=user_id, playlist_link=data['link']).first()
+    if existing_playlist:
+        return jsonify({'message': 'Playlist already saved'}), 200
+
     new_playlist = SavedPlaylistLinks(user_id=user_id, playlist_link=data['link'])
     db.session.add(new_playlist)
     db.session.commit()
@@ -328,10 +323,17 @@ def save_top_song():
 
 @main.route('/api/get_saved_playlists', methods=['GET'])
 def get_saved_playlists():
-    playlists = SavedPlaylistLinks.query.all()
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'User not logged in'}), 401
+
+    playlists = SavedPlaylistLinks.query.filter_by(user_id=user_id).all()
+    
+    # Convert SQLAlchemy objects to JSON-serializable format
     playlist_data = [
         {"playlist_link": p.playlist_link} for p in playlists
     ]
+
     return jsonify(playlist_data), 200
 
 @main.route('/api/get_saved_tracks', methods=['GET'])
@@ -346,23 +348,37 @@ def get_saved_tracks():
 
 @main.route('/api/playlist_info', methods=['GET'])
 def get_playlist_info():
-    playlist_link = request.args.get('link')  # Get the link from query param
+    playlist_link = request.args.get('link')
+    if not playlist_link:
+        return jsonify({"error": "Playlist link is required"}), 400
+
     playlist_id = playlist_link.split("/")[-1].split("?")[0]  # Extract ID from URL
-    token = get_spotify_token()
+    token = get_token()
+    current_app.logger.info(f"Access token: {token}")
+    if not token:
+        current_app.logger.warning("No access token found")
+        return jsonify({'error': 'Not authenticated'}), 401
 
     url = f"https://api.spotify.com/v1/playlists/{playlist_id}"
     headers = {"Authorization": f"Bearer {token}"}
     
     response = requests.get(url, headers=headers)
-    data = response.json()
-
+    
     if response.status_code == 200:
+        data = response.json()
+        name = data.get("name", "Unknown Playlist")
+        image_url = data["images"][0]["url"] if data.get("images") else "https://via.placeholder.com/640"
         return jsonify({
-            "name": data["name"],
-            "image_url": data["images"][0]["url"]
+            "name": name,
+            "image_url": image_url
         }), 200
+    elif response.status_code == 401:
+        return jsonify({"error": "Invalid or expired token"}), 401
+    elif response.status_code == 404:
+        return jsonify({"error": "Playlist not found"}), 404
     else:
-        return jsonify({"error": "Unable to fetch playlist data"}), 400
+        return jsonify({"error": "Unable to fetch playlist data"}), response.status_code
+
 
 # # Simulate a User Login and Set user_id
 # @main.route('/test_login', methods=['GET'])
