@@ -166,6 +166,7 @@
                         iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
                         iframe.loading = 'lazy';
                         iframe.src = track.track_link;  // Use the link saved in the backend for src
+                        iframe.style.marginBottom = '15px'; // Adds margin between iframes
 
                         trackList.appendChild(iframe);
                     });

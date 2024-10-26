@@ -306,17 +306,11 @@ def save_top_song():
     track_id = song_link.split("/")[-1].split("?")[0]
     embed_url = f"https://open.spotify.com/embed/track/{track_id}?utm_source=generator"
 
-    # Check if the user exists; if not, create them
-    user = User.query.filter_by(user_id=user_id).first()
-    if not user:
-        new_user = User(user_id=user_id)
-        db.session.add(new_user)
-        db.session.commit()
-
     # Save only the embed URL
     new_song = SavedTopSongsLinks(user_id=user_id, top_songs_links=embed_url)
     db.session.add(new_song)
     db.session.commit()
+
     return jsonify({'message': 'Song saved successfully!'}), 201
 
 @main.route('/api/get_saved_playlists', methods=['GET'])
