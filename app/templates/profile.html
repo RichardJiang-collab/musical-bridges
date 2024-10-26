@@ -112,24 +112,26 @@
                 const playlistResponse = await fetch('/api/get_saved_playlists');
                 const playlists = await playlistResponse.json();
     
-                playlistContainer.innerHTML = ''; // Clear placeholder content
+                playlistContainer.innerHTML = '';
     
                 if (playlists.length === 0) {
                     playlistContainer.innerHTML = '<p>No saved playlists found.</p>';
                 } else {
-                    for (let i = 0; i < Math.min(playlists.length, 4); i++) {  // Limit to 4 playlists
+                    for (let i = 0; i < Math.min(playlists.length, 4); i++) {
                         const playlist = playlists[i];
                         const div = document.createElement('div');
-                        div.className = 'bg-[#e7e6eb] p-4 rounded hover-effect'; // Styling with rounded corners
+                        div.className = 'bg-[#e7e6eb] p-4 rounded hover-effect';
     
                         // Fetch playlist details
                         const { name, imageUrl } = await getPlaylistDetails(playlist.playlist_link);
-                        
+    
+                        // Updated styling for rounded corners and background image
                         const playlistImage = document.createElement('div');
-                        playlistImage.className = 'h-40 w-40 bg-white rounded-full mx-auto mb-2';
+                        playlistImage.className = 'h-40 w-40 rounded-md mx-auto mb-2';
                         playlistImage.style.backgroundImage = `url(${imageUrl})`;
                         playlistImage.style.backgroundSize = 'cover';
     
+                        // Playlist name underneath
                         const playlistName = document.createElement('p');
                         playlistName.className = 'text-center item-text text-black';
                         playlistName.textContent = name;
@@ -186,7 +188,7 @@
                 return { name: data.name, imageUrl: data.image_url };
             } catch (error) {
                 console.error('Error fetching playlist details:', error);
-                return { name: 'Unknown Playlist', imageUrl: 'https://via.placeholder.com/640' }; // Placeholder in case of error
+                return { name: 'Unknown Playlist', imageUrl: 'https://via.placeholder.com/640' };
             }
         }
         
