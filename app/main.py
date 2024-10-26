@@ -297,21 +297,29 @@ def save_playlist():
 @main.route('/api/save_top_song', methods=['POST'])
 def save_top_song():
     user_id = session.get('user_id')
-    song_link = request.json.get('link')
+    song_link = request.json.get('link').strip()  # Ensure the input is stripped of leading/trailing whitespace
 
     if not user_id:
         return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
 
-    # Split to get the track ID, ensuring we handle any URL variations
+    # Extract only the track ID, removing any unexpected HTML tags
     try:
+        # Check if the input link contains an iframe tag and isolate the src if it does
+        if "<iframe" in song_link:
+            # Extract the URL from within the iframe tag
+            start = song_link.find("src=\"") + 5
+            end = song_link.find("\"", start)
+            song_link = song_link[start:end]
+
+        # Further split to get the track ID
         track_id = song_link.split("/track/")[-1].split("?")[0]
     except IndexError:
         return jsonify({'error': 'Invalid song link format'}), 400
 
-    # Format the URL correctly for embedding
+    # Generate the correctly formatted embed URL
     embed_url = f"https://open.spotify.com/embed/track/{track_id}?utm_source=generator"
 
-    # Save only the embed URL to the database
+    # Save only the clean embed URL to the database
     new_song = SavedTopSongsLinks(user_id=user_id, top_songs_links=embed_url)
     db.session.add(new_song)
     db.session.commit()
