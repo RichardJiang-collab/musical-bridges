@@ -8,7 +8,6 @@ import time, requests
 
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
-scope="playlist-modify-private user-read-private user-library-read"
 
 # Part 1. Login, Authentication, and Signout
 @main.route('/callback')
@@ -17,30 +16,43 @@ def callback():
         client_id=current_app.config['SPOTIFY_CLIENT_ID'],
         client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
         redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-        scope="playlist-modify-private"
+        scope="playlist-modify-private",
+        cache_handler=None
     )
     
     code = request.args.get('code')
     if not code:
         return jsonify({'error': 'Authorization code not found'}), 400
-
     try:
-        token_info = sp_oauth.get_access_token(code)
-        session['token_info'] = token_info  # Store token info in session
+        token_info = sp_oauth.get_access_token(code, check_cache=False)
     except Exception as e:
-        current_app.logger.error(f"Failed to retrieve access token: {str(e)}")
         return jsonify({'error': f'Failed to retrieve access token: {str(e)}'}), 500
 
-    sp = get_spotify_client(token_info['access_token'])
+    session['token_info'] = token_info
+    current_app.logger.info(f"Token info set in session: {session['token_info']}")
+    access_token = token_info['access_token']
+    sp = get_spotify_client(access_token)
     
     try:
         user_profile = sp.current_user()
-        session['display_name'] = user_profile.get('display_name', 'User')
-        session['user_id'] = user_profile.get('id')
+        display_name = user_profile.get('display_name')
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve user profile: {str(e)}'}), 500
+    session['display_name'] = display_name
 
-    return redirect('/genres-page') if not User.query.filter_by(user_id=session['user_id']).first() else redirect('/')
+    user_id = user_profile.get('id')
+    if not user_id:
+        return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
+    session['user_id'] = user_id
+
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        new_user = User(user_id=user_id)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect('/genres-page')  # First-time login, redirect to genres
+    else:
+        return redirect('/')  # Existing user, redirect to index
 
 def check_auth():
     if 'token_info' not in session:
@@ -161,24 +173,19 @@ def get_token():
     token_info = session.get('token_info')
     if not token_info:
         return None
-
     now = int(time.time())
-    is_expired = token_info['expires_at'] - now < 60  # Refresh if less than 1 minute remaining
-
+    is_expired = token_info['expires_at'] - now < 1440
+    
     if is_expired:
         sp_oauth = SpotifyOAuth(
             client_id=current_app.config['SPOTIFY_CLIENT_ID'],
             client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
             redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-            scope="playlist-modify-private"
+            scope="playlist-modify-private",
+            cache_handler=None
         )
-        try:
-            token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
-            session['token_info'] = token_info  # Update session with new token info
-        except Exception as e:
-            current_app.logger.error(f"Failed to refresh access token: {str(e)}")
-            session.clear()  # Clear session to force re-login if refresh fails
-            return None
+        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
+        session['token_info'] = token_info
     return token_info['access_token']
 
 @main.route('/api/create_playlist', methods=['POST'])
