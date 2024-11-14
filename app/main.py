@@ -26,17 +26,12 @@ def callback():
 
     try:
         token_info = sp_oauth.get_access_token(code)
-        access_token = token_info['access_token']
-        refresh_token = token_info['refresh_token']
-        expires_at = token_info['expires_at']
-
-        # Store token in session for immediate use
-        session['token_info'] = token_info
+        session['token_info'] = token_info  # Store token info in session
     except Exception as e:
         current_app.logger.error(f"Failed to retrieve access token: {str(e)}")
         return jsonify({'error': f'Failed to retrieve access token: {str(e)}'}), 500
 
-    sp = get_spotify_client(access_token)
+    sp = get_spotify_client(token_info['access_token'])
     
     try:
         user_profile = sp.current_user()
@@ -45,31 +40,7 @@ def callback():
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve user profile: {str(e)}'}), 500
 
-    user_id = session['user_id']
-    user = User.query.filter_by(user_id=user_id).first()
-    
-    # Check if user exists, otherwise create a new one
-    if not user:
-        new_user = User(
-            user_id=user_id,
-            access_token=access_token,
-            refresh_token=refresh_token,
-            expires_at=expires_at
-        )
-        db.session.add(new_user)
-    else:
-        try:
-            # Attempt to update the user's token info
-            user.access_token = access_token
-            user.refresh_token = refresh_token
-            user.expires_at = expires_at
-        except Exception as e:
-            current_app.logger.error(f"Failed to update user token information: {str(e)}")
-            return jsonify({'error': f'Failed to update user token information: {str(e)}'}), 500
-            
-    db.session.commit()
-
-    return redirect('/genres-page') if not user else redirect('/')
+    return redirect('/genres-page') if not User.query.filter_by(user_id=session['user_id']).first() else redirect('/')
 
 def check_auth():
     if 'token_info' not in session:
@@ -187,18 +158,14 @@ def update_genres():
 
 # Part 3. Recommending playlist and top tracks
 def get_token():
-    user_id = session.get('user_id')
-    if not user_id:
-        current_app.logger.error("User ID not found in session.")
-        return None
-
-    user = User.query.filter_by(user_id=user_id).first()
-    if not user or not user.access_token:
-        current_app.logger.error("User not found or access token missing in the database.")
+    token_info = session.get('token_info')
+    if not token_info:
         return None
 
     now = int(time.time())
-    if user.expires_at - now < 60:  # Refresh if less than 1 minute remaining
+    is_expired = token_info['expires_at'] - now < 60  # Refresh if less than 1 minute remaining
+
+    if is_expired:
         sp_oauth = SpotifyOAuth(
             client_id=current_app.config['SPOTIFY_CLIENT_ID'],
             client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
@@ -206,29 +173,13 @@ def get_token():
             scope="playlist-modify-private"
         )
         try:
-            # Refresh the access token
-            current_app.logger.info("Attempting to refresh access token for user.")
-            token_info = sp_oauth.refresh_access_token(user.refresh_token)
-            
-            if 'error' in token_info:
-                raise Exception(token_info['error'])
-                
-            # Update user tokens in the database
-            user.access_token = token_info['access_token']
-            user.refresh_token = token_info.get('refresh_token', user.refresh_token)  # Update only if a new one is provided
-            user.expires_at = token_info['expires_at']
-            db.session.commit()
-
-            current_app.logger.info("Access token successfully refreshed and saved for user.")
+            token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
+            session['token_info'] = token_info  # Update session with new token info
         except Exception as e:
-            current_app.logger.error(f"Failed to refresh access token for user {user_id}: {str(e)}")
-            # Handle specific errors
-            if "invalid_grant" in str(e) or "Refresh token revoked" in str(e):
-                session.clear()  # Clear session to force re-login
-                return None
-            else:
-                return None
-    return user.access_token
+            current_app.logger.error(f"Failed to refresh access token: {str(e)}")
+            session.clear()  # Clear session to force re-login if refresh fails
+            return None
+    return token_info['access_token']
 
 @main.route('/api/create_playlist', methods=['POST'])
 def create_playlist():
