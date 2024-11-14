@@ -209,7 +209,7 @@ def get_token():
             if 'error' in token_info:
                 raise Exception(token_info['error'])
             user.access_token = token_info['access_token']
-            user.refresh_token = token_info['refresh_token']
+            user.refresh_token = token_info['refresh_token']  # Update refresh token
             user.expires_at = token_info['expires_at']
             db.session.commit()
         except Exception as e:
