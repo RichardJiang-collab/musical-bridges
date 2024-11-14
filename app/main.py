@@ -189,10 +189,12 @@ def update_genres():
 def get_token():
     user_id = session.get('user_id')
     if not user_id:
+        current_app.logger.error("User ID not found in session.")
         return None
 
     user = User.query.filter_by(user_id=user_id).first()
     if not user or not user.access_token:
+        current_app.logger.error("User not found or access token missing in the database.")
         return None
 
     now = int(time.time())
@@ -205,16 +207,22 @@ def get_token():
         )
         try:
             # Refresh the access token
+            current_app.logger.info("Attempting to refresh access token for user.")
             token_info = sp_oauth.refresh_access_token(user.refresh_token)
+            
             if 'error' in token_info:
                 raise Exception(token_info['error'])
+                
+            # Update user tokens in the database
             user.access_token = token_info['access_token']
-            user.refresh_token = token_info['refresh_token']  # Update refresh token
+            user.refresh_token = token_info.get('refresh_token', user.refresh_token)  # Update only if a new one is provided
             user.expires_at = token_info['expires_at']
             db.session.commit()
+
+            current_app.logger.info("Access token successfully refreshed and saved for user.")
         except Exception as e:
-            current_app.logger.error(f"Failed to refresh access token: {str(e)}")
-            # Handle invalid_grant or revoked token by prompting re-authentication
+            current_app.logger.error(f"Failed to refresh access token for user {user_id}: {str(e)}")
+            # Handle specific errors
             if "invalid_grant" in str(e) or "Refresh token revoked" in str(e):
                 session.clear()  # Clear session to force re-login
                 return None
