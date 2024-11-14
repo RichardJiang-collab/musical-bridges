@@ -211,11 +211,10 @@ def get_token():
             db.session.commit()
         except Exception as e:
             current_app.logger.error(f"Failed to refresh access token: {str(e)}")
-            # Handle invalid grant/refresh token errors by prompting re-login
-            if "invalid_grant" in str(e):
-                session.clear()
+            # Handle invalid_grant or revoked token by prompting re-authentication
+            if "invalid_grant" in str(e) or "Refresh token revoked" in str(e):
+                session.clear()  # Clear session to force re-login
                 return None
-            return None
     return user.access_token
 
 @main.route('/api/create_playlist', methods=['POST'])
