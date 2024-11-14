@@ -204,7 +204,10 @@ def get_token():
             scope="playlist-modify-private"
         )
         try:
+            # Refresh the access token
             token_info = sp_oauth.refresh_access_token(user.refresh_token)
+            if 'error' in token_info:
+                raise Exception(token_info['error'])
             user.access_token = token_info['access_token']
             user.refresh_token = token_info['refresh_token']
             user.expires_at = token_info['expires_at']
@@ -214,6 +217,8 @@ def get_token():
             # Handle invalid_grant or revoked token by prompting re-authentication
             if "invalid_grant" in str(e) or "Refresh token revoked" in str(e):
                 session.clear()  # Clear session to force re-login
+                return None
+            else:
                 return None
     return user.access_token
 
