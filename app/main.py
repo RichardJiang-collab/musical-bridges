@@ -16,7 +16,7 @@ def callback():
         client_id=current_app.config['SPOTIFY_CLIENT_ID'],
         client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
         redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-        scope="playlist-modify-private",
+        scope=current_app.config['SPOTIFY_SCOPES'],
         cache_handler=None
     )
     
@@ -84,7 +84,6 @@ def login():
 def signout():
     session.clear()
     return redirect('/')
-
 
 # Part 2. Routes for each page
 @main.route('/')
