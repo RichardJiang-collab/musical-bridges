@@ -33,6 +33,7 @@ def callback():
         # Store token in session for immediate use
         session['token_info'] = token_info
     except Exception as e:
+        current_app.logger.error(f"Failed to retrieve access token: {str(e)}")
         return jsonify({'error': f'Failed to retrieve access token: {str(e)}'}), 500
 
     sp = get_spotify_client(access_token)
@@ -46,6 +47,8 @@ def callback():
 
     user_id = session['user_id']
     user = User.query.filter_by(user_id=user_id).first()
+    
+    # Check if user exists, otherwise create a new one
     if not user:
         new_user = User(
             user_id=user_id,
@@ -55,9 +58,15 @@ def callback():
         )
         db.session.add(new_user)
     else:
-        user.access_token = access_token
-        user.refresh_token = refresh_token
-        user.expires_at = expires_at
+        try:
+            # Attempt to update the user's token info
+            user.access_token = access_token
+            user.refresh_token = refresh_token
+            user.expires_at = expires_at
+        except Exception as e:
+            current_app.logger.error(f"Failed to update user token information: {str(e)}")
+            return jsonify({'error': f'Failed to update user token information: {str(e)}'}), 500
+            
     db.session.commit()
 
     return redirect('/genres-page') if not user else redirect('/')
@@ -202,6 +211,10 @@ def get_token():
             db.session.commit()
         except Exception as e:
             current_app.logger.error(f"Failed to refresh access token: {str(e)}")
+            # Handle invalid grant/refresh token errors by prompting re-login
+            if "invalid_grant" in str(e):
+                session.clear()
+                return None
             return None
     return user.access_token
 
