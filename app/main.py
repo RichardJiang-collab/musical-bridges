@@ -52,7 +52,7 @@ def callback():
         db.session.commit()
         return redirect('/genres-page')  # First-time login, redirect to genres
     else:
-        return redirect('/')  # Existing user, redirect to index
+        return redirect('/emotions')  # Existing user, redirect to index
 
 def check_auth():
     if 'token_info' not in session:
