@@ -12,6 +12,7 @@ CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 # Part 1. Login, Authentication, and Signout
 @main.route('/callback')
 def callback():
+    # Initialize Spotify OAuth
     sp_oauth = SpotifyOAuth(
         client_id=current_app.config['SPOTIFY_CLIENT_ID'],
         client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
@@ -20,39 +21,45 @@ def callback():
         cache_handler=None
     )
     
+    # Retrieve authorization code from the request
     code = request.args.get('code')
     if not code:
         return jsonify({'error': 'Authorization code not found'}), 400
+    
+    # Retrieve access token using the authorization code
     try:
         token_info = sp_oauth.get_access_token(code, check_cache=False)
+        session['token_info'] = token_info
+        current_app.logger.info(f"Token info set in session: {session['token_info']}")
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve access token: {str(e)}'}), 500
 
-    session['token_info'] = token_info
-    current_app.logger.info(f"Token info set in session: {session['token_info']}")
-    access_token = token_info['access_token']
-    sp = get_spotify_client(access_token)
-    
+    # Get the Spotify client using the access token
+    sp = get_spotify_client(token_info['access_token'])
+
+    # Retrieve user profile and save necessary details
     try:
         user_profile = sp.current_user()
         display_name = user_profile.get('display_name')
+        user_id = user_profile.get('id')
+        if not user_id:
+            raise ValueError('Failed to retrieve Spotify user ID')
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve user profile: {str(e)}'}), 500
-    session['display_name'] = display_name
 
-    user_id = user_profile.get('id')
-    if not user_id:
-        return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
+    # Store user details in session
+    session['display_name'] = display_name
     session['user_id'] = user_id
 
+    # Check if the user already exists in the database
     user = User.query.filter_by(user_id=user_id).first()
-    if not user:
-        new_user = User(user_id=user_id)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect('/genres-page')  # First-time login, redirect to genres
+    if user:
+        return redirect('/emotions')  # Existing user, redirect to emotions
     else:
-        return redirect('/emotions')  # Existing user, redirect to index
+        # First-time login, create a new user and redirect to genres page
+        db.session.add(User(user_id=user_id))
+        db.session.commit()
+        return redirect('/genres-page')
 
 def check_auth():
     if 'token_info' not in session:
@@ -65,7 +72,7 @@ def login():
         client_id=current_app.config['SPOTIFY_CLIENT_ID'],
         client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
         redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-        scope="playlist-modify-private"
+        scope=current_app.config['SPOTIFY_SCOPES'],
     )
     auth_url = sp_oauth.get_authorize_url()
     
@@ -180,7 +187,7 @@ def get_token():
             client_id=current_app.config['SPOTIFY_CLIENT_ID'],
             client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
             redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-            scope="playlist-modify-private",
+            scope=current_app.config['SPOTIFY_SCOPES'],
             cache_handler=None
         )
         token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
