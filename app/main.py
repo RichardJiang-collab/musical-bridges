@@ -81,7 +81,7 @@ def login():
         user = User.query.filter_by(user_id=user_id).first()
         
         if user:
-            return redirect('/')
+            return redirect('/emotions')
         else:
             return redirect('/genres-page')
     
