@@ -26,7 +26,6 @@ def callback():
     if not code:
         return jsonify({'error': 'Authorization code not found'}), 400
     
-    # Retrieve access token using the authorization code
     try:
         token_info = sp_oauth.get_access_token(code, check_cache=False)
         session['token_info'] = token_info
@@ -34,8 +33,7 @@ def callback():
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve access token: {str(e)}'}), 500
 
-    # Get the Spotify client using the access token
-    sp = get_spotify_client(token_info['access_token'])
+    sp = get_spotify_client(token_info['access_token'])  # Get the Spotify client using the access token
 
     # Retrieve user profile and save necessary details
     try:
@@ -56,7 +54,6 @@ def callback():
     if user:
         return redirect('/emotions')  # Existing user, redirect to emotions
     else:
-        # First-time login, create a new user and redirect to genres page
         db.session.add(User(user_id=user_id))
         db.session.commit()
         return redirect('/genres-page')
@@ -73,6 +70,7 @@ def login():
         client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
         redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
         scope=current_app.config['SPOTIFY_SCOPES'],
+        cache_handler=None
     )
     auth_url = sp_oauth.get_authorize_url()
     
@@ -140,7 +138,7 @@ def genres_page():
         return auth_check
     return send_from_directory(current_app.static_folder, 'genre.html')
 
-# Part 2.1 Get user's genres
+## Part 2.1 Get user's genres
 @main.route('/genres', methods=['GET'])
 def get_user_genres():
     user_id = session.get('user_id')
@@ -159,9 +157,7 @@ def update_genres():
     
     data = request.get_json()
     selected_genres = data.get('genres', [])
-
-    # Delete old genres for the user
-    UserGenre.query.filter_by(user_id=user_id).delete()
+    UserGenre.query.filter_by(user_id=user_id).delete()  # Delete old genres for the user
 
     # Add new genres
     for genre in selected_genres:
@@ -211,9 +207,7 @@ def create_playlist():
         intensity = data.get('intensity')
         current_app.logger.info(f'Received emotion: {emotion}, intensity: {intensity}')
 
-        # Construct emotion key
-        emotion_key = f"{emotion.upper()}_{intensity.upper()}"
-        print(f"Constructed emotion key: {emotion_key}")
+        emotion_key = f"{emotion.upper()}_{intensity.upper()}"  # Construct emotion key
         
         if emotion_key not in Emotion.__members__:
             print(f"Invalid emotion key: {emotion_key}")
@@ -223,7 +217,6 @@ def create_playlist():
         emotion_enum = Emotion[emotion_key]
         tracks = get_random_tracks(emotion_enum)
         if not tracks:
-            print("No tracks found for the given emotion")
             return jsonify({'error': f'No tracks found for emotion: {emotion_key}'}), 404
 
         # Create Spotify playlist
@@ -299,26 +292,20 @@ def save_playlist():
 def save_top_song():
     user_id = session.get('user_id')
     song_link = request.json.get('link').strip()  # Ensure the input is stripped of leading/trailing whitespace
-
     if not user_id:
         return jsonify({'error': 'Failed to retrieve Spotify user ID'}), 500
 
-    # Extract only the track ID, removing any unexpected HTML tags
     try:
-        # Check if the input link contains an iframe tag and isolate the src if it does
         if "<iframe" in song_link:
-            # Extract the URL from within the iframe tag
             start = song_link.find("src=\"") + 5
             end = song_link.find("\"", start)
             song_link = song_link[start:end]
 
-        # Further split to get the track ID
-        track_id = song_link.split("/track/")[-1].split("?")[0]
+        track_id = song_link.split("/track/")[-1].split("?")[0]   # Further split to get the track ID
     except IndexError:
         return jsonify({'error': 'Invalid song link format'}), 400
 
-    # Generate the correctly formatted embed URL
-    embed_url = f"https://open.spotify.com/embed/track/{track_id}?utm_source=generator"
+    embed_url = f"https://open.spotify.com/embed/track/{track_id}?utm_source=generator"  # Generate the correctly formatted embed URL
 
     # Save only the clean embed URL to the database
     new_song = SavedTopSongsLinks(user_id=user_id, top_songs_links=embed_url)
@@ -334,8 +321,6 @@ def get_saved_playlists():
         return jsonify({'error': 'User not logged in'}), 401
 
     playlists = SavedPlaylistLinks.query.filter_by(user_id=user_id).all()
-    
-    # Convert SQLAlchemy objects to JSON-serializable format
     playlist_data = [
         {"playlist_link": p.playlist_link} for p in playlists
     ]
@@ -384,12 +369,3 @@ def get_playlist_info():
         return jsonify({"error": "Playlist not found"}), 404
     else:
         return jsonify({"error": "Unable to fetch playlist data"}), response.status_code
-
-
-# # Simulate a User Login and Set user_id
-# @main.route('/test_login', methods=['GET'])
-# def test_login():
-#     # Set user_id manually for testing purposes
-#     session['user_id'] = 'test_user_id'
-#     session.permanent = True  # This should respect PERMANENT_SESSION_LIFETIME in config
-#     return jsonify({'message': 'Test login successful. User ID set in session.'}), 200
