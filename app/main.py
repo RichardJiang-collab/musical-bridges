@@ -1,10 +1,15 @@
 from flask import Blueprint, request, jsonify, current_app, redirect, session, url_for, render_template, send_from_directory
-from .models import Emotion, User, UserGenre, SavedPlaylistLinks, SavedTopSongsLinks
 from .utils import get_random_tracks, get_top_recommended_tracks, create_spotify_playlist, get_embedded_playlist_code, get_embedded_track_code, get_spotify_client
+from .models import Emotion, User, UserGenre, SavedPlaylistLinks, SavedTopSongsLinks
 from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
 from .extensions import db
-import time, requests
+import os
+import time
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
@@ -14,10 +19,10 @@ CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 def callback():
     # Initialize Spotify OAuth
     sp_oauth = SpotifyOAuth(
-        client_id=current_app.config['SPOTIFY_CLIENT_ID'],
-        client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
-        redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-        scope=current_app.config['SPOTIFY_SCOPES'],
+        client_id=os.environ.get['SPOTIFY_CLIENT_ID'],
+        client_secret=os.environ.get['SPOTIFY_CLIENT_SECRET'],
+        redirect_uri=os.environ.get['SPOTIFY_REDIRECT_URI'],
+        scope=os.environ.get['SPOTIFY_SCOPES'],
         cache_handler=None
     )
     
@@ -34,8 +39,6 @@ def callback():
         return jsonify({'error': f'Failed to retrieve access token: {str(e)}'}), 500
 
     sp = get_spotify_client(token_info['access_token'])  # Get the Spotify client using the access token
-
-    # Retrieve user profile and save necessary details
     try:
         user_profile = sp.current_user()
         display_name = user_profile.get('display_name')
@@ -48,8 +51,6 @@ def callback():
     # Store user details in session
     session['display_name'] = display_name
     session['user_id'] = user_id
-
-    # Check if the user already exists in the database
     user = User.query.filter_by(user_id=user_id).first()
     if user:
         return redirect('/emotions')  # Existing user, redirect to emotions
@@ -180,10 +181,10 @@ def get_token():
     
     if is_expired:
         sp_oauth = SpotifyOAuth(
-            client_id=current_app.config['SPOTIFY_CLIENT_ID'],
-            client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
-            redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
-            scope=current_app.config['SPOTIFY_SCOPES'],
+            client_id=os.environ.get['SPOTIFY_CLIENT_ID'],
+            client_secret=os.environ.get['SPOTIFY_CLIENT_SECRET'],
+            redirect_uri=os.environ.get['SPOTIFY_REDIRECT_URI'],
+            scope=os.environ.get['SPOTIFY_SCOPES'],
             cache_handler=None
         )
         token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])

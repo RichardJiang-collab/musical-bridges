@@ -1,11 +1,15 @@
-import spotipy, random
 from flask import current_app, session
 from .models import Song, Emotion
+import spotipy
+import random
 
+random.seed(42)
+# Will be replaced by a larger variety of options
 POPULAR_GENRES = [
     'pop', 'hip-hop', 'jazz', 'rock', 'electronic', 'classical', 'blues', 'latin', 'reggae', 'soul'
 ]
 
+# Confirm if the user is logged in or not
 def get_spotify_client(access_token=None):
     if not access_token:
         if 'token_info' not in session:
@@ -15,6 +19,7 @@ def get_spotify_client(access_token=None):
 
     return spotipy.Spotify(auth=access_token)
 
+# Algorithm for recommending users tracks and playlists based on their current emotion
 def get_random_tracks(emotion, min_count=10, max_count=20):
     sp = get_spotify_client()
     if not sp:
@@ -35,8 +40,8 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
         combined_genres = list(set(random.sample(user_genres, 5)))
     elif len(combined_genres) > 5:
         combined_genres = list(set(random.sample(combined_genres, 5)))
-
     attributes = emotion_to_attributes.get(emotion, {})
+
     try:
         results = sp.recommendations(limit=max_count, seed_genres=combined_genres, **attributes)
     except Exception as e:
@@ -54,11 +59,11 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
         emotion=emotion
     ) for track in results['tracks']]
 
+# Create a playlist based on the above algorithm
 def create_spotify_playlist(tracks):
     sp = get_spotify_client()
     if not sp:
         raise Exception("Spotify client not authenticated")
-
     if not tracks:  # Ensure there are tracks to add
         print("No tracks provided to create a playlist")
         return None
@@ -74,14 +79,13 @@ def create_spotify_playlist(tracks):
 
     return playlist['id']
 
-
-# Create Embedded Code
+# Create Embedded Codes for the playlist and the top 5 tracks
 def get_embedded_playlist_code(playlist_id):
     return f'<iframe src="https://open.spotify.com/embed/playlist/{playlist_id}" width="100%" height="808" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>'
-
 def get_embedded_track_code(track_id):
     return f'<iframe src="https://open.spotify.com/embed/track/{track_id}" width="300" height="380" frameborder="0" allowfullscreen="" allowtransparency="true" allow="encrypted-media"></iframe>'
 
+# Defining each metric's weight in the overall recommendation of the song
 def calculate_composite_score(track):
     return (
         track.danceability * 0.1 +
@@ -96,6 +100,7 @@ def calculate_composite_score(track):
         track.popularity * 0.3  # Give more weight to popularity
     )
 
+# Recommend top 5 tracks
 def get_top_recommended_tracks(playlist_id, limit=5):
     sp = get_spotify_client()
     if not sp:
