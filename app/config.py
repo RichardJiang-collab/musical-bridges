@@ -1,7 +1,6 @@
 import os
 from datetime import timedelta  # Import timedelta for session lifetime
 from dotenv import load_dotenv
-
 load_dotenv()
 
 class Config:

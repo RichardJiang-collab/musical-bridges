@@ -3,7 +3,7 @@ from flask import Flask
 from .extensions import db, migrate
 from .main import main as main_blueprint
 from flask_cors import CORS
-from whitenoise import WhiteNoise  # type: ignore
+from whitenoise import WhiteNoise
 
 def create_app(config_name='development'):
     base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -11,6 +11,8 @@ def create_app(config_name='development'):
 
     app = Flask(__name__, instance_relative_config=True, static_folder=static_folder, static_url_path='/static')
     app.config.from_object(f'app.config.{config_name.capitalize()}Config')
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
     app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_folder, prefix='static/')
