@@ -17,8 +17,8 @@ CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 @main.route('/debug-env')
 def debug_env():
     return jsonify({
-        'SPOTIFY_SCOPES': os.environ.get('SPOTIFY_SCOPES'),
-        'OTHER_VARIABLE': os.environ.get('OTHER_VARIABLE')
+        'SPOTIFY_SCOPES': current_app.config.get('SPOTIFY_SCOPES'),
+        'OTHER_VARIABLE': current_app.config.get('OTHER_VARIABLE')
     })
 
 #* Part 1. Login, Authentication, and Signout
@@ -26,11 +26,10 @@ def debug_env():
 def callback():
     # Initialize Spotify OAuth
     sp_oauth = SpotifyOAuth(
-        client_id=os.environ.get('SPOTIFY_CLIENT_ID'),
-        client_secret=os.environ.get('SPOTIFY_CLIENT_SECRET'),
-        redirect_uri=os.environ.get('SPOTIFY_REDIRECT_URI'),
-        scope=os.environ.get('SPOTIFY_SCOPES'),
-        cache_handler=None
+        client_id=current_app.config['SPOTIFY_CLIENT_ID'],
+        client_secret=current_app.config['SPOTIFY_CLIENT_SECRET'],
+        redirect_uri=current_app.config['SPOTIFY_REDIRECT_URI'],
+        scope=current_app.config['SPOTIFY_SCOPES'],
     )
     
     # Retrieve authorization code from the request
@@ -163,10 +162,10 @@ def get_token():
     
     if is_expired:
         sp_oauth = SpotifyOAuth(
-            client_id=os.environ.get('SPOTIFY_CLIENT_ID'),
-            client_secret=os.environ.get('SPOTIFY_CLIENT_SECRET'),
-            redirect_uri=os.environ.get('SPOTIFY_REDIRECT_URI'),
-            scope=os.environ.get('SPOTIFY_SCOPES'),
+            client_id=current_app.config('SPOTIFY_CLIENT_ID'),
+            client_secret=current_app.config('SPOTIFY_CLIENT_SECRET'),
+            redirect_uri=current_app.config('SPOTIFY_REDIRECT_URI'),
+            scope=current_app.config('SPOTIFY_SCOPES'),
             cache_handler=None
         )
         token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])

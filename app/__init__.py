@@ -13,8 +13,13 @@ def create_app(config_name='development'):
     app.config.from_object(f'app.config.{config_name.capitalize()}Config')
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_HTTPONLY'] = True
-    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
+    app.config['SPOTIFY_SCOPES'] = os.environ.get('SPOTIFY_SCOPES')
+    app.config['SPOTIFY_CLIENT_ID'] = os.environ.get('SPOTIFY_CLIENT_ID')
+    app.config['SPOTIFY_CLIENT_SECRET'] = os.environ.get('SPOTIFY_CLIENT_SECRET')
+    app.config['SPOTIFY_REDIRECT_URI'] = os.environ.get('SPOTIFY_REDIRECT_URI')
+
+    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
     app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_folder, prefix='static/')
 
     try:
