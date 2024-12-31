@@ -2,6 +2,7 @@ from .extensions import db
 from enum import Enum
 from datetime import datetime, timezone
 
+#* Defining Classes
 class Emotion(Enum):
     SAD_NORMAL = 'SAD_NORMAL'
     SAD_INTENSE = 'SAD_INTENSE'
@@ -10,7 +11,6 @@ class Emotion(Enum):
 
 class User(db.Model):
     __tablename__ = 'users'
-
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.String(100), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
@@ -49,16 +49,8 @@ class Playlist(db.Model):
     emotion = db.Column(db.Enum(Emotion), nullable=False)
     songs = db.relationship('Song', secondary='playlist_songs', back_populates='playlists')
 
-# Playlist-Songs
-playlist_songs = db.Table('playlist_songs',
-    db.Column('playlist_id', db.Integer, db.ForeignKey('playlist.id'), primary_key=True),
-    db.Column('song_id', db.Integer, db.ForeignKey('song.id'), primary_key=True)
-)
-Song.playlists = db.relationship('Playlist', secondary='playlist_songs', back_populates='songs')
-
 class UserGenre(db.Model):
     __tablename__ = 'user_genres'
-
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String, db.ForeignKey('users.user_id'), nullable=False)
     genre = db.Column(db.String, nullable=False)
@@ -67,20 +59,8 @@ class UserGenre(db.Model):
         self.user_id = user_id
         self.genre = genre
 
-class SavedPlaylistLinks(db.Model):
-    __tablename__ = 'saved_playlist_links'
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String, db.ForeignKey('users.user_id'), nullable=False)
-    playlist_link = db.Column(db.Text, nullable=False)
-
-    def __init__(self, user_id, playlist_link):
-        self.user_id = user_id
-        self.playlist_link = playlist_link
-
 class SavedTopSongsLinks(db.Model):
     __tablename__ = 'saved_top_songs_links'
-
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String, db.ForeignKey('users.user_id'), nullable=False)
     top_songs_links = db.Column(db.Text, nullable=False)
@@ -88,3 +68,10 @@ class SavedTopSongsLinks(db.Model):
     def __init__(self, user_id, top_songs_links):
         self.user_id = user_id
         self.top_songs_links = top_songs_links
+
+# Playlist-Songs
+playlist_songs = db.Table('playlist_songs',
+    db.Column('playlist_id', db.Integer, db.ForeignKey('playlist.id'), primary_key=True),
+    db.Column('song_id', db.Integer, db.ForeignKey('song.id'), primary_key=True)
+)
+Song.playlists = db.relationship('Playlist', secondary='playlist_songs', back_populates='songs')

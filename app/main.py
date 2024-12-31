@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, current_app, redirect, session, url_for, render_template, send_from_directory
 from .utils import get_random_tracks, get_top_recommended_tracks, create_spotify_playlist, get_embedded_playlist_code, get_embedded_track_code, get_spotify_client
-from .models import Emotion, User, UserGenre, SavedPlaylistLinks, SavedTopSongsLinks
+from .models import Emotion, User, UserGenre, SavedTopSongsLinks
 from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
 from .extensions import db
@@ -12,6 +12,14 @@ load_dotenv()
 
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+
+#* DEBUGGING
+@main.route('/debug-env')
+def debug_env():
+    return jsonify({
+        'SPOTIFY_SCOPES': os.environ.get('SPOTIFY_SCOPES'),
+        'OTHER_VARIABLE': os.environ.get('OTHER_VARIABLE')
+    })
 
 #* Part 1. Login, Authentication, and Signout
 @main.route('/callback')
