@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Recommendation Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@200;300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Libre Franklin', sans-serif;
+        }
+        .main-heading {
+            font-size: 38px;
+            font-weight: bold;
+            line-height: 44px;
+        }
+        .item-text {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 24px;
+        }
+        .sub-heading {
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 28px;
+            margin-top: -15px;
+            margin-bottom: 100px;
+        }
+        .section-heading {
+            font-size: 32px;
+            font-weight: bold;
+            line-height: 36px;
+        }
+
+        .hover-effect {
+            transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
+        }
+        .hover-effect:hover {
+            transform: scale(1.05);
+            background-color: #e7e6eb;
+        }
+        .hover-sidebar {
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+        .hover-sidebar:hover {
+            background-color: #5bb963;
+            color: white;
+        }
+        .hover-signout {
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+        .hover-signout:hover {
+            background-color: rgb(228, 76, 76); /* Hover color for Sign-Out */
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-[#f1f0f5] min-h-screen">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="bg-[#f1f0f5] p-6 w-64">
+            <nav class="space-y-4 mt-5">
+                <a href="{{ url_for('main.index') }}" class="hover-sidebar block item-text text-black rounded p-2">Home</a>
+                <a href="#" class="hover-sidebar block item-text text-black rounded p-2">Saved Playlists</a>
+                <a href="#" class="hover-sidebar block item-text text-black rounded p-2">All Artists</a>
+                <a href="{{ url_for('main.genres_page') }}" class="hover-sidebar block item-text text-black rounded p-2">Favorite Genres</a>
+                <a href="#" class="hover-sidebar block item-text text-black rounded p-2">All Tracks</a>
+                <a id="sign-out" href="{{ url_for('main.signout') }}" class="hover-signout block text-red-600 mt-6 rounded p-2 item-text">Sign Out</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-grow p-10">
+            <h1 class="main-heading mb-9 text-black">Emotion Deep Dive</h1>
+            <h3 class="sub-heading mb-4 text-black" style="margin-bottom: 35px;">Understanding Your Emotion is the First Step Towards Pinpointing Recommendation</h2>
+            
+            <!-- 1. Top Artists Section -->
+            <div class="mb-7">
+                <h2 class="section-heading mb-4 text-black">Most Listened Artists</h2>
+                <div class="grid grid-cols-5 gap-4">
+                    <div id="saved_artist_container" class="bg-[#e7e6eb] p-4 rounded hover-effect">
+                        <div id='artist_image' class="h-24 w-24 bg-white rounded-full mx-auto mb-2"></div>
+                        <p id='artist_name' class="text-center item-text text-black">Artist Name</p>
+                    </div>
+                    <!-- Repeat for other artists -->
+                </div>
+            </div>
+
+            <!-- 2. Saved Playlists Section -->
+            <div class="mb-7">
+                <h2 class="section-heading mb-4 text-black">Saved Playlists</h2>
+                <div class="saved-playlists-container grid grid-cols-5 gap-4">  <!-- Targeted by JavaScript --> </div>
+            </div>            
+
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

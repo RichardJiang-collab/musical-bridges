@@ -1,7 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
+
 html {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
-  font-family: sans-serif;
+  font-family: 'Manrope', sans-serif;  /* FIXME: ; */
 }
 
 body {
@@ -13,7 +15,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 }
 
 audio, canvas, progress, video {
-  vertical-align: baseline;
   display: inline-block;
 }
 
@@ -61,7 +62,6 @@ small {
 }
 
 sub, sup {
-  vertical-align: baseline;
   font-size: 75%;
   line-height: 0;
   position: relative;
@@ -93,7 +93,7 @@ pre {
 }
 
 code, kbd, pre, samp {
-  font-family: monospace;
+  font-family: monospace; /* FIXME: ; */
   font-size: 1em;
 }
 
@@ -112,7 +112,9 @@ button, select {
 }
 
 button, html input[type="button"], input[type="reset"] {
+  appearance: button;
   -webkit-appearance: button;
+  appearance: button;
   cursor: pointer;
 }
 
@@ -139,6 +141,7 @@ input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-o
 }
 
 input[type="search"] {
+  appearance: button;
   -webkit-appearance: none;
 }
 
@@ -176,7 +179,6 @@ td, th {
 }
 
 [class^="w-icon-"], [class*=" w-icon-"] {
-  speak: none;
   font-variant: normal;
   text-transform: none;
   -webkit-font-smoothing: antialiased;
@@ -224,7 +226,7 @@ body {
   background-color: #fff;
   min-height: 100%;
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   line-height: 20px;
 }
@@ -275,6 +277,7 @@ html.w-mod-touch * {
 }
 
 input.w-button {
+  appearance: button;
   -webkit-appearance: button;
 }
 
@@ -317,8 +320,6 @@ pre.w-code-block code {
   text-indent: 0;
   text-transform: inherit;
   text-shadow: none;
-  font-smoothing: auto;
-  vertical-align: baseline;
   cursor: inherit;
   white-space: inherit;
   word-break: normal;
@@ -477,6 +478,7 @@ fieldset {
 
 button, [type="button"], [type="reset"] {
   cursor: pointer;
+  appearance: button;
   -webkit-appearance: button;
   border: 0;
 }
@@ -507,7 +509,6 @@ label {
 
 .w-input, .w-select {
   color: #333;
-  vertical-align: middle;
   background-color: #fff;
   border: 1px solid #ccc;
   width: 100%;
@@ -1181,7 +1182,6 @@ textarea.w-input, textarea.w-select {
   text-align: center;
   clear: both;
   -webkit-tap-highlight-color: #0000;
-  tap-highlight-color: #0000;
   background: #ddd;
   height: 300px;
   position: relative;
@@ -1212,7 +1212,6 @@ textarea.w-input, textarea.w-select {
   z-index: 2;
   text-align: center;
   -webkit-tap-highlight-color: #0000;
-  tap-highlight-color: #0000;
   height: 40px;
   margin: auto;
   padding-top: 10px;
@@ -1276,7 +1275,6 @@ textarea.w-input, textarea.w-select {
   cursor: pointer;
   color: #fff;
   -webkit-tap-highlight-color: #0000;
-  tap-highlight-color: #0000;
   -webkit-user-select: none;
   user-select: none;
   width: 80px;
@@ -1416,6 +1414,7 @@ textarea.w-input, textarea.w-select {
   text-align: center;
   z-index: 2000;
   opacity: 0;
+  user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -1429,6 +1428,7 @@ textarea.w-input, textarea.w-select {
   list-style: disc;
   position: fixed;
   inset: 0;
+  transform : translate(0);
   -webkit-transform: translate(0);
 }
 
@@ -1560,6 +1560,7 @@ textarea.w-input, textarea.w-select {
   width: 10vh;
   padding: 2vh 1vh;
   display: inline-block;
+  transform: translate3d(0, 0, 0);
   -webkit-transform: translate3d(0, 0, 0);
 }
 
@@ -1890,7 +1891,6 @@ textarea.w-input, textarea.w-select {
   float: right;
   cursor: pointer;
   -webkit-tap-highlight-color: #0000;
-  tap-highlight-color: #0000;
   -webkit-user-select: none;
   user-select: none;
   padding: 18px;
@@ -2231,7 +2231,7 @@ textarea.w-input, textarea.w-select {
 
 body {
   color: #333;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   line-height: 20px;
 }
@@ -2256,7 +2256,7 @@ h3 {
   color: #000;
   margin-top: 20px;
   margin-bottom: 10px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 18px;
   font-weight: 600;
   line-height: 24px;
@@ -2266,7 +2266,7 @@ h4 {
   color: #000;
   margin-top: 10px;
   margin-bottom: 10px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 18px;
   font-weight: 600;
   line-height: 24px;
@@ -2304,7 +2304,7 @@ li {
   color: #000;
   margin-top: 5px;
   margin-bottom: 5px;
-  font-family: IBM Plex Mono, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 24px;
@@ -2322,7 +2322,7 @@ blockquote {
   border-left-width: 5px;
   margin-bottom: 10px;
   padding: 10px 20px;
-  font-family: IBM Plex Mono, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
@@ -2342,7 +2342,7 @@ figcaption {
   align-items: center;
   padding-left: 30px;
   padding-right: 30px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   display: flex;
   position: relative;
 }
@@ -2361,7 +2361,7 @@ figcaption {
   height: 90px;
   margin-left: 0;
   margin-right: 0;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   display: flex;
 }
 
@@ -2390,7 +2390,7 @@ figcaption {
   color: #fff;
   margin-left: 15px;
   margin-right: 15px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 600;
   line-height: 24px;
@@ -2412,7 +2412,7 @@ figcaption {
   background-color: #0000;
   border-radius: 4px;
   margin-left: 15px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 600;
   line-height: 24px;
@@ -2459,7 +2459,7 @@ figcaption {
   padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 50px;
   font-weight: 800;
   line-height: 80px;
@@ -2491,7 +2491,7 @@ figcaption {
   align-items: center;
   padding-left: 0;
   padding-right: 0;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 18px;
   font-weight: 800;
   line-height: 24px;
@@ -2513,7 +2513,6 @@ figcaption {
   text-align: left;
   text-transform: uppercase;
   -webkit-text-fill-color: inherit;
-  vertical-align: baseline;
   cursor: nwse-resize;
   object-fit: none;
   background-clip: border-box;
@@ -2524,7 +2523,7 @@ figcaption {
   margin-top: 40px;
   margin-right: 32px;
   padding: 17px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 13px;
   font-weight: 800;
   line-height: 30px;
@@ -2659,7 +2658,7 @@ figcaption {
   flex-flow: column;
   margin-top: 0;
   margin-bottom: 0;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;  /* FIXME: ; */
   font-size: 30px;
   font-weight: 300;
   line-height: 36px;
@@ -2695,7 +2694,7 @@ figcaption {
   width: 100%;
   margin-bottom: 0;
   padding-left: 20px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;  /* FIXME: ; */
   display: flex;
 }
 
@@ -2745,7 +2744,7 @@ figcaption {
   color: #000;
   margin-top: 0;
   margin-bottom: 10px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;  /* FIXME: ; */
   font-size: 16px;
   font-weight: 600;
 }
@@ -2835,7 +2834,7 @@ figcaption {
 .link {
   color: var(--medium-sea-green);
   text-transform: uppercase;
-  font-family: IBM Plex Mono, sans-serif;
+  font-family: 'Manrope', sans-serif;  /* FIXME: ; */
   font-size: 12px;
   font-weight: 400;
   line-height: 18px;
@@ -2980,7 +2979,7 @@ figcaption {
 .text-footer-credits {
   color: #666;
   margin-top: 15px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 600;
   line-height: 18px;
@@ -2989,7 +2988,7 @@ figcaption {
 .footer-links-list {
   flex-direction: column;
   padding-right: 50px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 600;
   display: flex;
@@ -2998,7 +2997,7 @@ figcaption {
 .link-footer {
   color: #fff;
   margin-bottom: 25px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 600;
   line-height: 18px;
@@ -3175,7 +3174,7 @@ figcaption {
 .block-quote {
   color: var(--medium-sea-green);
   border-left: 0 #0000;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 24px;
   font-weight: 300;
   line-height: 36px;
@@ -3197,7 +3196,7 @@ figcaption {
 .text-block {
   color: #000;
   margin-left: 20px;
-  font-family: IBM Plex Mono, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 24px;
@@ -3230,7 +3229,7 @@ figcaption {
 
 .price {
   color: #000;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 72px;
   font-weight: 800;
   line-height: 78px;
@@ -3246,7 +3245,7 @@ figcaption {
   color: #999;
   margin-top: 40px;
   margin-left: 10px;
-  font-family: IBM Plex Mono, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 24px;
@@ -3256,7 +3255,7 @@ figcaption {
   color: #000;
   margin-top: 10px;
   margin-bottom: 10px;
-  font-family: IBM Plex Mono, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 400;
   line-height: 18px;
@@ -3287,7 +3286,7 @@ figcaption {
   align-items: center;
   width: 100%;
   height: 60px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 800;
   line-height: 30px;
@@ -3484,7 +3483,7 @@ figcaption {
   color: #000;
   text-transform: uppercase;
   margin-bottom: 10px;
-  font-family: IBM Plex Mono, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 400;
   line-height: 18px;
@@ -3548,7 +3547,7 @@ figcaption {
 .contact-info-text {
   color: #999;
   width: 25%;
-  font-family: IBM Plex Mono, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 24px;
@@ -3572,7 +3571,7 @@ figcaption {
   height: 60px;
   padding-left: 0;
   padding-right: 0;
-  font-family: IBM Plex Mono, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 24px;
@@ -3597,14 +3596,14 @@ figcaption {
 
 .rich-text {
   color: #000;
-  font-family: IBM Plex Mono, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 30px;
 }
 
 .rich-text h2 {
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 24px;
   font-weight: 800;
 }
@@ -3613,7 +3612,7 @@ figcaption {
   color: #000;
   margin-top: 25px;
   margin-bottom: 25px;
-  font-family: IBM Plex Mono, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   line-height: 24px;
 }
@@ -3628,7 +3627,7 @@ figcaption {
   text-align: left;
   margin-top: 0;
   margin-bottom: 25px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 12px;
   line-height: 20px;
 }
@@ -3648,7 +3647,7 @@ figcaption {
 
 .nav-link {
   color: #fff;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 600;
   line-height: 24px;
@@ -3701,7 +3700,7 @@ figcaption {
   color: #fff;
   text-align: left;
   padding-left: 0;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 400;
 }
@@ -3719,13 +3718,13 @@ figcaption {
 .heading {
   color: #fff;
   margin-bottom: -14px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-weight: 800;
 }
 
 .paragraph-3 {
   color: #fff;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 20px;
 }
 
@@ -3788,7 +3787,7 @@ figcaption {
   border-radius: 15px;
   order: 1;
   margin-bottom: 20px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   text-decoration: none;
 }
 
@@ -3826,12 +3825,12 @@ figcaption {
 
 .emotion-heading {
   margin-bottom: 10px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .bold-text-2 {
   text-align: center;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-weight: 800;
 }
 
@@ -3840,7 +3839,7 @@ figcaption {
   margin-bottom: 20px;
   padding-left: 80px;
   padding-right: 80px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .about-paragraph {
@@ -3849,7 +3848,7 @@ figcaption {
   margin-bottom: 20px;
   padding-left: 20px;
   padding-right: 20px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .about-heading {
@@ -3911,7 +3910,7 @@ figcaption {
   margin-bottom: 30px;
   padding-left: 0;
   padding-right: 0;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   display: block;
 }
 
@@ -3936,7 +3935,7 @@ figcaption {
   margin-bottom: 0;
   margin-right: 9px;
   padding: 5px 16px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   line-height: 20px;
   transition: all .2s;
@@ -3964,7 +3963,7 @@ figcaption {
   text-transform: uppercase;
   border-radius: 15px;
   padding: 12px 25px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 12px;
   line-height: 20px;
   transition: all .2s;
@@ -4003,7 +4002,7 @@ figcaption {
 }
 
 .bold-text-4, .heading-4 {
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .div-block-2 {
@@ -4016,7 +4015,7 @@ figcaption {
   flex-flow: column;
   align-items: center;
   padding: 110px 130px 130px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   display: flex;
 }
 
@@ -4026,7 +4025,7 @@ figcaption {
 
 .emotion-sentence {
   margin-bottom: 20px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 17px;
 }
 
@@ -4062,7 +4061,7 @@ figcaption {
   width: 700px;
   padding-top: 20px;
   padding-bottom: 45px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   display: flex;
   box-shadow: 3px 2px 5px #0003;
 }
@@ -4101,7 +4100,7 @@ figcaption {
 }
 
 .list-item, .list-item-2, .list-item-3, .description-list-item {
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .selection-button {
@@ -4179,7 +4178,7 @@ figcaption {
   width: 1000px;
   max-width: 1000px;
   height: 50px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .intensity-button {
@@ -4188,7 +4187,7 @@ figcaption {
   align-self: auto;
   width: 120px;
   padding: 16px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 600;
   transition: transform 1s cubic-bezier(.075, .82, .165, 1), box-shadow .2s cubic-bezier(.075, .82, .165, 1), background-color .2s;
@@ -4208,7 +4207,7 @@ figcaption {
   width: 120px;
   padding-top: 10px;
   padding-bottom: 10px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 600;
   transition: transform 1s cubic-bezier(.075, .82, .165, 1), box-shadow .2s cubic-bezier(.075, .82, .165, 1), background-color .2s;
@@ -4246,7 +4245,7 @@ figcaption {
   align-items: center;
   width: 400px;
   padding: 12px 20px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   transition: box-shadow .5s cubic-bezier(.075, .82, .165, 1), transform 1.7s cubic-bezier(.075, .82, .165, 1);
   display: flex;
 }
@@ -4259,7 +4258,7 @@ figcaption {
 .result-header-content {
   flex-flow: column;
   align-items: center;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   display: flex;
 }
 
@@ -4301,7 +4300,7 @@ figcaption {
   background-color: var(--light-grey);
   border-radius: 5px;
   width: 700px;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   transition: transform 1s cubic-bezier(.075, .82, .165, 1), box-shadow .5s cubic-bezier(.075, .82, .165, 1);
 }
 
@@ -4313,7 +4312,7 @@ figcaption {
 .curated-heading {
   color: var(--purple);
   width: auto;
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .textarea {
@@ -4321,7 +4320,7 @@ figcaption {
 }
 
 .heading-5 {
-  font-family: Libre Franklin, sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 45px;
   font-weight: 800;
 }
