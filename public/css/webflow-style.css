@@ -3835,14 +3835,6 @@ figcaption {
   font-weight: 800;
 }
 
-.emotion-paragraph {
-  text-align: center;
-  margin-bottom: 20px;
-  padding-left: 80px;
-  padding-right: 80px;
-  font-family: 'Manrope', sans-serif;
-}
-
 .about-paragraph {
   color: var(--white);
   text-align: left;
@@ -4035,10 +4027,18 @@ figcaption {
   padding-right: 80px;
 }
 
+.emotion-paragraph {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-left: 80px;
+  padding-right: 80px;
+  font-family: 'Manrope', sans-serif;
+}
+
 .emotion-paragraph1 {
   text-align: center;
   margin-top: 11px;
-  margin-bottom: 39px;
+  margin-bottom: 30px;
   padding-left: 80px;
   padding-right: 80px;
 }
