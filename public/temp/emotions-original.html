@@ -25,35 +25,6 @@
       font-feature-settings: "liga" on;
       text-rendering: optimizeLegibility;
     }
-    .interactive-section {
-      margin: 20px 0;
-    }
-    .dropdown-label, .input-label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    .emotion-dropdown, .user-input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    .submit-button {
-      padding: 10px 20px;
-      background-color: #48944f;
-      color: white;
-      border: none;
-      border-radius: 25px;
-      transition: background-color 0.3s ease, transform 0.3s ease;
-      cursor: pointer;
-    }
-    .submit-button:hover {
-      background-color: #000000;
-      transform: translate(0px, -3px);
-      box-shadow: 1px 2px 3px #0003;
-    }
   </style>
 </head>
 <body>
@@ -78,23 +49,7 @@
     </div>
   </div>
   <div class="emotions">
-    <div class="interactive-section">
-      <label for="emotion-dropdown" class="dropdown-label">Select an Emotion:</label>
-      <select id="emotion-dropdown" class="emotion-dropdown">
-        <option value="sadness">Sadness</option>
-        <option value="happiness">Happiness</option>
-        <option value="fear">Fear</option>
-        <option value="anger">Anger</option>
-        <option value="surprise">Surprise</option>
-        <option value="disgust">Disgust</option>
-      </select>
-      
-      <label for="user-input" class="input-label">Describe your feelings:</label>
-      <input type="text" id="user-input" class="user-input" placeholder="Type here...">
-      
-      <button id="submit-button" class="submit-button">Submit</button>
-    </div>
-    <!-- <div class="nav-emotions">
+    <div class="nav-emotions">
       <div class="emotions-description">
         <h2 class="description-heading">😠 Angry</h2>
         <div class="emotion-description1">
@@ -139,7 +94,7 @@
               Recommendation</a></div>
         </div>
       </div>
-    </div> -->
+    </div>
   </div>
   <div class="separator">
     <div class="container">
