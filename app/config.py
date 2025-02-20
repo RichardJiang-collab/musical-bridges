@@ -9,7 +9,7 @@ class Config:
 
     # Database configuration
     basedir = os.path.abspath(os.path.dirname(__file__))
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///' + os.path.join(basedir, '..', 'instance', 'emotion_music.db')).replace("postgres://", "postgresql://")
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///' + os.path.join(basedir, '..', 'instance', 'main.db')).replace("postgres://", "postgresql://")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     SPOTIFY_CLIENT_ID = os.environ.get('SPOTIFY_CLIENT_ID')
