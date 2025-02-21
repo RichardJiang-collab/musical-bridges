@@ -14,6 +14,8 @@ load_dotenv()
 main = Blueprint('main', __name__)
 CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
+API_KEY = current_app.config.get('MOONSHOT_API_KEY')
+
 #* DEBUGGING
 @main.route('/debug-env')
 def debug_env():
@@ -144,7 +146,7 @@ def genres_page():
 
 #* Route for understanding and pinpointing the user's emotion
 client = OpenAI(
-    api_key=current_app.config.get('MOONSHOT_API_KEY'),
+    api_key=API_KEY,
     base_url="https://api.moonshot.cn/v1"
 )
 @main.route('/refineEmotion', methods=['POST'])

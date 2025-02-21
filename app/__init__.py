@@ -19,6 +19,8 @@ def create_app(config_name='development'):
     app.config['SPOTIFY_CLIENT_SECRET'] = os.environ.get('SPOTIFY_CLIENT_SECRET')
     app.config['SPOTIFY_REDIRECT_URI'] = os.environ.get('SPOTIFY_REDIRECT_URI')
 
+    app.config['MOONSHOT_API_KEY'] = os.environ.get('MOONSHOT_API_KEY')
+
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
     app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_folder, prefix='static/')
 
