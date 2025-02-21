@@ -17,6 +17,8 @@ class Config:
     SPOTIFY_REDIRECT_URI = os.environ.get('SPOTIFY_REDIRECT_URI', 'https://musical-bridges-063243932240.herokuapp.com/callback')
     DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')
 
+    MOONSHOT_API_KEY = os.environ.get('MOONSHOT_API_KEY')   
+
     # Songs and Playlists Track Numbers
     SONGS_PER_PAGE = 20
     MIN_PLAYLIST_TRACKS = 10

@@ -4,9 +4,10 @@ from .models import Emotion, User, UserGenre, SavedTopSongsLinks
 from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
 from .extensions import db
-import os
 import time
 from dotenv import load_dotenv
+from openai import OpenAI
+from aiohttp import ClientSession  # For async HTTP requests if needed
 
 load_dotenv()
 
@@ -20,6 +21,7 @@ def debug_env():
         'SPOTIFY_SCOPES': current_app.config.get('SPOTIFY_SCOPES'),
         'OTHER_VARIABLE': current_app.config.get('OTHER_VARIABLE')
     })
+
 
 #* Part 1. Login, Authentication, and Signout
 @main.route('/callback')
@@ -104,6 +106,7 @@ def signout():
     session.clear()
     return redirect('/')
 
+
 #* Part 2. Routes for each page of the website
 @main.route('/')
 def index():
@@ -115,20 +118,6 @@ def emotions():
     if auth_check:
         return auth_check
     return send_from_directory(current_app.static_folder, 'emotions.html')
-
-@main.route('/anger-selection')
-def anger_selection():
-    auth_check = check_auth()
-    if auth_check:
-        return auth_check
-    return send_from_directory(current_app.static_folder, 'anger-selection.html')
-
-@main.route('/sadness-selection')
-def sadness_selection():
-    auth_check = check_auth()
-    if auth_check:
-        return auth_check
-    return send_from_directory(current_app.static_folder, 'sadness-selection.html')
 
 @main.route('/recommendations')
 def recommendations():
@@ -151,6 +140,47 @@ def genres_page():
     if auth_check:
         return auth_check
     return send_from_directory(current_app.static_folder, 'genre.html')
+
+
+#* Route for understanding and pinpointing the user's emotion
+client = OpenAI(
+    api_key=current_app.config.get('MOONSHOT_API_KEY'),
+    base_url="https://api.moonshot.cn/v1"
+)
+@main.route('/refineEmotion', methods=['POST'])
+async def refine_emotion():
+    try:
+        data = request.get_json()
+        main_emotion, emotion_detail = data.get('mainEmotion'), data.get('emotionDetail')
+        if not main_emotion:
+            return jsonify({'error': 'Main emotion is required'}), 400
+        if emotion_detail and emotion_detail.strip():
+            prompt = f"""请根据以下描述细化情感，并在以下情感列表中选择最匹配的情感，仅回复情感名称：
+            情感描述: "{emotion_detail}"
+            主要情感: "{main_emotion}"
+            情感列表: Joy, Love, Devotion, Tender feelings, Suffering, Weeping, High spirits, Low spirits, Anxiety, Grief, Dejection, Despair, Anger, Hatred, Disdain, Contempt, Disgust, Guilt, Pride, Helplessness, Patience, Affirmation, Negation, Surprise, Fear, Self-attention, Shyness, Modesty, Blushing, Reflection, Meditation, Ill-temper, Sulkiness, Determination.
+            """
+
+            async with ClientSession() as session:
+                completion = await client.chat.completions.create(
+                    model="moonshot-v1-8k",
+                    messages=[
+                        {"role": "system", "content": "你是 Kimi，由 Moonshot AI 提供的人工智能助手，擅长中文和英文的对话，回答安全、准确且有帮助。"},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.3,
+                    max_tokens=20
+                )
+            refine_emotion = completion.choices[0].message.content.strip()
+            return jsonify({'refinedEmotion': refine_emotion})
+        
+        else:
+            return jsonify({'emotion': main_emotion})
+
+    except Exception as e:
+        print(f"Error refining emotion: {e}")
+        return jsonify({'error': 'Failed to refine emotion'}), 500
+
 
 #* Part 3. Functions for creating tailored playlist
 def get_token():
@@ -220,6 +250,7 @@ def create_playlist():
     except Exception as e:
         current_app.logger.error(f"Error in create_playlist: {str(e)}")
         return jsonify({'error': str(e)}), 500
+    
 
 #* Part 4. Function for recommending tailored top 5 tracks to the users
 @main.route('/api/recommend_top_tracks/<string:playlist_id>', methods=['GET'])
@@ -273,6 +304,7 @@ def update_genres():
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
 
 #* Part 6. Allowing users to save tracks they love
 @main.route('/api/save_top_song', methods=['POST'])
@@ -297,6 +329,7 @@ def save_top_song():
     db.session.commit()
 
     return jsonify({'message': 'Song saved successfully!'}), 201
+
 
 @main.route('/api/get_saved_tracks', methods=['GET'])
 def get_saved_tracks():

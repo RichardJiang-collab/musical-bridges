@@ -1,0 +1,18 @@
+/Users/richardjiang/Downloads/3 - Personal Projects/1. Musical Bridges/musical-bridges-dev/public/
+├── .DS_Store
+├── css/
+│   ├── .DS_Store
+│   └── webflow-style.css
+├── emotions.html
+├── genre.html
+├── images/
+├── index.html
+├── js/
+│   ├── jquery.js
+│   ├── script.js
+│   └── webflow-script.js
+├── main.html
+├── node_modules/
+├── package-lock.json
+├── package.json
+├── recommendations.html
