@@ -34,5 +34,7 @@ def create_app(config_name='development'):
     app.register_blueprint(main_blueprint)
 
     with app.app_context():
+        from .main import init_api_client
+        init_api_client()
         db.create_all()
     return app
