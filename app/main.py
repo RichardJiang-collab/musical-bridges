@@ -4,7 +4,7 @@ from .models import Emotion, User, UserGenre, SavedTopSongsLinks
 from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
 from .extensions import db
-import time
+import time, httpx
 from dotenv import load_dotenv
 from openai import OpenAI
 from aiohttp import ClientSession  # For async HTTP requests if needed
@@ -16,9 +16,11 @@ CORS(main, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 def init_api_client():
     global client
+    http_client = httpx.Client(proxies=None)
     client = OpenAI(
         api_key=current_app.config['MOONSHOT_API_KEY'],
-        base_url="https://api.moonshot.cn/v1"
+        base_url="https://api.moonshot.cn/v1",
+        http_client=http_client
     )
 
 #* DEBUGGING
