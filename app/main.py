@@ -151,7 +151,7 @@ def genres_page():
 
 
 #* Route for understanding and pinpointing the user's emotion
-@main.route('/refineEmotion', methods=['POST'])
+@main.route('/api/refineEmotion', methods=['POST'])
 async def refine_emotion():
     try:
         data = request.get_json()
