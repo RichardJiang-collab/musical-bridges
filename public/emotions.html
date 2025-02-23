@@ -136,30 +136,32 @@
   <script src="/js/jquery.js" type="text/javascript"></script>
   <script src="/js/webflow-script.js" type="text/javascript"></script>
   <script>
-    document.getElementById("submitBtn").addEventListener("click", async () => { // Add event listener to the submit button
-      const mainEmotion = document.getElementById("mainEmotion").value; // Get the value of the main emotion input
-      const emotionDetail = document.getElementById("emotionDetail").value.trim(); // Uncaught (in promise) TypeError: Cannot read properties of null (reading 'value')
-      const payload = { mainEmotion }; // Create a payload object with the main emotion
-      if (emotionDetail.length > 0) { // If emotion detail is not empty
-        payload.emotionDetail = emotionDetail; // Add emotion detail to the payload
-      }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("submitBtn").addEventListener("click", async () => {
+        const mainEmotion = document.getElementById("mainEmotion").value;
+        const emotionDetailElement = document.getElementById("emotionDetail");
+        const emotionDetail = emotionDetailElement ? emotionDetailElement.value.trim() : "";
+        const payload = { mainEmotion };
+        if (emotionDetail.length > 0) {
+          payload.emotionDetail = emotionDetail;
+        }
     
-      try {
-        const response = await fetch("/api/refineEmotion", { // Send a POST request to the /refineEmotion endpoint
-          method: "POST", // Specify the request method as POST
-          headers: { "Content-Type": "application/json" , "X-myName" : "Richard Jiang"}, // Set the request headers
-          body: JSON.stringify(payload) // Convert the payload object to a JSON string
-        });
-        const data = await response.json(); // Parse the JSON response
-        
-        document.getElementById("result").innerHTML = `
-          <h2>Final Emotion: ${data.emotion}</h2>
-          <p>Now recommending music based on this emotion...</p>
-        `;
-      } catch (err) { // Handle any errors that occur during the fetch
-        console.error("Error fetching recommendation:", err); // Log the error to the console
-        document.getElementById("result").innerHTML = `<p>Error: ${err.message}</p>`; // Display the error message in the result element
-      }
+        try {
+          const response = await fetch("/api/refineEmotion", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-myName": "Richard Jiang" },
+            body: JSON.stringify(payload)
+          });
+          const data = await response.json();
+          document.getElementById("result").innerHTML = `
+            <h2>Final Emotion: ${data.emotion}</h2>
+            <p>Now recommending music based on this emotion...</p>
+          `;
+        } catch (err) {
+          console.error("Error fetching recommendation:", err);
+          document.getElementById("result").innerHTML = `<p>Error: ${err.message}</p>`;
+        }
+      });
     });
   </script>
 
