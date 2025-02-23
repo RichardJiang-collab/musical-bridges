@@ -4,7 +4,7 @@ from .models import Emotion, User, UserGenre, SavedTopSongsLinks
 from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
 from .extensions import db
-import time, httpx, traceback
+import time, httpx, requests
 from dotenv import load_dotenv
 from openai import OpenAI
 from aiohttp import ClientSession  # For async HTTP requests if needed
@@ -152,12 +152,40 @@ def genres_page():
 
 #* Route for understanding and pinpointing the user's emotion
 @main.route('/api/refineEmotion', methods=['POST'])
-async def refine_emotion():
+# def refine_emotion():
+#     try:
+#         data = request.get_json()
+#         main_emotion, emotion_detail = data.get('mainEmotion'), data.get('emotionDetail')
+#         if not main_emotion:
+#             return jsonify({'error': 'Main emotion is required'}), 400
+#         if emotion_detail and emotion_detail.strip():
+#             prompt = f"""请根据以下描述细化情感，并在以下情感列表中选择最匹配的情感，仅回复情感名称：
+#                 情感描述: "{emotion_detail}"
+#                 主要情感: "{main_emotion}"
+#                 情感列表: Joy, Love, Devotion, Tender feelings, Suffering, Weeping, High spirits, Low spirits, Anxiety, Grief, Dejection, Despair, Anger, Hatred, Disdain, Contempt, Disgust, Guilt, Pride, Helplessness, Patience, Affirmation, Negation, Surprise, Fear, Self-attention, Shyness, Modesty, Blushing, Reflection, Meditation, Ill-temper, Sulkiness, Determination.
+#             """
+#             # Replace with actual Moonshot API call
+#             response = requests.post("https://api.moonshot.cn/v1", json={
+#                 "model": "moonshot-v1-8k",
+#                 "messages": [
+#                     {"role": "system", "content": "你是 Kimi，由 Moonshot AI 提供的人工智能助手，擅长中文和英文的对话，回答安全、准确且有帮助。"},
+#                     {"role": "user", "content": prompt}
+#                 ],
+#                 "temperature": 0.3,
+#                 "max_tokens": 20
+#             }, headers={"Authorization": "Bearer YOUR_API_KEY"})
+#             refine_emotion = response.json()["choices"][0]["message"]["content"].strip()
+#             return jsonify({'refinedEmotion': refine_emotion})
+#         else:
+#             return jsonify({'emotion': main_emotion})
+#     except Exception as e:
+#         print(f"Error refining emotion: {e}")
+#         return jsonify({'error': 'Failed to refine emotion'}), 500
+    
+def refine_emotion():
     try:
         data = request.get_json()
-        print(f"Received data: {data}")
         main_emotion, emotion_detail = data.get('mainEmotion'), data.get('emotionDetail')
-        print(f"Main emotion: {main_emotion}, Detail: {emotion_detail}")
         if not main_emotion:
             return jsonify({'error': 'Main emotion is required'}), 400
         if emotion_detail and emotion_detail.strip():
@@ -166,26 +194,22 @@ async def refine_emotion():
                 主要情感: "{main_emotion}"
                 情感列表: Joy, Love, Devotion, Tender feelings, Suffering, Weeping, High spirits, Low spirits, Anxiety, Grief, Dejection, Despair, Anger, Hatred, Disdain, Contempt, Disgust, Guilt, Pride, Helplessness, Patience, Affirmation, Negation, Surprise, Fear, Self-attention, Shyness, Modesty, Blushing, Reflection, Meditation, Ill-temper, Sulkiness, Determination.
             """
-            async with ClientSession() as session:
-                print("Calling API...")
-                completion = await client.chat.completions.create(
-                    model="moonshot-v1-8k",
-                    messages=[
-                        {"role": "system", "content": "你是 Kimi，由 Moonshot AI 提供的人工智能助手，擅长中文和英文的对话，回答安全、准确且有帮助。"},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.3,
-                    max_tokens=20
-                )
-                refine_emotion = completion.choices[0].message.content.strip()
-                print(f"Refined emotion: {refine_emotion}")
-                return jsonify({'refinedEmotion': refine_emotion})
+            completion = client.chat.completions.create(
+                model = "moonshot-v1-8k",
+                messages = [
+                    {"role": "system", "content": "你是 Kimi，由 Moonshot AI 提供的人工智能助手，你更擅长中文和英文的对话。你会为用户提供安全，有帮助，准确的回答。同时，你会拒绝一切涉及恐怖主义，种族歧视，黄色暴力等问题的回答。Moonshot AI 为专有名词，不可翻译成其他语言。"},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature = 0.3,
+                max_tokens=20
+            )
+            refine_emotion = completion.choices[0].message.content
+            return jsonify({'refinedEmotion': refine_emotion})
         else:
             return jsonify({'emotion': main_emotion})
-    except Exception as e:
-        print(f"Error refining emotion: {e}")
-        traceback.print_exc()  # Print full stack trace
-        return jsonify({'error': f'Failed to refine emotion: {str(e)}'}), 500
+    except Exception as error:
+        print(f"Error refining emotion: {error}")
+        return jsonify({'error': 'Failed to refine emotion'}), 500
 
 
 #* Part 3. Functions for creating tailored playlist
