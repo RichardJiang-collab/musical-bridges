@@ -152,7 +152,10 @@
             headers: { "Content-Type": "application/json", "X-myName": "Richard Jiang" },
             body: JSON.stringify(payload)
           });
-          const data = await response.json();
+          console.log("Raw response:", response); // Log the response object
+          const text = await response.text(); // Get raw text first
+          console.log("Response text:", text); // Log the raw text
+          const data = JSON.parse(text); // Parse manually
           document.getElementById("result").innerHTML = `
             <h2>Final Emotion: ${data.emotion}</h2>
             <p>Now recommending music based on this emotion...</p>

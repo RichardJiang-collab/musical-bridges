@@ -4,7 +4,7 @@ from .models import Emotion, User, UserGenre, SavedTopSongsLinks
 from spotipy.oauth2 import SpotifyOAuth
 from flask_cors import CORS
 from .extensions import db
-import time, httpx
+import time, httpx, traceback
 from dotenv import load_dotenv
 from openai import OpenAI
 from aiohttp import ClientSession  # For async HTTP requests if needed
@@ -155,17 +155,19 @@ def genres_page():
 async def refine_emotion():
     try:
         data = request.get_json()
+        print(f"Received data: {data}")
         main_emotion, emotion_detail = data.get('mainEmotion'), data.get('emotionDetail')
+        print(f"Main emotion: {main_emotion}, Detail: {emotion_detail}")
         if not main_emotion:
             return jsonify({'error': 'Main emotion is required'}), 400
         if emotion_detail and emotion_detail.strip():
             prompt = f"""请根据以下描述细化情感，并在以下情感列表中选择最匹配的情感，仅回复情感名称：
-            情感描述: "{emotion_detail}"
-            主要情感: "{main_emotion}"
-            情感列表: Joy, Love, Devotion, Tender feelings, Suffering, Weeping, High spirits, Low spirits, Anxiety, Grief, Dejection, Despair, Anger, Hatred, Disdain, Contempt, Disgust, Guilt, Pride, Helplessness, Patience, Affirmation, Negation, Surprise, Fear, Self-attention, Shyness, Modesty, Blushing, Reflection, Meditation, Ill-temper, Sulkiness, Determination.
+                情感描述: "{emotion_detail}"
+                主要情感: "{main_emotion}"
+                情感列表: Joy, Love, Devotion, Tender feelings, Suffering, Weeping, High spirits, Low spirits, Anxiety, Grief, Dejection, Despair, Anger, Hatred, Disdain, Contempt, Disgust, Guilt, Pride, Helplessness, Patience, Affirmation, Negation, Surprise, Fear, Self-attention, Shyness, Modesty, Blushing, Reflection, Meditation, Ill-temper, Sulkiness, Determination.
             """
-
             async with ClientSession() as session:
+                print("Calling API...")
                 completion = await client.chat.completions.create(
                     model="moonshot-v1-8k",
                     messages=[
@@ -175,15 +177,15 @@ async def refine_emotion():
                     temperature=0.3,
                     max_tokens=20
                 )
-            refine_emotion = completion.choices[0].message.content.strip()
-            return jsonify({'refinedEmotion': refine_emotion})
-        
+                refine_emotion = completion.choices[0].message.content.strip()
+                print(f"Refined emotion: {refine_emotion}")
+                return jsonify({'refinedEmotion': refine_emotion})
         else:
             return jsonify({'emotion': main_emotion})
-
     except Exception as e:
         print(f"Error refining emotion: {e}")
-        return jsonify({'error': 'Failed to refine emotion'}), 500
+        traceback.print_exc()  # Print full stack trace
+        return jsonify({'error': f'Failed to refine emotion: {str(e)}'}), 500
 
 
 #* Part 3. Functions for creating tailored playlist
