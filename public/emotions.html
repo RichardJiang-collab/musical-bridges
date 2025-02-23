@@ -97,7 +97,7 @@
       
       <!-- User Input -->
       <label for="emotionDetail" class="input-label">Describe your current feeling (optional):</label>
-      <input type="emotionDetail" id="user-input" class="user-input" placeholder="Enter details here...">
+      <input type="emotionDetail" id="emotionalDetail" class="user-input" placeholder="Enter details here...">
       
       <!-- Submit Button -->
       <button id="submitBtn" class="submit-button">Submit</button>
@@ -138,7 +138,7 @@
   <script>
     document.getElementById("submitBtn").addEventListener("click", async () => { // Add event listener to the submit button
       const mainEmotion = document.getElementById("mainEmotion").value; // Get the value of the main emotion input
-      const emotionDetail = document.getElementById("emotionDetail").value.trim(); // Get the value of the emotion detail input and trim whitespace
+      const emotionDetail = document.getElementById("emotionDetail").value.trim(); // Uncaught (in promise) TypeError: Cannot read properties of null (reading 'value')
       const payload = { mainEmotion }; // Create a payload object with the main emotion
       if (emotionDetail.length > 0) { // If emotion detail is not empty
         payload.emotionDetail = emotionDetail; // Add emotion detail to the payload
