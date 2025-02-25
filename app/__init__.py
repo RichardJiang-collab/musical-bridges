@@ -2,12 +2,14 @@ import os
 from flask import Flask
 from .extensions import db, migrate
 from .main import main as main_blueprint
+from .utils import init_app
 from flask_cors import CORS
 from whitenoise import WhiteNoise
 
 def create_app(config_name='development'):
     base_dir = os.path.abspath(os.path.dirname(__file__))
     static_folder = os.path.join(base_dir, '..', 'public')
+    init_app()
 
     app = Flask(__name__, instance_relative_config=True, static_folder=static_folder, static_url_path='/static')
     app.config.from_object(f'app.config.{config_name.capitalize()}Config')

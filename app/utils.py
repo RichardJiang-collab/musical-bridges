@@ -4,7 +4,11 @@ import spotipy, random, os
 
 random.seed(42)
 ALL_GENRES = []
-GENRES_PATH = os.path.join(current_app.static_folder, 'genres.md')
+GENRES_PATH = None
+
+def init_app(app):
+    global GENRES_PATH
+    GENRES_PATH = os.path.join(app.static_folder, 'genres.md')
 
 with open(GENRES_PATH, 'r', encoding='utf-8') as file:
     lines = file.readlines()
