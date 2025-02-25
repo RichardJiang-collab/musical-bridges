@@ -4,7 +4,8 @@ import spotipy, random
 
 random.seed(42)
 ALL_GENRES = []
-with open('genres.md', 'r', encoding='utf-8') as file:
+
+with open('/genres-markdown', 'r', encoding='utf-8') as file:
     lines = file.readlines()
     for line in lines:
         if line.strip() and line.strip()[0].isdigit():
