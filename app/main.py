@@ -200,10 +200,6 @@ def genres_page():
         return auth_check
     return send_from_directory(current_app.static_folder, 'genre.html')
 
-@main.route('/genres-markdown')
-def genres_markdown():
-    return send_from_directory(current_app.static_folder, 'genres.md')
-
 
 #* Route for understanding and pinpointing the user's emotion
 @main.route('/api/refineEmotion', methods=['POST'])
