@@ -104,7 +104,7 @@
 
       <!-- Area to display the final emotion and recommendation -->
       <div id="result" style="margin-top: 30px;">
-        <a href="/recommendations" id="finalEmotionLink" style="color: #333;"><h2>Final Emotion: Sadness</h2></a>
+        <a href="/recommendations" id="finalEmotionLink" style="color: #333;"><h2></h2></a>
       </div>
     </div>
   </div>
@@ -163,9 +163,8 @@
           const text = await response.text(); // Get raw text first
           console.log("Response text:", text); // Log the raw text
           const data = JSON.parse(text); // Parse manually
-          document.getElementById("result").innerHTML = `
-            <h2>Final Emotion: ${data.emotion}</h2>
-          `;
+          const capitalizedEmotion = data.emotion.charAt(0).toUpperCase() + data.emotion.slice(1);
+          document.getElementById("result").innerHTML = `<h2>Final Emotion: ${capitalizedEmotion}</h2>`;
 
           setTimeout(() => {
             window.location.href = `/recommendations?emotion_type=${encodeURIComponent(data.emotion)}`;

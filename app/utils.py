@@ -78,6 +78,7 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
         raise Exception("Spotify client not authenticated")
     
     GENRES_PATH = current_app.config['GENRES_PATH']
+    ALL_GENRES = []
     with open(GENRES_PATH, 'r', encoding='utf-8') as file:
         lines = file.readlines()
         for line in lines:
@@ -90,14 +91,25 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
     random_genres = random.sample(ALL_GENRES, k=3)
     combined_genres = list(set(user_genres + random_genres))  # Combining user and random genres
 
-    # 2. Fetch recommendations based on genres and attributes
+    # 2. Fetch valid genre seeds from Spotify and filter combined_genres
+    try:
+        valid_genres = sp.recommendation_genre_seeds()['genres']  # Get available genre seeds
+        # Keep only genres that exist in Spotify's valid genre seeds
+        combined_genres = [genre for genre in combined_genres if genre.lower() in valid_genres]
+        if not combined_genres:  # If no valid genres remain, use fallback genres
+            combined_genres = random.sample(valid_genres, k=min(3, len(valid_genres)))
+    except Exception as e:
+        print(f"Error fetching valid genre seeds: {str(e)}")
+        combined_genres = ['pop', 'rock']  # Fallback to safe defaults if API call fails
+
+    # 3. Limit to 5 genres (Spotify max for seeds) and apply attributes
     if len(user_genres) > 5:
         combined_genres = list(set(random.sample(user_genres, 5)))
     elif len(combined_genres) > 5:
         combined_genres = list(set(random.sample(combined_genres, 5)))
     attributes = emotion_to_attributes.get(emotion, {})
 
-    # 3. Fetch recommendations from Spotify
+    # 4. Fetch recommendations from Spotify
     try:
         results = sp.recommendations(limit=max_count, seed_genres=combined_genres, **attributes)
     except Exception as e:
@@ -106,7 +118,7 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
     if len(results.get('tracks', [])) < min_count:
         return []
 
-    # 4. Parse the results and return as Song objects
+    # 5. Parse the results and return as Song objects
     return [Song(
         spotify_id=track['id'],
         title=track['name'],
