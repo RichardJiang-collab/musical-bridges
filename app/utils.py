@@ -6,7 +6,7 @@ random.seed(42)
 ALL_GENRES = []
 GENRES_PATH = os.path.join(current_app.static_folder, 'genres.md')
 
-with open('', 'r', encoding='utf-8') as file:
+with open(GENRES_PATH, 'r', encoding='utf-8') as file:
     lines = file.readlines()
     for line in lines:
         if line.strip() and line.strip()[0].isdigit():
