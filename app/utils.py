@@ -1,14 +1,17 @@
 from flask import current_app, session
 from .models import Song, Emotion
 import spotipy, random, os
+from app import create_app
 
 random.seed(42)
 ALL_GENRES = []
+app = create_app()
 
 def init_app(app):
     return os.path.join(app.static_folder, 'genres.md')
 
-GENRES_PATH = current_app.config['GENRES_PATH']
+with app.app_context():
+    GENRES_PATH = current_app.config['GENRES_PATH']
 
 with open(GENRES_PATH, 'r', encoding='utf-8') as file:
     lines = file.readlines()
