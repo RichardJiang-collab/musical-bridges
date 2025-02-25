@@ -5,20 +5,9 @@ from app import create_app
 
 random.seed(42)
 ALL_GENRES = []
-app = create_app()
 
 def init_app(app):
     return os.path.join(app.static_folder, 'genres.md')
-
-with app.app_context():
-    GENRES_PATH = current_app.config['GENRES_PATH']
-
-with open(GENRES_PATH, 'r', encoding='utf-8') as file:
-    lines = file.readlines()
-    for line in lines:
-        if line.strip() and line.strip()[0].isdigit():
-            genre = line.strip().split('. ', 1)[1]
-            ALL_GENRES.append(genre)
 
 #* Defining the attributes for each emotion
 emotion_to_attributes = {
@@ -88,6 +77,14 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
     sp = get_spotify_client()
     if not sp:
         raise Exception("Spotify client not authenticated")
+    
+    GENRES_PATH = current_app.config['GENRES_PATH']
+    with open(GENRES_PATH, 'r', encoding='utf-8') as file:
+        lines = file.readlines()
+        for line in lines:
+            if line.strip() and line.strip()[0].isdigit():
+                genre = line.strip().split('. ', 1)[1]
+                ALL_GENRES.append(genre)
 
     # 1. Get user-selected genres and add random genres
     user_genres = session.get('selectedGenres', [])
