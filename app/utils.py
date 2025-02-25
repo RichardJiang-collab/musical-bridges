@@ -1,7 +1,6 @@
 from flask import current_app, session
 from .models import Song, Emotion
 import spotipy, random, os
-from app import create_app
 
 random.seed(42)
 ALL_GENRES = []
