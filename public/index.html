@@ -148,8 +148,8 @@
   <!-- 5. Footer Section -->
   <div class="footer">
     <div class="container cc-footer">
-      <div class="footer-column cc-footer"><a href="/" aria-current="page"
-          class="navigation-logo w-inline-block w--current"><img src="/static/images/unknown.svg" width="341" alt="" /></a>
+      <div class="footer-column cc-footer"><a href="/" class="navigation-logo w-inline-block"><img
+            src="/static/images/unknown.svg" width="341" alt="" /></a>
         <div class="text-footer-credits">© 2025 Musical Bridges, All rights reserved.</div>
       </div>
       <div class="footer-column">
@@ -157,34 +157,33 @@
               alt="" /></a><a href="#" class="link-social w-inline-block"><img src="/static/images/icon-twitter.svg"
               alt="" /></a><a href="#" class="link-social w-inline-block"><img src="/static/images/icon-instagram.svg"
               alt="" /></a></div>
-        <div class="footer-links-list"><a href="/about" class="link-footer">About</a><a href="/blog"
-            class="link-footer">Emotions</a><a href="/recommendations" class="link-footer">Contact</a></div>
+        <div class="footer-links-list"><a href="/" class="link-footer">About</a><a href="/emotions"
+            class="link-footer">Emotions</a><a href="/" class="link-footer">Contact</a></div>
       </div>
     </div>
   </div>
+  
+  <!-- Script Section -->
   <script src="/static/js/jquery.js" type="text/javascript"></script>
   <script src="/static/js/webflow-script.js" type="text/javascript"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var emotionButton = document.getElementById('emotion_page');
+      if (emotionButton) {
+        emotionButton.addEventListener('click', function(event) {
+          event.preventDefault();
+          window.location.href = '/emotions';
+        });
+      }
+      // Profile Icon logic
+      var profileIcon = document.getElementById('profile-icon');
+      if (profileIcon) {
+        profileIcon.addEventListener('click', function(event) {
+          event.preventDefault();
+          window.location.href = '/user-profile'; // Or dynamically change this based on login status
+        });
+      }
+    });
+  </script>
 </body>
 </html>
-
-<!-- Script Section -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var emotionButton = document.getElementById('emotion_page');
-    if (emotionButton) {
-      emotionButton.addEventListener('click', function(event) {
-        event.preventDefault();
-        window.location.href = '/emotions';
-      });
-    }
-
-    // Profile Icon logic
-    var profileIcon = document.getElementById('profile-icon');
-    if (profileIcon) {
-      profileIcon.addEventListener('click', function(event) {
-        event.preventDefault();
-        window.location.href = '/user-profile'; // Or dynamically change this based on login status
-      });
-    }
-  });
-</script>

@@ -146,9 +146,8 @@
               alt="" /></a><a href="#" class="link-social w-inline-block"><img src="/static/images/icon-twitter.svg"
               alt="" /></a><a href="#" class="link-social w-inline-block"><img src="/static/images/icon-instagram.svg"
               alt="" /></a></div>
-        <div class="footer-links-list"><a href="/about" class="link-footer">About</a><a href="/blog"
-            class="link-footer">Emotions</a><a href="/recommendations" aria-current="page"
-            class="link-footer w--current">Contact</a></div>
+        <div class="footer-links-list"><a href="/" class="link-footer">About</a><a href="/emotions"
+            class="link-footer">Emotions</a><a href="/" class="link-footer">Contact</a></div>
       </div>
     </div>
   </div>
@@ -181,21 +180,18 @@
             attempt();
         });
     }
-
+    
     window.onload = function () {
       // Fetch playlist and tracks on page load
       var urlParams = new URLSearchParams(window.location.search);
       var emotion = urlParams.get('emotion_type');
-      var intensity = urlParams.get('intensity_type');
-    
       console.log('Emotion Type: ' + emotion);
-      console.log('Intensity Type: ' + intensity);
-    
+      
       fetchWithRetry('/api/create_playlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ emotion, intensity })
+        body: JSON.stringify({ emotion })
       })
       .then(data => {
         console.log('Response received from backend:', data);
@@ -238,9 +234,24 @@
       });
     
       function handleStarClick(icon, isPlaylist) {
-        const user_id = 'current_user_id'; // Replace this with the actual user ID from your app's session or context
+        const user_id = document.querySelector('meta[name="user-id"]').content; // Replace with actual user ID from session/auth
       
-        if (icon.src.includes('star-20icon.png')) {
+        // Determine if we're saving (star is currently unfilled) or unsaving (star is filled)
+        const isSaving = !icon.classList.contains('clicked');
+      
+        // Get the link or identifier to send
+        const linkElement = isPlaylist 
+          ? document.getElementById('playlist-embed') 
+          : icon.closest('.topsongs_div').querySelector('.songcode');
+        const link = linkElement.innerHTML; // Ideally, extract an ID instead of full embed code
+      
+        // Define the appropriate endpoint based on action and type
+        const apiEndpoint = isPlaylist 
+          ? (isSaving ? '/api/save_playlist' : '/api/unsave_playlist') 
+          : (isSaving ? '/api/save_top_song' : '/api/unsave_top_song');
+      
+        // Toggle the star icon state
+        if (isSaving) {
           icon.src = '/static/images/star-20icon-fill.png';
           icon.classList.add('clicked');
         } else {
@@ -248,47 +259,46 @@
           icon.classList.remove('clicked');
         }
       
-        const link = isPlaylist 
-          ? document.getElementById('playlist-embed').innerHTML 
-          : icon.closest('.topsongs_div').querySelector('.songcode').innerHTML;
-      
-        const apiEndpoint = isPlaylist ? '/api/save_playlist' : '/api/save_top_song';
-        
+        // Send the request
         fetch(apiEndpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ user_id, link })
+          body: JSON.stringify({ user_id, link }) // Replace 'link' with an ID if available
         })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Failed to save: ${response.statusText}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log('Save successful:', data);
-          showSuccessMessage(isPlaylist);
-        })
-        .catch(error => {
-          console.error('Save error:', error);
-          alert('Failed to save. Please try again.');
-        });
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Failed to ${isSaving ? 'save' : 'unsave'}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            showSuccessMessage(isPlaylist, isSaving);
+          })
+          .catch(error => {
+            // Revert star state on failure
+            if (isSaving) {
+              icon.src = '/static/images/star-20icon.png';
+              icon.classList.remove('clicked');
+            } else {
+              icon.src = '/static/images/star-20icon-fill.png';
+              icon.classList.add('clicked');
+            }
+            alert(`Failed to ${isSaving ? 'save' : 'unsave'}. Please try again.`);
+          });
       }
       
-      function showSuccessMessage(isPlaylist) {
+      // Update success message to reflect save or unsave
+      function showSuccessMessage(isPlaylist, isSaving) {
         const successContainer = document.getElementById('success-container');
         const successMessage = document.getElementById('successMessage');
-        successMessage.textContent = isPlaylist
-          ? 'Your playlist is successfully saved in your library! Go check it out in your profile!'
-          : 'Your song is successfully saved in your library! Go check it out in your profile!';
-      
+        successMessage.textContent = isSaving 
+          ? `Your ${isPlaylist ? 'playlist' : 'song'} is successfully saved!` 
+          : `Your ${isPlaylist ? 'playlist' : 'song'} is removed from your library!`;
         successContainer.classList.add('show');
-        setTimeout(() => {
-          successContainer.classList.remove('show');
-        }, 3000);
+        setTimeout(() => successContainer.classList.remove('show'), 3000);
       }      
-    };     
+    };
   </script>
 </body>
 </html>

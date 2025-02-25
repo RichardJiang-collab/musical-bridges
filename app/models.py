@@ -4,10 +4,10 @@ from datetime import datetime, timezone
 
 #* Defining Classes
 class Emotion(Enum):
-    SAD_NORMAL = 'SAD_NORMAL'
-    SAD_INTENSE = 'SAD_INTENSE'
-    ANGRY_NORMAL = 'ANGRY_NORMAL'
-    ANGRY_INTENSE = 'ANGRY_INTENSE'
+    JOY = 'JOY'
+    TENDER = 'TENDER'
+    ANGER = 'ANGER'
+    SADNESS = 'SADNESS'
 
 class User(db.Model):
     __tablename__ = 'users'

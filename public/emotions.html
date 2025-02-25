@@ -82,10 +82,10 @@
   </div>
 
   <!-- Main Section -->
-  <div class="emotions">
+  <div class="emotions" style="padding-top: 70px;">
     <div class="interactive-section">
       <!-- Dropdown -->
-      <label for="mainEmotion" class="dropdown-label">Choose a main Emotion:</label>
+      <label for="mainEmotion" class="dropdown-label" style="font-size:large">Choose a Main Emotion:</label>
       <select id="mainEmotion" class="emotion-dropdown">
         <option value="sadness">Sadness</option>
         <option value="happiness">Happiness</option>
@@ -96,14 +96,16 @@
       </select>
       
       <!-- User Input -->
-      <label for="emotionDetail" class="input-label">Describe your current feeling (optional):</label>
+      <label for="emotionDetail" class="input-label" style="font-size:large; margin-top:15px;">Describe your current feeling (optional):</label>
       <input type="emotionDetail" id="emotionalDetail" class="user-input" placeholder="Enter details here...">
       
       <!-- Submit Button -->
-      <button id="submitBtn" class="submit-button">Submit</button>
+      <button id="submitBtn" class="submit-button" style="margin-top: 15px; margin-bottom: 15px; font-weight: bold;">Submit</button>
 
       <!-- Area to display the final emotion and recommendation -->
-      <div id="result" style="margin-top: 30px;"></div>
+      <div id="result" style="margin-top: 30px;">
+        <a href="/recommendations" id="finalEmotionLink" style="color: #333;"><h2>Final Emotion: Sadness</h2></a>
+      </div>
     </div>
   </div>
 
@@ -126,8 +128,8 @@
               alt="" /></a><a href="#" class="link-social w-inline-block"><img src="/static/images/icon-twitter.svg"
               alt="" /></a><a href="#" class="link-social w-inline-block"><img src="/static/images/icon-instagram.svg"
               alt="" /></a></div>
-        <div class="footer-links-list"><a href="/about" class="link-footer">About</a><a href="/blog"
-            class="link-footer">Emotions</a><a href="/recommendations" class="link-footer">Contact</a></div>
+        <div class="footer-links-list"><a href="/" class="link-footer">About</a><a href="/emotions"
+            class="link-footer">Emotions</a><a href="/" class="link-footer">Contact</a></div>
       </div>
     </div>
   </div>
@@ -135,6 +137,11 @@
   <!-- JavaScripts -->
   <script src="/js/jquery.js" type="text/javascript"></script>
   <script src="/js/webflow-script.js" type="text/javascript"></script>
+  <script>
+    window.onload = function () {
+      document.getElementById('finalEmotionLink').title = 'Continue Your Recommendation';
+    };
+  </script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("submitBtn").addEventListener("click", async () => {
@@ -158,8 +165,11 @@
           const data = JSON.parse(text); // Parse manually
           document.getElementById("result").innerHTML = `
             <h2>Final Emotion: ${data.emotion}</h2>
-            <p>Now recommending music based on this emotion...</p>
           `;
+
+          setTimeout(() => {
+            window.location.href = `/recommendations?emotion_type=${encodeURIComponent(data.emotion)}`;
+          }, 2000);
         } catch (err) {
           console.error("Error fetching recommendation:", err);
           document.getElementById("result").innerHTML = `<p>Error: ${err.message}</p>`;

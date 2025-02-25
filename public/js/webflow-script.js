@@ -3718,7 +3718,6 @@
         GENERAL_DISPLAY: "GENERAL_DISPLAY",
         GENERAL_START_ACTION: "GENERAL_START_ACTION",
         GENERAL_CONTINUOUS_ACTION: "GENERAL_CONTINUOUS_ACTION",
-        // TODO: Clean these up below because they're not used at this time
         GENERAL_COMBO_CLASS: "GENERAL_COMBO_CLASS",
         GENERAL_STOP_ACTION: "GENERAL_STOP_ACTION",
         GENERAL_LOOP: "GENERAL_LOOP",
@@ -16323,7 +16322,6 @@
     "node_modules/graphql/jsutils/instanceOf.mjs"() {
       init_inspect();
       instanceOf = /* c8 ignore next 6 */
-        // FIXME: https://github.com/graphql/graphql-js/issues/2317
         globalThis.process && true ? function instanceOf2(value, constructor) {
           return value instanceof constructor;
         } : function instanceOf3(value, constructor) {
@@ -24122,7 +24120,6 @@ spurious results.`);
                 var merge3 = policies.getMergeFunction(typename, field.name.value, childTypename);
                 if (merge3) {
                   childTree.info = {
-                    // TODO Check compatibility against any existing childTree.field?
                     field,
                     typename,
                     merge: merge3
@@ -26339,11 +26336,6 @@ spurious results.`);
             var transformCache = this.transformCache;
             if (!transformCache.has(document2)) {
               var cacheEntry = {
-                // TODO These three calls (hasClientExports, shouldForceResolvers, and
-                // usesNonreactiveDirective) are performing independent full traversals
-                // of the transformed document. We should consider merging these
-                // traversals into a single pass in the future, though the work is
-                // cached after the first time.
                 hasClientExports: hasClientExports(document2),
                 hasForcedResolvers: this.localState.shouldForceResolvers(document2),
                 hasNonreactiveDirective: hasDirectives(["nonreactive"], document2),
@@ -39959,9 +39951,6 @@ spurious results.`);
       };
       getNumberFormat = (0, import_memoize.default)(
         (unit, currencyDisplay = "symbol") => (
-          // HACK: for some reason, GraphQL is returning a currency of '???' for null
-          // prices; we're temporarily glossing over this fact, and will address the
-          // backend at a later time..
           unit != null && isValidCurrency(unit) ? new Intl.NumberFormat("en-US", {
             currency: unit,
             style: "currency",
