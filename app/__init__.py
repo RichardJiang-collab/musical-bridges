@@ -9,7 +9,6 @@ from whitenoise import WhiteNoise
 def create_app(config_name='development'):
     base_dir = os.path.abspath(os.path.dirname(__file__))
     static_folder = os.path.join(base_dir, '..', 'public')
-    init_app()
 
     app = Flask(__name__, instance_relative_config=True, static_folder=static_folder, static_url_path='/static')
     app.config.from_object(f'app.config.{config_name.capitalize()}Config')
@@ -22,6 +21,7 @@ def create_app(config_name='development'):
     app.config['SPOTIFY_REDIRECT_URI'] = os.environ.get('SPOTIFY_REDIRECT_URI')
 
     app.config['MOONSHOT_API_KEY'] = os.environ.get('MOONSHOT_API_KEY')
+    app.config['GENRES_PATH'] = init_app(app=app)
 
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
     app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_folder, prefix='static/')
