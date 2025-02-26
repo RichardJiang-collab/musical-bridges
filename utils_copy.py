@@ -76,8 +76,7 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
     sp = get_spotify_client()
     if not sp:
         raise Exception("Spotify client not authenticated")
-
-    # Load genres (unchanged)
+    
     GENRES_PATH = current_app.config['GENRES_PATH']
     ALL_GENRES = []
     with open(GENRES_PATH, 'r', encoding='utf-8') as file:
@@ -87,50 +86,46 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
                 genre = line.strip().split('. ', 1)[1]
                 ALL_GENRES.append(genre)
 
-    # Combine user and random genres
+    # 1. Get user-selected genres and add random genres
     user_genres = session.get('selectedGenres', [])
     random_genres = random.sample(ALL_GENRES, k=3)
-    combined_genres = list(set(user_genres + random_genres))
+    combined_genres = list(set(user_genres + random_genres))  # Combining user and random genres
 
-    # Map emotion to keyword
-    emotion_map = {
-        Emotion.JOY: "happy",
-        Emotion.TENDER: "chill",
-        Emotion.ANGER: "intense",
-        Emotion.SADNESS: "sad"
-    }
-    emotion_keyword = emotion_map.get(emotion, "happy")  # Default to "happy"
-    selected_genre = random.choice(user_genres if user_genres else combined_genres)
-
+    # 2. Fetch valid genre seeds from Spotify and filter combined_genres
     try:
-        # Search for playlists
-        query = f"{emotion_keyword} {selected_genre}"
-        results = sp.search(q=query, type='playlist', limit=5)
-        if not results['playlists']['items']:
-            return []
-
-        # Fetch tracks from the first playlist
-        playlist_id = results['playlists']['items'][0]['id']
-        playlist_results = sp.playlist_tracks(playlist_id)
-        all_tracks = playlist_results['items']
-
-        # Select tracks
-        if len(all_tracks) < min_count:
-            return []
-        selected_tracks = random.sample(all_tracks, k=min(max_count, len(all_tracks)))
-
-        # Parse into Song objects
-        return [Song(
-            spotify_id=item['track']['id'],
-            title=item['track']['name'],
-            artist=item['track']['artists'][0]['name'],
-            album=item['track']['album']['name'],
-            popularity=item['track']['popularity'],
-            emotion=emotion
-        ) for item in selected_tracks]
+        valid_genres = sp.recommendation_genre_seeds()['genres']
+        combined_genres = [genre for genre in combined_genres if genre.lower() in valid_genres]
+        if not combined_genres:  # If no valid genres remain, use fallback genres
+            combined_genres = random.sample(valid_genres, k=min(3, len(valid_genres)))
     except Exception as e:
-        print(f"Error fetching tracks: {str(e)}")
+        print(f"Error fetching valid genre seeds: {str(e)}")
+        combined_genres = ['pop', 'rock']  # Fallback to safe defaults if API call fails
+
+    # 3. Limit to 5 genres (Spotify max for seeds) and apply attributes
+    if len(user_genres) > 5:
+        combined_genres = list(set(random.sample(user_genres, 5)))
+    elif len(combined_genres) > 5:
+        combined_genres = list(set(random.sample(combined_genres, 5)))
+    attributes = emotion_to_attributes.get(emotion, {})
+
+    # 4. Fetch recommendations from Spotify
+    try:
+        results = sp.recommendations(limit=max_count, seed_genres=combined_genres, **attributes)
+    except Exception as e:
+        print(f"Error fetching recommendations: {str(e)}")
         return []
+    if len(results.get('tracks', [])) < min_count:
+        return []
+
+    # 5. Parse the results and return as Song objects
+    return [Song(
+        spotify_id=track['id'],
+        title=track['name'],
+        artist=track['artists'][0]['name'],
+        album=track['album']['name'],
+        popularity=track['popularity'],
+        emotion=emotion
+    ) for track in results['tracks']]
 
 
 
@@ -185,17 +180,31 @@ def get_top_recommended_tracks(playlist_id, limit=5):
 
     try:
         playlist_tracks = sp.playlist_tracks(playlist_id)
-        tracks = [Song(
-            spotify_id=item['track']['id'],
-            title=item['track']['name'],
-            artist=item['track']['artists'][0]['name'],
-            album=item['track']['album']['name'],
-            popularity=item['track']['popularity']
-        ) for item in playlist_tracks['items']]
-
-        # Sort by popularity
-        sorted_tracks = sorted(tracks, key=lambda track: track.popularity, reverse=True)
-        return sorted_tracks[:limit]
+        track_ids = [item['track']['id'] for item in playlist_tracks['items']]
+        audio_features = sp.audio_features(track_ids)
     except Exception as e:
-        print(f"Error fetching playlist tracks: {str(e)}")
+        print(f"Error fetching playlist tracks or audio features: {str(e)}")
         return []
+
+    tracks = []
+    for item, features in zip(playlist_tracks['items'], audio_features):
+        if features:
+            tracks.append(Song(
+                spotify_id=item['track']['id'],
+                title=item['track']['name'],
+                artist=item['track']['artists'][0]['name'],
+                album=item['track']['album']['name'],
+                popularity=item['track']['popularity'],
+                danceability=features.get('danceability', 0),
+                energy=features.get('energy', 0),
+                loudness=features.get('loudness', 0),
+                speechiness=features.get('speechiness', 0),
+                acousticness=features.get('acousticness', 0),
+                instrumentalness=features.get('instrumentalness', 0),
+                liveness=features.get('liveness', 0),
+                valence=features.get('valence', 0),
+                tempo=features.get('tempo', 0)
+            ))
+
+    sorted_tracks = sorted(tracks, key=calculate_composite_score, reverse=True)
+    return sorted_tracks[:limit]
