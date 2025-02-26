@@ -93,8 +93,7 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
 
     # 2. Fetch valid genre seeds from Spotify and filter combined_genres
     try:
-        valid_genres = sp.recommendation_genre_seeds()['genres']  # Get available genre seeds
-        # Keep only genres that exist in Spotify's valid genre seeds
+        valid_genres = sp.recommendation_genre_seeds(market='US')['genres']
         combined_genres = [genre for genre in combined_genres if genre.lower() in valid_genres]
         if not combined_genres:  # If no valid genres remain, use fallback genres
             combined_genres = random.sample(valid_genres, k=min(3, len(valid_genres)))
@@ -111,7 +110,7 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
 
     # 4. Fetch recommendations from Spotify
     try:
-        results = sp.recommendations(limit=max_count, seed_genres=combined_genres, **attributes)
+        results = sp.recommendations(limit=max_count, seed_genres=combined_genres, market='US', **attributes)
     except Exception as e:
         print(f"Error fetching recommendations: {str(e)}")
         return []
@@ -127,6 +126,7 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
         popularity=track['popularity'],
         emotion=emotion
     ) for track in results['tracks']]
+
 
 
 #* 3. Function for creating a Spotify playlist
