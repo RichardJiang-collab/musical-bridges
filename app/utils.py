@@ -93,7 +93,8 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
 
     # 2. Fetch valid genre seeds from Spotify and filter combined_genres
     try:
-        valid_genres = sp.recommendation_genre_seeds(market='US')['genres']
+        # Replace deprecated recommendation_genre_seeds()
+        valid_genres = sp.recommendation_genres()['genres']  # Updated endpoint
         combined_genres = [genre for genre in combined_genres if genre.lower() in valid_genres]
         if not combined_genres:  # If no valid genres remain, use fallback genres
             combined_genres = random.sample(valid_genres, k=min(3, len(valid_genres)))
@@ -110,7 +111,8 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
 
     # 4. Fetch recommendations from Spotify
     try:
-        results = sp.recommendations(limit=max_count, seed_genres=combined_genres, market='US', **attributes)
+        # Replace deprecated recommendations() endpoint
+        results = sp.get_recommendations(limit=max_count, seed_genres=combined_genres, **attributes)
     except Exception as e:
         print(f"Error fetching recommendations: {str(e)}")
         return []
@@ -181,7 +183,15 @@ def get_top_recommended_tracks(playlist_id, limit=5):
     try:
         playlist_tracks = sp.playlist_tracks(playlist_id)
         track_ids = [item['track']['id'] for item in playlist_tracks['items']]
-        audio_features = sp.audio_features(track_ids)
+        
+        # Replace deprecated audio_features() endpoint
+        # Process tracks in batches if needed (Spotify API can handle up to 100 track IDs at once)
+        audio_features = []
+        batch_size = 100
+        for i in range(0, len(track_ids), batch_size):
+            batch_ids = track_ids[i:i+batch_size]
+            batch_features = sp.get_audio_features(batch_ids)
+            audio_features.extend(batch_features)
     except Exception as e:
         print(f"Error fetching playlist tracks or audio features: {str(e)}")
         return []
