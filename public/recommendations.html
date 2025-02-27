@@ -195,7 +195,16 @@
       })
       .then(data => {
         console.log('Response received from backend:', data);
-        document.getElementById('playlist-embed').innerHTML = data.embedded_playlist_code;
+        if (data && data.embedded_playlist_code) {
+          document.getElementById('playlist-embed').innerHTML = data.embedded_playlist_code;  // Add error handling for when the Iframe does not load.
+          document.getElementById('playlist-embed').querySelector('iframe').onerror = function() {
+              console.error("Error loading Spotify playlist iframe");
+              document.getElementById('playlist-embed').innerHTML = "<p>Sorry, the playlist could not be loaded.</p>";
+          };
+        } else {
+            console.error("No embedded playlist code received from backend");
+            document.getElementById('playlist-embed').innerHTML = "<p>Sorry, there was a problem loading the playlist.</p>";
+        }
     
         const topTracksContainer = document.querySelector('#top-tracks .curated-songs');
         topTracksContainer.innerHTML = ''; // Clear previous content
@@ -223,6 +232,7 @@
       .catch(error => {
         console.error('Error:', error);
         alert('An error occurred while fetching your playlist. Please try again.');
+        document.getElementById('playlist-embed').innerHTML = "<p>Sorry, there was a network error.</p>";
       });
     
       // Event Delegation for star icons

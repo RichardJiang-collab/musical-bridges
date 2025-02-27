@@ -291,7 +291,8 @@ def create_playlist():
         
         # 5. Get embedded playlist code
         embedded_playlist_code = get_embedded_playlist_code(spotify_playlist_id)
-
+        current_app.logger.info(f"Embedded playlist code: {embedded_playlist_code}")
+        
         # 6. Get top recommended tracks
         top_tracks = get_top_recommended_tracks(spotify_playlist_id)
         if not top_tracks:
