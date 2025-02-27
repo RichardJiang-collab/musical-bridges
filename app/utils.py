@@ -106,12 +106,14 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
         # Search for playlists
         query = f"{emotion_keyword} {selected_genre}"
         results = sp.search(q=query, type='playlist', limit=5)
-        if not results['playlists']['items']:
+        if not results or not results['playlists']['items']: #check if results or items exist.
             return []
 
         # Fetch tracks from the first playlist
         playlist_id = results['playlists']['items'][0]['id']
         playlist_results = sp.playlist_tracks(playlist_id)
+        if not playlist_results or not playlist_results['items']: #check if playlist_results or items exist.
+            return []
         all_tracks = playlist_results['items']
 
         # Select tracks
@@ -120,18 +122,22 @@ def get_random_tracks(emotion, min_count=10, max_count=20):
         selected_tracks = random.sample(all_tracks, k=min(max_count, len(all_tracks)))
 
         # Parse into Song objects
-        return [Song(
-            spotify_id=item['track']['id'],
-            title=item['track']['name'],
-            artist=item['track']['artists'][0]['name'],
-            album=item['track']['album']['name'],
-            popularity=item['track']['popularity'],
-            emotion=emotion
-        ) for item in selected_tracks]
+        song_objects = []
+        for item in selected_tracks:
+            if item and item['track'] and item['track']['id']: # Check that item, track, and track id exist.
+                song_objects.append(Song(
+                    spotify_id=item['track']['id'],
+                    title=item['track']['name'],
+                    artist=item['track']['artists'][0]['name'],
+                    album=item['track']['album']['name'],
+                    popularity=item['track']['popularity'],
+                    emotion=emotion
+                ))
+        return song_objects
+
     except Exception as e:
         print(f"Error fetching tracks: {str(e)}")
         return []
-
 
 
 #* 3. Function for creating a Spotify playlist
