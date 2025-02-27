@@ -198,25 +198,25 @@
       })
       .then(data => {
         console.log('Response received from backend:', data);
+
+        // Playlist Loading (Dynamic Creation)
+        const playlistEmbedContainer = document.getElementById('playlist-embed');
+        playlistEmbedContainer.innerHTML = ''; // Clear existing content
+
         if (data && data.embedded_playlist_code) {
-          setTimeout(() => {
-            const playlistEmbed = document.getElementById('playlist-embed');
-            if (playlistEmbed) {
-                const originalHTML = playlistEmbed.innerHTML;
-                playlistEmbed.innerHTML = ''; // Clear the content
-                setTimeout(() => {
-                    playlistEmbed.innerHTML = originalHTML; // Restore the content
-                }, 100); // Short delay
-            }
+            const playlistIframe = document.createElement('div');
+            playlistIframe.className = 'code-embed w-embed w-iframe';
+            playlistIframe.innerHTML = data.embedded_playlist_code;
+            playlistEmbedContainer.appendChild(playlistIframe.firstChild); // Append the iframe
+
             // Add error handling for when the Iframe does not load.
-            document.getElementById('playlist-embed').querySelector('iframe').onerror = function() {
+            playlistEmbedContainer.querySelector('iframe').onerror = function() {
                 console.error("Error loading Spotify playlist iframe");
-                document.getElementById('playlist-embed').innerHTML = "<p>Sorry, the playlist could not be loaded.</p>";
+                playlistEmbedContainer.innerHTML = "<p>Sorry, the playlist could not be loaded.</p>";
             };
-        }, 500); // Delay of 500 milliseconds
         } else {
             console.error("No embedded playlist code received from backend");
-            document.getElementById('playlist-embed').innerHTML = "<p>Sorry, there was a problem loading the playlist.</p>";
+            playlistEmbedContainer.innerHTML = "<p>Sorry, there was a problem loading the playlist.</p>";
         }
     
         const topTracksContainer = document.querySelector('#top-tracks .curated-songs');
