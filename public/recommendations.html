@@ -67,6 +67,9 @@
       font-size: 16px;
       margin-left: 10px;
     }
+    .refresh-iframe {
+      opacity: 0.99; /* A very slight change */
+    }
   </style>
 </head>
 <body>
@@ -199,11 +202,10 @@
           setTimeout(() => {
             const iframe = document.getElementById('playlist-embed').querySelector('iframe');
             if (iframe) {
-                const originalSrc = iframe.src;
-                iframe.src = originalSrc + '?refresh=' + Date.now(); // Add a timestamp to force reload
+                iframe.classList.add('refresh-iframe');
                 setTimeout(() => {
-                    iframe.src = originalSrc; // Set it back to the original
-                }, 100); // Small delay before setting it back
+                    iframe.classList.remove('refresh-iframe');
+                }, 100);
             } else {
                 document.getElementById('playlist-embed').innerHTML = data.embedded_playlist_code;
             }
