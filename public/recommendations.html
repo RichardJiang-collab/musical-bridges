@@ -198,22 +198,20 @@
       })
       .then(data => {
         console.log('Response received from backend:', data);
-
-        // Playlist Loading (Dynamic Creation)
+    
         const playlistEmbedContainer = document.getElementById('playlist-embed');
-        playlistEmbedContainer.innerHTML = ''; // Clear existing content
-
+        playlistEmbedContainer.innerHTML = '';
+    
         if (data && data.embedded_playlist_code) {
-            const playlistIframe = document.createElement('div');
-            playlistIframe.className = 'code-embed w-embed w-iframe';
-            playlistIframe.innerHTML = data.embedded_playlist_code;
-            playlistEmbedContainer.appendChild(playlistIframe.firstChild); // Append the iframe
-
-            // Add error handling for when the Iframe does not load.
-            playlistEmbedContainer.querySelector('iframe').onerror = function() {
-                console.error("Error loading Spotify playlist iframe");
-                playlistEmbedContainer.innerHTML = "<p>Sorry, the playlist could not be loaded.</p>";
-            };
+            setTimeout(() => {
+                const playlistIframe = document.createElement('div');
+                playlistIframe.innerHTML = data.embedded_playlist_code;
+                playlistEmbedContainer.appendChild(playlistIframe.firstChild);
+                playlistEmbedContainer.querySelector('iframe').onerror = function() {
+                    console.error("Error loading Spotify playlist iframe");
+                    playlistEmbedContainer.innerHTML = "<p>Sorry, the playlist could not be loaded.</p>";
+                };
+            }, 2000);
         } else {
             console.error("No embedded playlist code received from backend");
             playlistEmbedContainer.innerHTML = "<p>Sorry, there was a problem loading the playlist.</p>";
