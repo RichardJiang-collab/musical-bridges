@@ -252,13 +252,19 @@ def classify_emotion(emotion):
 
 @main.route('/api/create_playlist', methods=['POST'])
 def create_playlist():
+    auth_check = check_auth()
+    if auth_check:
+        return auth_check  # Redirect to login if not authenticated
+
     # Get Access Token for Spotify Access
     current_app.logger.info("create_playlist called")
     access_token = get_token()
     current_app.logger.info(f"Access token: {access_token}")
+
     if not access_token:
         current_app.logger.warning("No access token found")
-        return jsonify({'error': 'Not authenticated'}), 401
+        return redirect(url_for('main.login'))
+        
     
     # Get Spotify client
     sp = get_spotify_client(access_token)
