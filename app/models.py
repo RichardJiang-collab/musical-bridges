@@ -13,14 +13,16 @@ class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.String(100), unique=True, nullable=False)
+    display_name = db.Column(db.String(100)) # Add this line
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     access_token = db.Column(db.String(255))
     refresh_token = db.Column(db.String(255))
     expires_at = db.Column(db.Integer)
     genres = db.relationship('UserGenre', backref='user', lazy=True)
 
-    def __init__(self, user_id):
+    def __init__(self, user_id, display_name=None): # Update this line
         self.user_id = user_id
+        self.display_name = display_name # Add this line
 
 class Song(db.Model):
     id = db.Column(db.Integer, primary_key=True)

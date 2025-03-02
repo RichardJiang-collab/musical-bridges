@@ -58,6 +58,7 @@ def init_api_client():
         http_client=http_client
     )
 
+
 #* DEBUGGING
 @main.route('/debug-env')
 def debug_env():
@@ -65,6 +66,7 @@ def debug_env():
         'SPOTIFY_SCOPES': current_app.config.get('SPOTIFY_SCOPES'),
         'OTHER_VARIABLE': current_app.config.get('OTHER_VARIABLE')
     })
+
 
 #* Part 1. Login, Authentication, Get Token, Signout
 @main.route('/callback')
@@ -96,7 +98,7 @@ def callback():
     sp = get_spotify_client(access_token)
     try:
         user_profile = sp.current_user()
-        display_name = user_profile.get('display_name', 'Unknown User')
+        display_name = user_profile.get('display_name', 'Unknown User')  # FIXME: new_user = User(user_id=user_id, display_name=display_name)
         user_id = user_profile.get('id')
         if not user_id:
             raise ValueError('Failed to retrieve Spotify user ID')
@@ -190,7 +192,7 @@ def user_profile():
     auth_check = check_auth()
     if auth_check:
         return auth_check
-    display_name = session.get('display_name', 'User')
+    display_name = session.get('display_name', 'User')  # FIXME: new_user = User(user_id=user_id, display_name=display_name)
     return render_template('profile.html', display_name=display_name)
 
 @main.route('/genres-page', methods=['GET'])
@@ -265,7 +267,6 @@ def create_playlist():
         current_app.logger.warning("No access token found")
         return redirect(url_for('main.login'))
         
-    
     # Get Spotify client
     sp = get_spotify_client(access_token)
     if not sp:
